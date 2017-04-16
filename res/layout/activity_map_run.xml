@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#c3c3c3">
+
+
+    <RelativeLayout
+        android:id="@+id/RelativeL_mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/bmapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/LL_et"
+            android:clickable="true"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/LL_et"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_toLeftOf="@+id/map_nav_button"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:background="#26a0e2">
+            <EditText
+                android:id="@+id/map_nav_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/map_nav_end"
+                android:gravity="center"
+                android:hint="点击地图选择起点"
+                android:textColorHint="#fff"
+                android:textColor="#fff"
+                android:singleLine="true"
+                android:layout_weight="1"
+                android:enabled="false"/>
+
+            <EditText
+                android:id="@+id/map_nav_end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColorHint="#fff"
+                android:textColor="#fff"
+                android:singleLine="true"
+                android:hint="点击地图选择终点"
+                android:enabled="false"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/map_nav_button"
+            android:layout_width="130dp"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/bmapView"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="导航"
+            android:textStyle="bold"
+            android:textColor="#1f8f97"
+            android:background="@drawable/selector_navi_button"
+            android:textSize="24sp"/>
+
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/img_tomylocation"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/tomylocation"
+            android:layout_above="@+id/map_nav_button"
+            android:layout_marginLeft="3dp"
+            android:layout_marginBottom="25dp"/>
+
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/img_map_offline"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_above="@+id/img_tomylocation"
+            android:layout_marginLeft="3dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/map_download" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

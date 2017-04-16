@@ -1,0 +1,144 @@
+package com.aj.activity;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.aj.collection.R;
+import com.aj.tools.SPUtils;
+import com.aj.tools.T;
+import com.aj.ui.HeadControlPanel;
+import com.aj.ui.HeadControlPanel.LeftImageOnClick;
+import com.aj.ui.HeadControlPanel.RightImageOnClick;
+
+public class DetecedUnit extends Activity
+{
+	private Switch kaiguan;
+	private TextView userTV;
+	private EditText unitNameET,unitAddrET,unitPostET,unitCZET,unitPhoneET;
+	private String unitName,unitAddr,unitPost,unitCZ,unitPhone;
+	private EditText jiankongET;
+	private String jiankong;
+	HeadControlPanel headPanel = null;
+	String login_user;
+	LinearLayout ll;
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.set_base_info);
+		init();
+		ll = (LinearLayout) findViewById(R.id.ll_jiankong);
+		unitNameET = (EditText)findViewById(R.id.unit_name_set);
+		unitAddrET = (EditText)findViewById(R.id.unit_addr_set);
+		unitPostET = (EditText)findViewById(R.id.unit_post_set);
+		unitCZET = (EditText)findViewById(R.id.unit_cz_set);
+		unitPhoneET = (EditText)findViewById(R.id.unit_phone_set);
+		jiankongET = (EditText)findViewById(R.id.jiankong_set);
+		userTV = (TextView)findViewById(R.id.user_set);
+		kaiguan = (Switch)findViewById(R.id.switch_phone);
+		String dv = "";
+		login_user = (String) SPUtils.get(this, SPUtils.LOGIN_USER, dv, SPUtils.USER_DATA);
+		userTV.setText(login_user);
+		kaiguan.setChecked((Boolean)SPUtils.get(this, SPUtils.KAIGUAN, false, login_user));
+		unitNameET.setText((String)SPUtils.get(this, SPUtils.UNIT_NAME, dv,login_user ));
+		unitAddrET.setText((String)SPUtils.get(this, SPUtils.UNIT_ADDR, dv,login_user ));
+		unitPostET.setText((String)SPUtils.get(this, SPUtils.UNIT_POST, dv,login_user ));
+		unitCZET.setText((String)SPUtils.get(this, SPUtils.UNIT_CZ, dv,login_user ));
+		unitPhoneET.setText((String)SPUtils.get(this, SPUtils.UNIT_PHONE, dv,login_user ));
+
+		jiankongET.setText((String)SPUtils.get(this, SPUtils.JIANKONG, dv, login_user));
+		
+		//根据开关状态改变栏目状态
+		if(!kaiguan.isChecked())
+		{
+			ll.setVisibility(View.INVISIBLE);
+		}
+		else
+		{
+			ll.setVisibility(View.VISIBLE);
+		}
+		kaiguan.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+			{
+				// TODO Auto-generated method stub
+				if(isChecked)
+				{
+					ll.setVisibility(View.VISIBLE);
+				}
+				else
+				{
+					ll.setVisibility(View.INVISIBLE);
+				}
+			}
+		});
+	}
+	private void init()
+	{
+		headPanel = (HeadControlPanel)findViewById(R.id.head_layout);  
+		headPanel.setRightVisible(View.VISIBLE);
+        if(headPanel != null){  
+            headPanel.initHeadPanel();  
+            headPanel.setMiddleTitle("基本信息");
+            headPanel.setLeftImage(R.drawable.ic_menu_back);
+            LeftImageOnClick l = new LeftImageOnClick()
+			{
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					finish();
+				}
+			};
+			headPanel.setLeftImageOnClick(l);
+			headPanel.setRightImage(R.drawable.save_file);
+			headPanel.setRightText("保存");
+			RightImageOnClick r = new RightImageOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					unitName = unitNameET.getText().toString().replace(" ", "");
+					unitAddr = unitAddrET.getText().toString().replace(" ", "");
+					unitPost = unitPostET.getText().toString().replace(" ", "");
+					unitCZ = unitCZET.getText().toString().replace(" ", "");
+					unitPhone = unitPhoneET.getText().toString().replace(" ", "");
+					jiankong = jiankongET.getText().toString().replace(" ", "");
+					if(unitName.equals("") || unitAddr.equals("") || unitPost.equals("")
+							|| unitCZ.equals("")||unitPhone.equals("")
+							||jiankong.equals(""))
+					{
+						T.showShort(DetecedUnit.this, "所有栏目不能为空");
+						return ;
+					}
+					SPUtils.put(DetecedUnit.this, SPUtils.UNIT_NAME, unitName, login_user);
+					SPUtils.put(DetecedUnit.this, SPUtils.UNIT_ADDR, unitAddr, login_user);
+					SPUtils.put(DetecedUnit.this, SPUtils.UNIT_POST, unitPost, login_user);
+					SPUtils.put(DetecedUnit.this, SPUtils.UNIT_CZ, unitCZ, login_user);
+					SPUtils.put(DetecedUnit.this, SPUtils.UNIT_PHONE, unitPhone, login_user);
+					SPUtils.put(DetecedUnit.this, SPUtils.JIANKONG, jiankong, login_user);
+					SPUtils.put(DetecedUnit.this, SPUtils.KAIGUAN, kaiguan.isChecked(), login_user);
+					T.showShort(DetecedUnit.this, "保存成功");
+				}
+			};
+			headPanel.setRightImageOnClick(r);
+        }
+	}
+}

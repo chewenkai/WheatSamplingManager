@@ -1,0 +1,139 @@
+package com.aj.ui;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.aj.Constant;
+import com.aj.collection.R;
+
+public class HeadControlPanel extends RelativeLayout
+{
+	private Context mContext;  
+    private TextView mMidleTitle;  
+//    private ImageView mRightImage;  
+    private ImageText mRightImage;
+    private ImageText mThird;
+    private ImageView mLeftImage;
+    private ThirdOnClick mThirdImageOnClick = null;
+    private LeftImageOnClick mLeftImageOnClick = null;
+    private RightImageOnClick mRightImageOnClick = null;
+    private static final float middle_title_size = 30;   
+    private static final float right_title_size = 30f;   
+    private static final int default_background_color = Color.rgb(23, 124, 202);  
+      
+    public HeadControlPanel(Context context, AttributeSet attrs) {  
+        super(context, attrs);  
+        // TODO Auto-generated constructor stub  
+    }
+    public void setThirdVisible(int visibility)
+    {
+    	mThird.setVisibility(visibility);
+    }
+    public void setRightVisible(int visibility)
+    {
+    	mRightImage.setVisibility(visibility);
+    }
+    public interface ThirdOnClick
+    {
+    	public void onImageClickListener();
+    }
+    public void setThirdOnClick(ThirdOnClick t)
+    {
+    	this.mThirdImageOnClick = t;
+    }
+    public void setThirdImage(int resId)
+    {
+    	mThird.setImage(resId);
+    }
+    public void setThirdText(String str)
+    {
+    	mThird.setText(str);
+    }
+    
+    public interface LeftImageOnClick
+    {
+    	public void onImageClickListener();
+    }
+    public void setLeftImageOnClick(LeftImageOnClick l)
+    {
+    	this.mLeftImageOnClick = l;
+    }
+    public void setLeftImage(int resId)
+    {
+    	mLeftImage.setImageResource(resId);
+    }
+    public interface RightImageOnClick
+    {
+    	public void onImageClickListener();
+    }
+    public void setRightImageOnClick(RightImageOnClick r)
+    {
+    	this.mRightImageOnClick = r;
+    }
+    public void setRightImage(int resId)
+    {
+//    	mRightImage.setImageResource(resId);
+    	mRightImage.setImage(resId);
+    }
+    public void setRightText(String str)
+    {
+    	mRightImage.setText(str);
+    }
+    @Override  
+    protected void onFinishInflate() {  
+        // TODO Auto-generated method stub  
+        mMidleTitle = (TextView)findViewById(R.id.midle_title);  
+        mRightImage = (ImageText)findViewById(R.id.right_img);  
+        mLeftImage = (ImageView) findViewById(R.id.left_img);
+        mThird = (ImageText)findViewById(R.id.third);
+        mThird.setOnClickListener(new OnClickListener()
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				// TODO Auto-generated method stub
+				mThirdImageOnClick.onImageClickListener();
+			}
+		});
+        mLeftImage.setOnClickListener(new OnClickListener()
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				// TODO Auto-generated method stub
+				mLeftImageOnClick.onImageClickListener();
+			}
+		});
+        mRightImage.setOnClickListener(new OnClickListener()
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				// TODO Auto-generated method stub
+				mRightImageOnClick.onImageClickListener();
+			}
+		});
+        setBackgroundColor(default_background_color);  
+    }  
+    public void initHeadPanel(){  
+          
+        if(mMidleTitle != null){  
+            setMiddleTitle(Constant.FRAGMENT_FLAG_DO);  
+        }  
+    }  
+    
+    public void setMiddleTitle(String s){  
+        mMidleTitle.setText(s);  
+        mMidleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP,middle_title_size);  
+    } 
+}

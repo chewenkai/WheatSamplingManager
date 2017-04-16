@@ -1,0 +1,314 @@
+package com.aj.activity;
+
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.aj.collection.R;
+import com.aj.tools.L;
+import com.aj.tools.T;
+import com.aj.ui.HeadControlPanel;
+import com.aj.ui.HeadControlPanel.LeftImageOnClick;
+import com.aj.ui.HeadControlPanel.RightImageOnClick;
+import com.aj.ui.MyLayout;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.encoder.ByteMatrix;
+import com.jrs.utils.SprtPrinter;
+
+public class PrintActivity extends Activity
+{
+	
+	private HeadControlPanel headPanel = null;
+	private String strPrint;
+	private TextView strPrintTV;
+	private ImageView codeBar;
+	private String num;	//条形码
+	private ProgressDialog proDialog;
+	private BluetoothAdapter mBluetoothAdapter=null;
+	private String printer;	//打印机句柄
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.print_layout);
+		try
+		{
+			init();
+		}
+		catch (WriterException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//1、打开蓝牙需要先拿到蓝牙
+		mBluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
+		//拿到之后需进行一个判断，是否拿到了呀
+		if(mBluetoothAdapter==null)
+		{
+			Toast.makeText(this, "这个设备不支持蓝牙呀", Toast.LENGTH_SHORT).show();
+		}
+		//2、点击打印按钮，先打开蓝牙
+		//不通知用户直接打开蓝牙
+		if(!mBluetoothAdapter.isEnabled())
+		{
+			mBluetoothAdapter.enable();
+			//Toast.makeText(this, "这个设备打不开蓝牙呀", Toast.LENGTH_SHORT).show();
+		}
+	}
+	private void init() throws WriterException
+	{
+		headPanel = (HeadControlPanel)findViewById(R.id.head_layout);  
+		headPanel.setRightVisible(View.VISIBLE);
+        if(headPanel != null){  
+            headPanel.initHeadPanel();  
+            headPanel.setMiddleTitle("打印预览");
+            headPanel.setLeftImage(R.drawable.ic_menu_back);
+            LeftImageOnClick l = new LeftImageOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					finish();
+				}
+			};
+			headPanel.setLeftImageOnClick(l);
+			headPanel.setRightImage(R.drawable.print);
+			headPanel.setRightText("打印");
+			RightImageOnClick r = new RightImageOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					AlertDialog alertDialog;
+					AlertDialog.Builder builder = new AlertDialog.Builder(PrintActivity.this);
+//					builder.setTitle("温馨提示");
+					builder.setMessage("是否打印？");
+					builder.setPositiveButton("是", onClickListener);
+					builder.setNegativeButton("否", null);
+					alertDialog = builder.create();
+					alertDialog.show();
+				}
+			};
+			headPanel.setRightImageOnClick(r);
+        }
+        strPrintTV = (TextView) findViewById(R.id.print_content);
+        Intent i = getIntent();
+        strPrint = i.getStringExtra("jsonStr");
+        strPrint = parseJsonStr(strPrint);
+        if(strPrint == null)
+        {
+        	strPrint = "无内容";
+        }
+        strPrintTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+        strPrintTV.setText(strPrint);
+        codeBar = (ImageView)findViewById(R.id.code_bar);
+        Bitmap bitmap = newBarCode(num);
+        codeBar.setImageBitmap(bitmap);
+	}
+	
+	 private Bitmap newBarCode(String content) throws WriterException  
+     {  
+		// 生成一维条码,编码时指定大小,不要生成了图片以后再进行缩放,这样会模糊导致识别失败
+        BitMatrix matrix = new MultiFormatWriter().encode(content,
+                BarcodeFormat.CODE_128, 500, 200);
+        int width = matrix.getWidth();
+        int height = matrix.getHeight();
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (matrix.get(x, y)) {
+                    pixels[y * width + x] = 0xff000000;
+                }
+            }
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height,
+                Bitmap.Config.ARGB_8888);
+        // 通过像素数组生成bitmap,具体参考api
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return bitmap;  
+           
+           
+     }
+	private DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener()
+	{
+		
+		@Override
+		public void onClick(DialogInterface dialog, int which)
+		{
+			// TODO Auto-generated method stub
+//			T.showShort(PrintActivity.this, "print...");
+			PrintActivity.this.printer=SprtPrinter.CBT;
+			proDialog = new ProgressDialog(PrintActivity.this);  
+	    	proDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);  
+	    	proDialog.setTitle("单据打印");  
+	    	proDialog.setMessage("正在打印单据，请稍候...");
+	    	proDialog.setProgress(0);  
+	    	proDialog.setIndeterminate(true);  
+	    	proDialog.setCancelable(false);  
+	    	proDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+	    		@Override
+	    		public void onDismiss(DialogInterface dialog) {
+	    		}});
+	    	proDialog.show();
+	    	PrinterThread printerThread = new PrinterThread();
+	    	printerThread.start();
+		}
+	};
+	private String parseJsonStr(String jsonStr)
+	{
+		StringBuffer str = new StringBuffer();
+		try
+		{
+			JSONObject task = new JSONObject(jsonStr);	//第一层的对象
+			JSONArray task_value = task.getJSONArray(MyLayout.TASK);	//通过key取得value	key--"task".
+			for(int i = 0; i < task_value.length(); i ++)	//循环取出第一层的值
+			{
+				JSONObject jsonObject = task_value.optJSONObject(i);	//第二层的对象
+				JSONArray item_value = jsonObject.getJSONArray(MyLayout.getName(i));
+				System.out.println(jsonObject.names()+"***  "+i);
+				for(int j = 0; j < item_value.length(); j++)	//循环取出第二层的值
+				{
+					JSONObject itemObject = item_value.optJSONObject(j);	//第三层的对象
+					String name = itemObject.optString(MyLayout.NAME);		//条目名称
+					String type = itemObject.optString(MyLayout.TYPE);		//条目类型
+					Object cont = itemObject.opt(MyLayout.CONT);				//条目内容
+					String print = itemObject.optString(MyLayout.PRINT);		//条目是否可以打印
+					String size = itemObject.optString(MyLayout.SIZE);	//条目的字体大小
+					if(print.equals("T"))
+					{
+						if(type.equals(MyLayout.TYPE_INPUT)|| type.equals(MyLayout.TYPE_NUMBER) 
+								||type.equals(MyLayout.TYPE_AUTO) || type.equals(MyLayout.TYPE_ADDR)
+								||type.equals(MyLayout.TYPE_DATE)||type.equals(MyLayout.TYPE_COMPANY)
+								|| type.equals(MyLayout.TYPE_ITEMS)||type.equals(MyLayout.TYPE_COLLDATE))
+						{
+							if(type.equals(MyLayout.TYPE_NUMBER)||type.equals(MyLayout.TYPE_GPS))
+							{
+								num = (String)cont;
+							}
+							str.append(name);
+							str.append(":");
+							str.append((String)cont);
+							str.append("\n");
+						}
+						else if(type.equals(MyLayout.TYPE_TABLE))
+						{
+							str.append(name);
+							str.append("\n");
+						}
+						else if(type.equals(MyLayout.TYPE_SELECT))
+						{
+							int len = ((JSONArray)cont).length();
+							str.append(name);
+							str.append(": ");
+							for(int k = 0; k< len; k++)
+							{
+								str.append(((JSONArray)cont).get(k));
+								str.append(";");
+							}
+//							str.append(((JSONArray)cont).toString());
+							str.append("\n");
+						}
+					}	
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			L.d("解析json失败");
+		}
+		return str.toString();
+	}
+	private class PrinterThread extends Thread{
+		public void run() {
+			try {
+				Message msg = handler.obtainMessage(2, "正在打印...");
+				handler.sendMessage(msg);
+				SprtPrinter sprtPrinter = new SprtPrinter(); 
+				
+				msg = handler.obtainMessage(2, "连接打印机" + printer + "...");
+				handler.sendMessage(msg);
+				sprtPrinter.connect(printer);
+				
+				msg = handler.obtainMessage(2, "打印测试...");
+				handler.sendMessage(msg);
+				sprtPrinter.send("\n");	//	怕打不全
+				sprtPrinter.send(new byte[]{0x1D,0x21,18});	
+				/*
+				 * 0~7 对应纵向 1~8 倍	0、16、32、48、64、80、96、112 对应横向 1~8倍 
+				 * 横向纵向相加得到倍数 n	0x1d,0x21,n
+				 * */
+				sprtPrinter.send(strPrintTV.getText().toString());
+				sprtPrinter.send("\n\n");
+				
+
+				sprtPrinter.send("\n");
+				System.out.println(num);
+				sprtPrinter.printCodeBar(num, 20, 80);	//打印条形码	code128
+//				sprtPrinter.send("打印测试完成");
+				sprtPrinter.send("\n");
+				sprtPrinter.send("\n");
+				sprtPrinter.send("\n");
+				Thread.sleep(500L);
+				
+				sprtPrinter.close();
+				msg = handler.obtainMessage(1, "打印完成");
+				handler.sendMessage(msg);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Message msg = handler.obtainMessage(100,"打印失败");
+				handler.sendMessage(msg);
+			}
+		}
+	}
+	
+	
+	private Handler handler = new Handler(){  
+		@SuppressLint("HandlerLeak")
+		@Override  
+		public void handleMessage(Message msg) {  
+			if(msg.what == 1){
+		   		proDialog.dismiss();  
+		   	}
+			else if(msg.what==100)
+			{
+				proDialog.dismiss();
+				T.showShort(PrintActivity.this, "打印失败");
+			}
+			else{
+		   		proDialog.setMessage((String)msg.obj);
+		   	}
+		}
+	};
+}

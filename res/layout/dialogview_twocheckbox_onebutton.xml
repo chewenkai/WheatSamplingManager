@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null">
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/shape_dialog_background"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/Alert_Dialog_Title_SlideMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="20dp"
+            android:text="Title"
+            android:textColor="#333"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/Alert_Dialog_Message_SlideMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Alert_Dialog_Title_SlideMenu"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="Message"
+            android:textColor="#333"
+            android:textSize="18sp"
+            android:textStyle="italic" />
+
+        <LinearLayout
+            android:id="@+id/LL_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:layout_below="@+id/Alert_Dialog_Message_SlideMenu">
+            <CheckBox
+                android:id="@+id/checkbox_task"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/custom_checkbox"
+                android:checked="true"
+                />
+            <TextView
+                android:id="@+id/tv_checkbox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="已抽任务"
+                android:textColor="#333"
+                android:textSize="19sp"
+                android:checked="true"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/LL_templet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:layout_below="@+id/LL_task">
+            <CheckBox
+                android:id="@+id/checkbox_templet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                style="@style/custom_checkbox"
+                />
+            <TextView
+                android:id="@+id/tv_checkbox2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="在抽任务"
+                android:textColor="#333"
+                android:textSize="19sp"/>
+
+        </LinearLayout>
+
+
+
+        <TextView
+            android:id="@+id/textview_save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/LL_templet"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/selector_save_button"
+            android:padding="5dp"
+            android:text=" 清理 "
+            android:textColor="#111"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,838 @@
+package com.aj.ui;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.aj.activity.Calendar_View;
+import com.aj.activity.CameraView;
+import com.aj.activity.GatherActivity;
+import com.aj.activity.WritePadDialog;
+import com.aj.collection.R;
+import com.aj.tools.DialogListener;
+import com.aj.tools.FileStream;
+import com.aj.tools.L;
+import com.aj.tools.SPUtils;
+import com.aj.tools.Util;
+
+public class MyLayout
+{
+	public static final String TASK = "Task";			//第一层的键
+	public static final String NAME = "name";			//条目名称
+	public static final String TYPE = "type";			//条目类型
+	public static final String CONT = "cont";			//条目内容
+	public static final String CHAN = "chan";			//条目是否可以改变
+	public static final String PRINT = "print";			//条目是否打印
+	public static final String SIZE = "size";			//蓝牙打印机中的字体大小
+	
+	public static final String CHOOSE_DATE = "请选择日期";	//date button
+	
+//	public static final String TYPE_TITLE = "TITLE";	//1.类型为标题
+	public static final String TYPE_INPUT = "INPUT";	//2.类型为直接输入
+	public static final String TYPE_DATE = "DATE";		//3.类型为日期
+	public static final String TYPE_SELECT = "SELECT";	//4.类型为选择
+	public static final String TYPE_SIGN = "SIGN";		//5.类型为签名
+	public static final String TYPE_CAMERA = "CAMERA";	//6.类型为拍照
+	public static final String TYPE_GPS = "GPS";		//7.类型为地理位置信息
+	public static final String TYPE_NUMBER = "NUM";		//8.类型为编号,文件流水号
+//	public static final String TYPE_NAME = "NAME";		//9.类型为采集人
+//	public static final String TYPE_DEVNUM = "DEVNUM";	//10.类型为设备编号
+	public static final String TYPE_COLLDATE="COLLDATE";//11.类型为采集日期
+	public static final String TYPE_TABLE ="TABLE";		//12.类型为表头
+	public static final String TYPE_VIDEO = "VIDEO";	//13.类型为录像
+	public static final String TYPE_AUTO = "CLIENTAUTOGENERATION";	//14.类型为客户端自动生成
+	public static final String TYPE_COMPANY = "COMPANY";	//15.类型为被抽样单位名称
+	public static final String TYPE_ITEMS = "ITEMS";	//16.类型为样品名称
+	
+	//add by 2015-08-16
+	public static final String TYPE_ADDR = "ADDRESS";  //17.类型为定点的地理位置
+	
+	public static final int SIZE_TABLE = 25 ;			//表头字体大小
+	public static final int SIZE_FIRST = 35 ;			//一级标题字体大小
+	public static final int SIZE_SECOND = 27 ;			//二级标题字体大小
+	public static final int SIZE_THRIRD = 25 ;			//蓝字大小
+	public static final int SIZE_CONTENT = 21 ;			//条目字体大小
+	
+	public static final int TV_GPS_ID = 19001;	//GPS控件ID
+	public static final int TV_NUMBER_ID=19002;	//编号显示控件
+	public static final int ET_COMPANY = 19003;	//被抽样单位ID
+	public static final int ET_ITEM = 19004;	//样品名称ID
+	
+	public static final int DO_FORM =100;	//填表模式
+	public static final int SEE_FORM = 101; //看表模式
+	
+	private LinearLayout parentView;
+	private Activity activity;
+	private FileStream fs;
+	private String root_path;	//存储图片和录像的根路径
+	private int taskId;
+	private boolean isFixPoint;
+	public boolean getIsFixPoint()
+	{
+		return isFixPoint;
+	}
+	public MyLayout(LinearLayout linearLayout, Activity activity,
+			FileStream fs, String root_path,int taskId)
+	{
+		parentView = linearLayout;
+		this.activity = activity;
+		this.fs = fs;
+		this.root_path = root_path;
+		this.taskId = taskId;
+	}
+	public void initLayout(String jsonStr)
+	{
+		try
+		{
+			JSONObject task = new JSONObject(jsonStr);	//第一层的对象
+			JSONArray task_value = task.getJSONArray(TASK);	//通过key取得value	key--"task".
+			for(int i = 0; i < task_value.length(); i ++)	//循环取出第一层的值
+			{
+				JSONObject jsonObject = task_value.optJSONObject(i);	//第二层的对象
+				JSONArray item_value = jsonObject.getJSONArray(getName(i));
+				LinearLayout item_layout = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.item_layout,null);
+				TextView module_key = (TextView) item_layout.getChildAt(0);
+				System.out.println(jsonObject.names()+"***  "+i);
+				module_key.setText(getNameInfo(getName(i)));
+				module_key.setTextSize(TypedValue.COMPLEX_UNIT_SP,SIZE_THRIRD);
+				LinearLayout module_value = (LinearLayout) item_layout.getChildAt(1);
+				for(int j = 0; j < item_value.length(); j++)	//循环取出第二层的值
+				{
+					JSONObject itemObject = item_value.optJSONObject(j);	//第三层的对象
+					HashMap<String, Object> item = new HashMap<String, Object>();	//将取出的值全部放进hashmap里
+					System.out.println(jsonObject.names());		//打印出第二层所包含的
+					item.put(NAME, itemObject.optString(NAME));		//条目名称
+					item.put(TYPE, itemObject.optString(TYPE));		//条目类型
+					item.put(CONT, itemObject.opt(CONT));				//条目内容
+					item.put(CHAN, itemObject.optString(CHAN));		//条目内容是否可以改写
+					item.put(PRINT, itemObject.optString(PRINT));		//条目是否可以打印
+					item.put(SIZE, itemObject.optString(SIZE));		//条目的字体大小
+					System.out.println(item);
+					LinearLayout parentLayout = createWidget(item, i);	//生成一个linearLayout（一个条目）
+					
+					module_value.addView(parentLayout);	//将条目添加至父类视图
+						
+				}
+				parentView.addView(item_layout);
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			L.d("解析json失败");
+		}
+	}
+	/**
+	 * 
+	 * @param items	条目集合/条目父类视图的Tag
+	 * @param id	通过id来确认是哪个按钮触发的事件
+	 * @param task_mode
+	 * @return
+	 * @throws JSONException 
+	 */
+	private LinearLayout createWidget(HashMap<String, Object> item,int id) throws JSONException
+	{
+		//要生成的条目父类视图linearLayout F
+		LinearLayout myWidget = (LinearLayout)activity.getLayoutInflater().inflate(R.layout.linearlayout_input, null);
+		myWidget.setTag(item);	//设置好F的标签
+		String type = (String)item.get(TYPE);	//取出条目类型
+		if(type.equals(TYPE_TABLE))
+		{
+			TextView tvv = new TextView(myWidget.getContext());	//表头用TextView显示
+			tvv.setText((String)item.get(NAME));
+			tvv.setTextSize(TypedValue.COMPLEX_UNIT_SP, SIZE_TABLE);
+			myWidget.addView(tvv);
+		}
+		else
+		{
+			TextView tv = new TextView(myWidget.getContext());	//条目名称用TextView显示
+			String name = (String)item.get(NAME);
+			tv.setText(name +": ");	//取出条目名
+			tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, SIZE_CONTENT);
+			myWidget.addView(tv);		//添加至F
+		}
+		switch (taskId)
+		{
+			case SEE_FORM:
+				if(type.equals(TYPE_INPUT) || type.equals(TYPE_ADDR)) {
+				    myWidget.addView(createEditText(myWidget.getContext(), item));
+				}
+				else if(type.equals(TYPE_COMPANY) || type.equals(TYPE_ITEMS) 
+						||type.equals(TYPE_NUMBER) || type.equals(TYPE_GPS)
+						||type.equals(TYPE_COLLDATE)||type.equals(TYPE_AUTO)
+						)
+				{
+					myWidget.addView(createTextView(myWidget.getContext(), item, type));
+				}
+				else if(type.equals(TYPE_DATE))	//类型为选择日期
+				{
+					myWidget.addView(createDateButton(myWidget.getContext(), item, id));
+				}else if(type.equals(TYPE_SIGN))	//类型为签名
+				{
+					myWidget.addView(createImageView(myWidget.getContext(), item));
+					
+				}
+				else if (type.equals(TYPE_SELECT))	//类型为选择时，全部当成多选来处理
+				{
+					createMultiCheckBox(myWidget,item);
+				}
+				else if(type.equals(TYPE_CAMERA))	//类型为拍照时
+				{
+					JSONArray camera_value = (JSONArray) item.get(CONT);
+					ImageView iv = createCameraImageView(myWidget.getContext(), id);
+					ImageView ivv = new ImageView(myWidget.getContext());
+					ivv.setId(GatherActivity.REQUESTCODEFORPICTURE+id);
+					if(camera_value.length()>0)
+					{
+						String ipath = root_path + File.separator + camera_value.getString(camera_value.length()-1);
+						Bitmap bm = Util.getBitmap(ipath, 2);
+						ivv.setImageBitmap(bm);
+					}
+//					ImageView ivvv = new ImageView(myWidget.getContext());
+//					ivvv.setId(GatherActivity.REQUESTCODEFORPICTURE+id+1);
+					myWidget.addView(iv);
+					myWidget.addView(ivv);
+//					myWidget.addView(ivvv);
+//					createBrowserPic(myWidget, item);
+				}
+				else if(type.equals(TYPE_VIDEO))	//类型为录像时
+				{
+					JSONArray video_value = (JSONArray) item.get(CONT);
+					ImageView iv = createVideoImageView(myWidget.getContext(),id);
+					TextView tvv = new TextView(myWidget.getContext());
+					tvv.setId(GatherActivity.REQUESTCODEFORVIDEO+1);
+					if(video_value.length()>0)
+					{
+						tvv.setText(video_value.getString(video_value.length()-1));
+					}
+//					TextView tvvv = new TextView(myWidget.getContext());
+//					tvvv.setId(GatherActivity.REQUESTCODEFORVIDEO+2);
+					myWidget.addView(iv);
+					myWidget.addView(tvv);
+//					myWidget.addView(tvvv);
+				}
+				break;
+			case DO_FORM:
+				if(type.equals(TYPE_INPUT) || type.equals(TYPE_ADDR)
+						|| type.equals(TYPE_COMPANY) || type.equals(TYPE_ITEMS))	//类型为直接输入
+				{
+					myWidget.addView(createEditText(myWidget.getContext(), item));
+				}
+				else if(type.equals(TYPE_AUTO))
+				{
+					myWidget.addView(createTextView(myWidget.getContext(), item, type));
+				}
+				else if(type.equals(TYPE_DATE))	//类型为选择日期
+				{
+					myWidget.addView(createDateButton(myWidget.getContext(), item, id));
+				}else if(type.equals(TYPE_SIGN))	//类型为签名
+				{
+					myWidget.addView(createSignImage(myWidget.getContext()));
+				}
+				else if (type.equals(TYPE_SELECT))	//类型为选择时，全部当成多选来处理
+				{
+					createMultiCheckBox(myWidget,item);
+				}
+				else if(type.equals(TYPE_CAMERA))	//类型为拍照时
+				{
+					JSONArray camera_value = new JSONArray();
+					item.put(CONT, camera_value);	//初始为空
+					myWidget.setTag(item);	//重新设置标签
+					ImageView iv = createCameraImageView(myWidget.getContext(), id);
+					ImageView ivv = new ImageView(myWidget.getContext());
+					ivv.setId(GatherActivity.REQUESTCODEFORPICTURE+id);
+//					ImageView ivvv = new ImageView(myWidget.getContext());
+//					ivvv.setId(GatherActivity.REQUESTCODEFORPICTURE+id+1);
+					myWidget.addView(iv);
+					myWidget.addView(ivv);
+//					myWidget.addView(ivvv);
+				}
+				else if(type.equals(TYPE_VIDEO))	//类型为录像时
+				{
+					JSONArray video_value = new JSONArray();
+					item.put(CONT, video_value);	//初始为空
+					myWidget.setTag(item);	//重新设置标签
+					ImageView iv = createVideoImageView(myWidget.getContext(),id);
+					TextView tvv = new TextView(myWidget.getContext());
+					tvv.setId(GatherActivity.REQUESTCODEFORVIDEO+1);
+//					TextView tvvv = new TextView(myWidget.getContext());
+//					tvvv.setId(GatherActivity.REQUESTCODEFORVIDEO+2);
+					myWidget.addView(iv);
+					myWidget.addView(tvv);
+//					myWidget.addView(tvvv);
+				}
+				else if(type.equals(TYPE_GPS))		//类型为GPS时
+				{
+					TextView tv_gps=new TextView(myWidget.getContext());
+//						new GpsService(myWidget.getContext(), tv_gps);
+					tv_gps.setId(TV_GPS_ID);
+					tv_gps.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 
+							activity.getResources().getDimensionPixelSize(R.dimen.gps_view_height)));
+					tv_gps.setText("");
+					myWidget.addView(tv_gps);
+				}
+				else if(type.equals(TYPE_NUMBER)	//类型为编号.采集日期
+						||type.equals(TYPE_COLLDATE))	
+				{
+					myWidget.addView(createTextView(myWidget.getContext(),type,item));
+				}
+				break;
+
+			default:
+				break;
+		}
+		
+		return myWidget;
+	}
+	/**
+	 * 创建用于显示图片的控件
+	 */
+	private void createBrowserPic(LinearLayout myWidget,
+			HashMap<String, Object> item) throws JSONException
+	{
+		// TODO Auto-generated method stub
+		JSONArray ja = (JSONArray)item.get(CONT);
+		int len = ja.length();
+		for(int i =0 ; i<3 && i<len ; i ++)
+		{
+			ImageView iv = new ImageView(myWidget.getContext());
+			String ipath = root_path + File.separator + ja.getString(i);
+			Bitmap bm = Util.getBitmap(ipath, 2);
+			iv.setImageBitmap(bm);
+			myWidget.addView(iv);
+		}
+	}
+	/**
+	 * 创建拍照控件/用ImageView
+	 * @param context
+	 * @param item
+	 * @return
+	 */
+	private ImageView createCameraImageView(final Context context ,final int id)
+	{
+		ImageView imageView =new ImageView(context);
+		imageView.setTag("none");	//设置控件tag为none
+//		imageView.setId(FillForm.REQUESTCODEFORPICTURE+id);		//设置触发控件ID
+//		imageView.setLayoutParams(new LayoutParams(60,60));	//设置控件大小
+		imageView.setImageResource(R.drawable.ic_menu_camera);	//设置控件默认图片
+		imageView.setOnClickListener(new View.OnClickListener()	//监听控件
+		{
+			@Override
+			public void onClick(View v)
+			{
+				TextView tv_gps = (TextView)activity.findViewById(MyLayout.TV_GPS_ID);
+				TextView tv_num = (TextView)activity.findViewById(MyLayout.TV_NUMBER_ID);
+//				if(tv_gps.getText().equals(""))
+//				{
+//					Toast.makeText(context, "定位中，稍后拍照。。。", Toast.LENGTH_SHORT).show();
+//					return;
+//				}
+				Intent intent=new Intent(activity,CameraView.class);
+				intent.putExtra("root_path", root_path);	//将存储图片根目录传递过去
+				intent.putExtra("view_id", GatherActivity.REQUESTCODEFORPICTURE+id);		//控件ID
+				intent.putExtra("location",tv_gps.getText().toString());
+				intent.putExtra("number",tv_num.getText().toString());
+				activity.startActivityForResult(intent, GatherActivity.REQUESTCODEFORPICTURE);
+			}
+		});
+		return imageView;
+	}
+	private ImageView createVideoImageView(final Context context, final int id)
+	{
+		ImageView imageView = new ImageView(context);
+		imageView.setId(GatherActivity.REQUESTCODEFORVIDEO);
+		imageView.setTag("none");	//设置控件tag为none
+		imageView.setImageResource(R.drawable.ic_menu_camera);	//设置控件默认图片
+		imageView.setOnClickListener(new View.OnClickListener()	//监听控件
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				// TODO Auto-generated method stub
+				File file = new File(root_path);
+				if(!file.exists())
+				{
+					file.mkdirs();
+				}
+				File video_name = new File(file.getPath()+File.separator+"VIDEO_"+Util.getCurrentTime("yyMMddHHmmss")+".mp4");
+				Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+				intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY,0);
+				intent.putExtra("view_id", v.getId());
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(video_name));
+				activity.startActivityForResult(intent, GatherActivity.REQUESTCODEFORVIDEO);
+			}
+		});
+		return imageView;
+	}
+	/**
+	 * 创建编号显示控件
+	 * @param context
+	 * @param cont
+	 * @return
+	 */
+	private TextView createTextView(Context context, String type,HashMap<String, Object> item )
+	{
+		TextView tv = new TextView(context);
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, SIZE_CONTENT);
+		if(type.equals(TYPE_NUMBER))
+		{
+			tv.setId(TV_NUMBER_ID);
+			String cont = (String)item.get(CONT);
+			if(cont.equals(""))
+			{
+				tv.setText(Util.getCurrentTime("yyMMddHHmmss")+Util.getLocalSeq(context , true));
+				isFixPoint = false;
+			}
+			else
+			{
+				tv.setText(cont);
+				isFixPoint = true;
+			}
+			
+		}
+		else if(type.equals(TYPE_COLLDATE))
+		{
+			tv.setText(Util.getCurrentTime("yyyy-MM-dd"));
+		}
+		return tv;
+	}
+	/**
+	 * 创建输入控件
+	 * @param context
+	 * @param cont
+	 * @return
+	 */
+	private EditText createEditText(Context context, HashMap<String, Object> item)
+	{
+		String chan = (String)item.get(CHAN);	
+		String cont = (String)item.get(CONT);
+		EditText et = new EditText(context);
+		et.setHint("请输入信息");
+		if(!cont.equals(""))
+		{
+			et.setText(cont);
+		}
+		if(chan.equals("F"))
+		{
+			et.setClickable(false);
+			et.setFocusableInTouchMode(false);
+			et.setFocusable(false);
+		}
+		et.setTextSize(TypedValue.COMPLEX_UNIT_SP, SIZE_CONTENT);
+		String type = (String)item.get(TYPE);
+		if(type.equals(TYPE_COMPANY)) et.setId(ET_COMPANY);
+		if(type.equals(TYPE_ITEMS)) et.setId(ET_ITEM);
+		return et;
+	}
+	/**
+	 * 创建显示日期的控件
+	 * @param context
+	 * @param cont
+	 * @param id	触发的按钮
+	 * @return
+	 */
+	private Button createDateButton(Context context, HashMap<String, Object> item, int id)
+	{
+		Button btn = new Button(context);
+		btn.setId(GatherActivity.REQUESTCODEFORDATE+id);	//设置触发按钮ID
+		btn.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				// TODO Auto-generated method stub
+				Intent i=new Intent(activity,Calendar_View.class);
+				i.putExtra("btn_id", v.getId());	//将触发按钮ID传入下个activity
+				activity.startActivityForResult(i, GatherActivity.REQUESTCODEFORDATE);
+			}
+		});
+		String cont = (String)item.get(CONT);
+		if(!cont.equals(""))
+		{
+			btn.setText(cont);	//设置按钮内容
+		}
+		else
+		{
+			btn.setText(CHOOSE_DATE);
+		}
+		return btn;
+	}
+	/**
+	 * 创建显示签名的控件
+	 * @param context
+	 * @return
+	 */
+	private ImageView createSignImage(Context context)
+	{
+//		Button btn = new Button(context);
+//		btn.setText("签名");
+		ImageView imageView =new ImageView(context);
+		imageView.setTag("none");	//设置控件标签为none
+//		imageView.setLayoutParams(new LayoutParams(60,40));	//设置控件的长和宽
+		
+		imageView.setImageResource(R.drawable.edit_query);		//设置控件的背景图片
+		imageView.setOnClickListener(new View.OnClickListener()	//监听控件
+		{
+			@Override
+			public void onClick(View v)
+			{
+				//初始化签字对话框
+				WritePadDialog writePadDialog = new WritePadDialog((ImageView)v,activity, new DialogListener()
+				{
+					@Override
+					public void refreshActivity(ImageView imageView, Object object)
+					{
+						// TODO Auto-generated method stub
+						Bitmap signBitmap = (Bitmap)object;		//获得签名的图片
+						String sing_name = "SIGN" + "_" + Util.getCurrentTime("yyMMddHHmmss")+".jpg";	//图片名称
+						imageView.setTag(sing_name);		//签名生成的图片名称保存在控件的tag标签里
+						BitmapFactory.Options options = new BitmapFactory.Options();
+						options.inSampleSize = 2;
+						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						signBitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);//这里100的话表示不压缩质量
+						Bitmap bm = BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.size(), options);
+						imageView.setImageBitmap(bm);	//显示签名图片
+//						imageView.setClickable(false);	//只签一次
+						fs.createImageFile(signBitmap, root_path, sing_name);	//创建图片文件
+					}
+				});
+				writePadDialog.show();
+			}
+		});
+		return imageView;
+	}
+	/**
+	 * 创建多选的控件	/	单选也应用此控件
+	 * @param myWidget
+	 * @param cont
+	 * @throws JSONException
+	 */
+	private void createMultiCheckBox(LinearLayout myWidget, HashMap<String, Object> item) throws JSONException 
+	{
+		myWidget.setOrientation(LinearLayout.VERTICAL);
+		Object cont = item.get(CONT);	//取得内容
+		String chan = (String)item.get(CHAN);
+		int size = ((JSONArray)cont).length();	//获得内容长度
+		for (int i = 0; i < size; i ++)
+		{
+			CheckBox checkBox = new CheckBox(myWidget.getContext());
+			checkBox.setText(((JSONArray)cont).getString(i));	//获取具体内容
+			checkBox.setTextSize(TypedValue.COMPLEX_UNIT_SP, SIZE_CONTENT); //设置内容字体大小
+			if(chan.endsWith("F"))
+			{
+				checkBox.setChecked(true);	//默认选中
+				checkBox.setClickable(false);	//不可更改
+			}
+			myWidget.addView(checkBox);
+		}
+	}
+	/**
+	 * 创建用于显示图片的控件
+	 * @param context
+	 * @param item
+	 * @return
+	 */
+	private View createImageView(Context context, HashMap<String, Object> item)
+	{
+		// TODO Auto-generated method stub
+		ImageView iv = new ImageView(context);
+		iv.setTag(item.get(CONT));
+		String imagePath = root_path + File.separator + (String)item.get(CONT);
+		System.out.println("imagePath -->"+imagePath+"\nroot_path"+root_path);
+		Bitmap bm = Util.getBitmap(imagePath ,2);
+		if(bm == null)
+		{
+			iv.setImageResource(R.drawable.edit_query);
+			iv.setOnClickListener(new View.OnClickListener()	//监听控件
+			{
+				@Override
+				public void onClick(View v)
+				{
+					//初始化签字对话框
+					WritePadDialog writePadDialog = new WritePadDialog((ImageView)v,activity, new DialogListener()
+					{
+						@Override
+						public void refreshActivity(ImageView imageView, Object object)
+						{
+							// TODO Auto-generated method stub
+							Bitmap signBitmap = (Bitmap)object;		//获得签名的图片
+							String sing_name = "SIGN" + "_" + Util.getCurrentTime("yyMMddHHmmss")+".jpg";	//图片名称
+							imageView.setTag(sing_name);		//签名生成的图片名称保存在控件的tag标签里
+							BitmapFactory.Options options = new BitmapFactory.Options();
+							options.inSampleSize = 2;
+							ByteArrayOutputStream baos = new ByteArrayOutputStream();
+							signBitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);//这里100的话表示不压缩质量
+							Bitmap bm = BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.size(), options);
+							imageView.setImageBitmap(bm);	//显示签名图片
+//							imageView.setClickable(false);	//只签一次
+							fs.createImageFile(signBitmap, root_path, sing_name);	//创建图片文件
+						}
+					});
+					writePadDialog.show();
+				}
+			});
+		}
+		else
+		{
+			iv.setImageBitmap(bm);
+//			iv.setClickable(false);	//只签一次
+		}
+		
+		return iv;
+	}
+	/**
+	 * 创建用于显示的textview
+	 * @param context
+	 * @param item	传的是item
+	 * @param type	INPUT/SELECT/DATE/GPS
+	 * @return
+	 * @throws JSONException 
+	 */
+	private TextView createTextView(Context context, HashMap<String, Object> item, String type) throws JSONException
+	{
+		TextView tv = new TextView(context);
+		System.out.println(type);
+		if(type.equals(TYPE_SELECT) /*|| type.equals(TYPE_GPS) */|| type.equals(TYPE_VIDEO))
+		{
+			JSONArray cont = (JSONArray)item.get(CONT);
+			StringBuffer str = new StringBuffer();
+			int len = cont.length();
+			if(type.equals(TYPE_VIDEO))
+			{
+				len = Math.min(len, 2);
+			}
+			for(int k = 0; k< len; k++)
+			{
+				str.append(cont.get(k));
+				str.append(";");
+			}
+			tv.setText(str.toString());
+		}
+		else if(type.equals(TYPE_AUTO))
+		{
+			switch (taskId)
+			{
+				case DO_FORM:
+					String name = (String)item.get(NAME);
+					tv.setText(getAutoName(context,name));
+					break;
+				case SEE_FORM:
+					tv.setText((String)item.get(CONT));
+					break;
+				default:
+					break;
+			}
+		}
+		else if(type.equals(TYPE_GPS))
+		{
+			tv.setId(TV_GPS_ID);
+			tv.setText((String)item.get(CONT));
+		}
+		else if(type.equals(TYPE_NUMBER))
+		{
+			tv.setId(TV_NUMBER_ID);
+			tv.setText((String)item.get(CONT));
+		}
+		else 
+		{
+			tv.setText((String)item.get(CONT));
+		}
+//		if(type.equals(TYPE_GPS))
+//		{
+			tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+//		}
+		return tv;
+	}
+	private String getAutoName(Context context,String name)
+	{
+		String dv = "";
+		String login_user = (String) SPUtils.get(context, SPUtils.LOGIN_USER, dv, SPUtils.USER_DATA);
+		// TODO Auto-generated method stub
+		if(name.equals("名称"))
+		{
+			return (String) SPUtils.get(context, SPUtils.UNIT_NAME, dv, login_user );
+		}
+		else if(name.equals("地址"))
+		{
+			return (String) SPUtils.get(context, SPUtils.UNIT_ADDR, dv, login_user );
+		}
+		else if(name.equals("邮编"))
+		{
+			return (String) SPUtils.get(context, SPUtils.UNIT_POST, dv, login_user );
+		}
+		else if(name.equals("采样人"))
+		{
+			return login_user;
+		}
+		else if(name.equals("联系电话"))
+		{
+			return (String) SPUtils.get(context, SPUtils.UNIT_PHONE, dv, login_user );
+		}
+		else if(name.equals("传真"))
+		{
+			return (String) SPUtils.get(context, SPUtils.UNIT_CZ, dv, login_user );
+		}
+		return name;
+	}
+	/**
+	 * 将hashmap转换成jsonObject
+	 * @param item	条目集合
+	 * @param cont	条目内容
+	 * @return
+	 * @throws JSONException 
+	 */
+	public JSONObject mapToJson(HashMap<String, Object> item , Object cont ) throws JSONException
+	{
+		JSONObject itemObject = new JSONObject();
+		itemObject.put(NAME, (String)item.get(NAME));
+		itemObject.put(TYPE, (String)item.get(TYPE));
+		itemObject.put(CHAN, (String)item.get(CHAN));
+		itemObject.put(PRINT, (String)item.get(PRINT));
+		itemObject.put(SIZE, (String)item.get(SIZE));
+		String type = (String)item.get(TYPE);
+		if(type.equals(TYPE_TABLE))
+		{
+			if(cont == null)
+			{
+				itemObject.put(CONT, (String)item.get(CONT));
+			}
+			else
+			{
+				itemObject.put(CONT, (String)cont);
+			}
+			
+		}
+		// input/date/number/sign 内容皆为字符串
+		else if(type.equals(TYPE_INPUT) || type.equals(TYPE_DATE) || type.equals(TYPE_NUMBER) 
+				|| type.equals(TYPE_SIGN)||type.equals(TYPE_COLLDATE)||type.equals(TYPE_COMPANY)
+				|| type.equals(TYPE_ITEMS) || type.equals(TYPE_AUTO) ||type.equals(TYPE_ADDR))
+		{
+			itemObject.put(CONT, (String)cont);
+		}
+		// select/gps 为JSONArray数组
+		else if(type.equals(TYPE_GPS))
+		{
+			switch (taskId)
+			{
+				case DO_FORM:
+//					itemObject.put(CONT, (JSONArray)cont);
+					itemObject.put(CONT,(String)cont);
+					break;
+				case SEE_FORM:
+					itemObject.put(CONT, (String)item.get(CONT));
+					break;
+
+				default:
+					break;
+			}
+		}
+		else if( type.equals(TYPE_SELECT))
+		{
+			itemObject.put(CONT, (JSONArray)cont);
+		}
+		// camera直接将图片名称放入tag里面了
+		else if (type.equals(TYPE_CAMERA) || type.equals(TYPE_VIDEO))
+		{
+			itemObject.put(CONT, (JSONArray)item.get(CONT));
+		}
+		return itemObject;
+	}
+	/**
+	 * Get key from json.
+	 * @param id
+	 * @return
+	 */
+	public static String getName(int id)
+	{
+		switch (id)
+		{
+			case 0:
+				return "autogeneration";
+			case 1:
+				return "samplingdivision";
+			case 2:
+				return "sampeddivision";    //被抽样单位
+			case 3:
+				return "specimencondition";
+			case 4:
+				return "samplingcondition";
+			case 5:
+				return "samplingdivisionsign";
+			case 6:
+				return "sampleddivisionsign";
+			case 7:
+				return "extra";
+			default:
+				break;
+		}
+		return null;
+	}
+	private HashMap<String, String> getModuleKeyMap()
+	{
+		HashMap<String, String> moduleKeyMap = new HashMap<String, String>(); 
+		moduleKeyMap.put("autogeneration", "基本信息");
+		moduleKeyMap.put("samplingdivision", "抽样单位");
+		moduleKeyMap.put("sampeddivision", "被抽样单位");
+		moduleKeyMap.put("specimencondition", "样品情况");
+		moduleKeyMap.put("samplingcondition", "抽样情况");
+		moduleKeyMap.put("samplingdivisionsign", "抽样单位签字");
+		moduleKeyMap.put("sampleddivisionsign", "被抽样单位签字");
+		moduleKeyMap.put("extra", "备注");
+		return moduleKeyMap;
+	}
+	private String getNameInfo(String key)
+	{
+		HashMap<String, String> map = getModuleKeyMap();
+		if(!map.containsKey(key))
+		{
+			return key;
+		}
+		return map.get(key);
+	}
+	/**
+	 * Get key from value.
+	 * @param value
+	 * @return
+	 */
+	public String getNameKey(String value)
+	{
+		HashMap<String, String> map = getModuleKeyMap();
+		if(!map.containsValue(value))
+		{
+			return value;
+		}
+		for(String key:map.keySet())
+		{
+			if(map.get(key).equals(value))
+			{
+				return key;
+			}
+		}
+		return value;
+	}
+}

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <!-- 照片预览界面 -->
+    <FrameLayout 
+        android:id="@+id/camera_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <!-- 界面中显示的元素 -->
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        >
+        <!-- 不保存按钮 -->
+        <!-- <Button 
+            android:id="@+id/btn_unsavePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text="unSave"/> -->
+
+        <!-- 确认保存按钮 -->
+        <!-- <Button 
+            android:id="@+id/btn_savePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignBaseline="@id/btn_takePicture"
+            android:text="save"/> -->
+        <!-- 显示日期控件 -->
+        <TextView 
+            android:id="@+id/tv_timeDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentLeft="true"
+            android:textColor="@color/camera_text_color"
+            android:text="显示日期"/>
+        <!-- 显示GPS控件 -->
+        <TextView 
+            android:id="@+id/tv_GPSDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_timeDisplay"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/camera_text_color"
+            android:textStyle="bold"
+            android:text="经纬度"/>
+        <!-- 拍照按钮 -->
+
+        <Button
+            android:id="@+id/btn_takePicture"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/takephoto"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+</FrameLayout>

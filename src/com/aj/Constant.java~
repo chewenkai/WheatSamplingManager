@@ -1,0 +1,14 @@
+package com.aj;
+
+public class Constant
+{
+	 //Btn的标识   
+    public static final int BTN_FLAG_DO = 0x01;  
+    public static final int BTN_FLAG_SEE = 0x01 << 1;  
+    public static final int BTN_FLAG_SETTING = 0x01 << 2;  
+      
+    //Fragment的标识   
+    public static final String FRAGMENT_FLAG_DO = "在抽任务";   
+    public static final String FRAGMENT_FLAG_SEE = " 已抽任务";   
+    public static final String FRAGMENT_FLAG_SETTING = "设置";
+}

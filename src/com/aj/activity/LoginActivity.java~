@@ -1,0 +1,87 @@
+package com.aj.activity;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.aj.collection.R;
+import com.aj.tools.SPUtils;
+import com.aj.tools.T;
+import com.aj.ui.HeadControlPanel;
+
+public class LoginActivity extends Activity implements OnClickListener
+{
+	private Button login;
+	private EditText userET;
+	private EditText pwdET;
+	private TextView newUser;
+	private String user,pwd;
+	private HeadControlPanel headPanel = null;
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.login_layout);
+		login = (Button) findViewById(R.id.l_signin_button);
+		userET = (EditText) findViewById(R.id.l_username_edit);
+		pwdET = (EditText) findViewById(R.id.l_password_edit);
+		newUser = (TextView) findViewById(R.id.new_user);
+		login.setOnClickListener(this);
+		newUser.setOnClickListener(this);
+		
+		headPanel = (HeadControlPanel)findViewById(R.id.head_layout);  
+        if(headPanel != null){  
+            headPanel.initHeadPanel();  
+            headPanel.setMiddleTitle("抽样监督管理系统");
+        }
+	}
+	@Override
+	public void onClick(View v)
+	{
+		// TODO Auto-generated method stub
+		switch (v.getId())
+		{
+			case R.id.l_signin_button:
+				if(!verify())
+				{
+					return;
+				}
+				Intent intent = new Intent(this,MainActivity.class);
+				startActivity(intent);
+				break;
+			case R.id.new_user:
+				Intent i = new Intent(this,RegistActivity.class);
+				startActivity(i);
+				break;
+
+			default:
+				break;
+		}
+	}
+	private boolean verify()
+	{
+		String pwdDefault = "";
+		user = userET.getText().toString();
+		pwd = pwdET.getText().toString();
+		if(!SPUtils.contains(this, user, SPUtils.USER_DATA))
+		{
+			T.showShort(this, "帐户不存在");
+			return false;
+		}
+		if(!pwd.equals((String)SPUtils.get(this, user, pwdDefault, SPUtils.USER_DATA)))
+		{
+			T.showShort(this, "密码不正确");
+			return false;
+		}
+		SPUtils.put(this, SPUtils.LOGIN_USER, user, SPUtils.USER_DATA);
+		return true;
+	}
+}

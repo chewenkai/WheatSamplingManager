@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- <TextView
+android:layout_height="wrap_content"
+android:layout_width="wrap_content"
+android:textSize="15sp"
+android:layout_marginTop="30dp"
+android:layout_marginLeft="30dp"
+android:textColor="@android:color/holo_blue_dark"
+android:text="浏览任务" /> --><!-- android:layout_marginTop="30dp"
+	    	android:layout_marginLeft="30dp" 
+	    	android:layout_marginRight="30dp" -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/see_task_ll"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#d0c9c9"
+
+    android:orientation="vertical"
+    android:padding="15dip">
+
+    <ListView
+        android:id="@+id/lv_see_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
+

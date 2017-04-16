@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@null">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/shape_dialog_background"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="25dp"
+            android:gravity="left|center_vertical"
+            android:text="采样工具箱"
+            android:textColor="@color/accent_material_light"
+            android:textSize="27sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/accent_material_light"/>
+
+        <LinearLayout
+            android:id="@+id/map_navi_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:clickable="true">
+
+
+            <ImageView
+                android:id="@+id/map_navi_img"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignBaseline="@+id/map_navi_tv"
+                android:layout_centerVertical="true"
+                android:src="@drawable/navigation" />
+
+            <TextView
+                android:id="@+id/map_navi_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/map_navi_img"
+                android:text="地图导航"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/minote_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:clickable="true"
+            android:gravity="center">
+
+
+            <ImageView
+                android:id="@+id/minote_img"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignBaseline="@+id/minote_tv"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_app" />
+
+            <TextView
+                android:id="@+id/minote_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/minote_img"
+                android:text="记事便签"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/compass_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:gravity="center">
+
+
+            <ImageView
+                android:id="@+id/compass_img"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignBaseline="@+id/compass_tv"
+                android:layout_centerVertical="true"
+                android:src="@drawable/app_icon" />
+
+            <TextView
+                android:id="@+id/compass_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/compass_img"
+                android:text="方向指南"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

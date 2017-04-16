@@ -1,0 +1,642 @@
+package com.aj.activity;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.aj.collection.R;
+import com.aj.tools.FileStream;
+import com.aj.tools.L;
+import com.aj.tools.SPUtils;
+import com.aj.tools.T;
+import com.aj.tools.Util;
+import com.aj.ui.HeadControlPanel;
+import com.aj.ui.HeadControlPanel.LeftImageOnClick;
+import com.aj.ui.HeadControlPanel.RightImageOnClick;
+import com.aj.ui.HeadControlPanel.ThirdOnClick;
+import com.aj.ui.MyLayout;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.LocationClientOption.LocationMode;
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeOption;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class GatherActivity extends Activity
+{
+	public static final int REQUESTCODEFORDATE=100001;		//接收选择的日期
+	public static final int REQUESTCODEFORSIGN=10001;		//接收签名后的图片
+	public static final int REQUESTCODEFORPICTURE=1001;		//接收拍照后的图片
+	public static final int REQUESTCODEFORVIDEO=2001;		//接收录像的名称
+	Intent intent ;			//传递时间的意图
+	String jsonStr;			//目标字符串
+	String label;			//文件名称
+	String root_path;		//跟目录
+	String filepath;		//文件目录（定点采样用来删除文件）
+	boolean isFixPoint;		//是否是定点采样
+	FileStream fs ;			//文件流
+	MyLayout lu ;		//布局生成类
+	String username;		//采集人登录名
+	TextView tv_gps;		//gps显示控件
+	String strVideoPath=""; //视频文件的绝对路径
+	String num;		//编号
+	String whichTask;	//被点击的任务
+	StringBuffer sb = new StringBuffer(256);
+	LinearLayout parentView;
+	SmsManager smsManager = SmsManager.getDefault();
+	private String phone_number="15004600323";
+	private boolean kaiguan = false;
+	GeoCoder mSearch; 
+	public LocationClient mLocationClient = null;
+	public OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {  
+	    public void onGetGeoCodeResult(GeoCodeResult result) {  
+	    	//正向地理编码	地址转换成GPS点
+	        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {  
+	            //没有检索到结果  
+	        	if(!sb.equals(""))
+	        	{
+//	        		Toast.makeText(GatherActivity.this, "正向地理编码但是无结果", Toast.LENGTH_SHORT).show();
+	        		tv_gps.setText(sb.toString());
+	        	}
+	        } 
+	        else
+	        {
+	        	 //获取地理编码结果  
+	        	StringBuffer sb1 = new StringBuffer(256);
+	        	sb1.append(sb.toString());
+	        	if(result.getLocation().latitude !=0 && result.getLocation().longitude != 0)
+	        	{
+	        		sb1.append("\n北纬 : ");
+		        	sb1.append(result.getLocation().latitude);
+		        	sb1.append("\n东经 :");
+		        	sb1.append(result.getLocation().longitude);
+	        	}
+	        	if(!sb1.toString().equals(""))
+	        	{
+//	        		Toast.makeText(GatherActivity.this, "正向地理编码并且有结果", Toast.LENGTH_SHORT).show();
+	        		tv_gps.setText(sb1.toString());
+	        	}
+	        }
+	    }  
+	    //反向地理编码	GPS点转换成地址信息
+	    @Override  
+	    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {  
+	        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {  
+	            //没有找到检索结果  
+	        	if(!sb.equals(""))
+	        	{
+//	        		Toast.makeText(GatherActivity.this, "反向地理编码但是无结果", Toast.LENGTH_SHORT).show();
+	        		tv_gps.setText(sb.toString());
+	        	}
+	        }  
+	        else
+	        {
+	        	//获取反向地理编码结果  
+	        	StringBuffer sb2 = new StringBuffer(256);
+	        	if(result.getAddress() != null)
+	        	{
+	        		sb2.append(result.getAddress());
+	        	}
+	        	sb2.append(sb.toString());
+	        	if(!sb2.toString().equals(""))
+	        	{
+//	        		Toast.makeText(GatherActivity.this, "反向地理编码并且有结果", Toast.LENGTH_SHORT).show();
+	        		tv_gps.setText(sb2.toString());
+	        	}
+	        }
+	    }  
+	};
+	//定位监听
+	public BDLocationListener myListener = new BDLocationListener()
+	{
+		
+		@Override
+		public void onReceiveLocation(BDLocation location)
+		{
+			// TODO Auto-generated method stub
+			if (location == null)
+	            return ;
+			if (location.getLocType() == BDLocation.TypeGpsLocation){
+				if(location.getLatitude()!=0 && location.getLongitude() !=0)
+				{
+					sb.delete(0, sb.length());
+					sb.append("\n北纬 : ");
+					sb.append(location.getLatitude());
+					sb.append("\n东经 : ");
+					sb.append(location.getLongitude());
+					tv_gps.setText(sb.toString());
+//					Toast.makeText(GatherActivity.this, "GPS优先", Toast.LENGTH_SHORT).show();
+					mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+						.location(new LatLng(location.getLatitude(), location.getLongitude())));
+				}
+			} else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
+//				sb.append("\n定位地点 : ");
+				sb.delete(0, sb.length());
+				sb.append(location.getAddrStr());
+				tv_gps.setText(sb.toString());
+//				Toast.makeText(GatherActivity.this, "网络优先", Toast.LENGTH_SHORT).show();
+				mSearch.geocode(new GeoCodeOption().city(location.getCity())
+						.address(location.getAddrStr()));
+			} else
+			{
+				if(tv_gps.getText().equals(""))
+				{
+					tv_gps.setText("定位失败...");
+				}
+			}
+		}
+	};
+	HeadControlPanel headPanel = null;
+	public void sendMes()
+	{
+		if(!kaiguan)
+		{
+			SPUtils.put(GatherActivity.this, whichTask, true, SPUtils.WHICHTASK);
+			T.showShort(GatherActivity.this, "保存成功");
+			return;
+		}
+//		System.out.println("smsManager:"+smsManager);
+		String sms_content = "任务名："+label+"\n"+
+							 "编号："+num+
+							 tv_gps.getText().toString();
+		if(sms_content.length() > 70) {
+            List<String> contents = smsManager.divideMessage(sms_content);
+            for(String sms : contents) {
+                smsManager.sendTextMessage(phone_number, null, sms, null, null);
+            }
+        } else {
+         smsManager.sendTextMessage(phone_number, null, sms_content, null, null);
+        }
+		SPUtils.put(GatherActivity.this, whichTask, true, SPUtils.WHICHTASK);
+		T.showShort(GatherActivity.this, "保存成功，并已发送定位短信");
+	}
+	private EditText etCompany;
+	private EditText etItem;
+	private String companyName;
+	private String itemName;
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//在使用SDK各组件之前初始化context信息，传入ApplicationContext  
+        //注意该方法要再setContentView方法之前实现  
+        SDKInitializer.initialize(getApplicationContext()); 
+		setContentView(R.layout.form_layout);
+		String dv = "";
+		phone_number = (String) SPUtils.get(this, SPUtils.JIANKONG, dv, (String)SPUtils.get(this, SPUtils.LOGIN_USER, dv, SPUtils.USER_DATA));
+		kaiguan = (Boolean) SPUtils.get(this, SPUtils.KAIGUAN, false, (String)SPUtils.get(this, SPUtils.LOGIN_USER, dv, SPUtils.USER_DATA));
+		parentView = (LinearLayout) findViewById(R.id.form_parent);
+		
+		//百度地图相关设置
+        mSearch = GeoCoder.newInstance();
+        mSearch.setOnGetGeoCodeResultListener(listener);
+        
+		mLocationClient = new LocationClient(getApplicationContext());	//初始化
+		mLocationClient.registerLocationListener(myListener);	//注册监听函数
+		LocationClientOption option = new LocationClientOption();
+		option.setOpenGps(true);	//设置打开GPS
+		option.setLocationMode(LocationMode.Hight_Accuracy);//设置定位模式为同时使用网络和GPS
+		option.setCoorType("bd09ll");//返回的定位结果是百度经纬度,默认值gcj02
+		option.setScanSpan(20*1000);//设置发起定位请求的间隔时间为10000ms
+		option.setIsNeedAddress(true);//返回的定位结果包含地址信息
+		option.setNeedDeviceDirect(true);//返回的定位结果包含手机机头的方向
+		mLocationClient.setLocOption(option);
+		mLocationClient.start();	//开启定位服务
+		
+		fs = new FileStream();		//写文件用到的流
+		intent = getIntent();
+		whichTask = intent.getStringExtra("whichTask");
+		jsonStr = intent.getStringExtra("res");		//获得文件
+		filepath = intent.getStringExtra("filepath");
+//		System.out.println(jsonStr);
+		label = intent.getStringExtra("label");		//文件名称
+		root_path = fs.getTaskFile().getPath();		//task file
+		root_path = root_path 						//组装成新的根目录来存储新的文件和图片
+				+ File.separator 
+				+ label;							//文件夹的名称
+		headPanel = (HeadControlPanel)findViewById(R.id.head_layout);  
+		headPanel.setRightVisible(View.VISIBLE);
+		headPanel.setThirdVisible(View.VISIBLE);
+        if(headPanel != null){  
+            headPanel.initHeadPanel();  
+            headPanel.setMiddleTitle("在抽样品");
+            headPanel.setLeftImage(R.drawable.ic_menu_back);
+            LeftImageOnClick l = new LeftImageOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					
+					AlertDialog alertDialog;
+					AlertDialog.Builder builder = new AlertDialog.Builder(GatherActivity.this);
+					builder= new AlertDialog.Builder(GatherActivity.this);
+					builder.setTitle("温馨提示");
+					builder.setMessage("确定放弃填表?");
+					builder.setPositiveButton("是", new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							// TODO Auto-generated method stub
+							finish();	//退出
+						}
+					});
+					builder.setNegativeButton("否", null);
+					alertDialog = builder.create();
+					alertDialog.show();	//显示对话框
+				}
+			};
+			headPanel.setLeftImageOnClick(l);
+			headPanel.setRightImage(R.drawable.save_file);
+			headPanel.setRightText("保存");
+			RightImageOnClick r = new RightImageOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					companyName = etCompany.getText().toString().replace(" ", "");
+					itemName = etItem.getText().toString().replace(" ","");
+					if(tv_gps.getText().toString().equals(""))
+					{
+						T.showShort(GatherActivity.this, "正在定位中...请稍后保存~");
+						return;
+					}
+					if(companyName.equals("") || itemName.equals(""))
+					{
+						T.showShort(GatherActivity.this, "被抽样单位名称和样品名称不能为空！");
+						return;
+					}
+					try
+					{
+						if(!isFixPoint)
+						{
+							String mes = createJsonStr(true);	//生成json字符串
+							//写入txt
+							if(fs.createSpmsFile(mes, root_path,companyName+itemName+Util.getLocalSeq(GatherActivity.this, true)))
+							{
+								Util.writeLocalSeq(GatherActivity.this);//更新本地流水
+								TextView tv = (TextView) findViewById(MyLayout.TV_NUMBER_ID);
+								tv.setText(Util.getCurrentTime("yyMMddHHmmss")+Util.getLocalSeq(GatherActivity.this , true));
+								sendMes();
+							}
+						}
+						else
+						{
+							String mes = createJsonStr(false);	//生成json字符串
+							if(whichTask.length() <= 5)
+							{
+								T.showLong(GatherActivity.this,"文件名长度过短");
+								return;
+							}
+							if(fs.createSpmsFile(mes, root_path, whichTask.substring(
+									0,whichTask.length()-5)))
+							{
+								File file = new File(filepath);
+								if(file.exists())
+								{
+									file.delete();
+								}
+							}
+							sendMes();
+							finish();
+						}
+//						finish();
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e)
+					{
+						e.printStackTrace();
+						T.showLong(GatherActivity.this, e.toString());
+					}
+				}
+			};
+			headPanel.setRightImageOnClick(r);
+			headPanel.setThirdImage(R.drawable.print);
+			headPanel.setThirdText("打印");
+			ThirdOnClick t = new ThirdOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					companyName = etCompany.getText().toString().replace(" ", "");
+					itemName = etItem.getText().toString().replace(" ","");
+					if(companyName.equals("") || itemName.equals(""))
+					{
+						T.showShort(GatherActivity.this, "被抽样单位名称和样品名称不能为空！");
+						return;
+					}
+					Intent i = new Intent(GatherActivity.this, PrintActivity.class);
+					try
+					{
+						i.putExtra("jsonStr", createJsonStr(false));
+						startActivity(i);
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						T.showShort(GatherActivity.this, "创建json失败");
+					}
+				}
+			};
+			headPanel.setThirdOnClick(t);
+        }
+		File task = new File(root_path);	//先创建文件夹
+		if(!task.exists())
+		{
+			task.mkdirs();
+		}
+		
+		lu = new MyLayout(parentView,this, fs,root_path,MyLayout.DO_FORM);	//生成布局的类
+		lu.initLayout(jsonStr);
+		isFixPoint = lu.getIsFixPoint();
+		etCompany = (EditText) findViewById(MyLayout.ET_COMPANY);
+		etItem = (EditText) findViewById(MyLayout.ET_ITEM);
+		tv_gps = (TextView)findViewById(MyLayout.TV_GPS_ID);
+		tv_gps.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+//		headPanel.setMiddleTitle(label);
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+//		CameraView cv=new CameraView();
+		super.onActivityResult(requestCode, resultCode, data);
+		System.out.println("recieve--requestCode-->"+requestCode);
+		if(requestCode==REQUESTCODEFORDATE)
+		{
+			if(data!=null)
+			{
+				String ymd=data.getStringExtra("ymd");
+				int id = data.getIntExtra("btn_id", 0);
+				Button btn=(Button)findViewById(id);
+				if(ymd!=null)
+				{
+					btn.setText(ymd);
+				}
+				else
+				{
+					btn.setText("重新获取日期");
+				}
+			}
+		}
+		else if(requestCode == REQUESTCODEFORVIDEO)
+		{
+			if (resultCode == RESULT_OK) {    
+                Uri uriVideo = data.getData(); 
+                String video_path = uriVideo.toString();
+                String video_name = video_path.substring(video_path.lastIndexOf("/")+1, video_path.length());
+                ImageView iv = (ImageView) findViewById(REQUESTCODEFORVIDEO);
+                TextView tv = (TextView)findViewById(REQUESTCODEFORVIDEO+1);
+//                TextView tvv = (TextView)findViewById(REQUESTCODEFORVIDEO+2);
+                T.showShort(this,"录像保存成功"+video_name);
+                HashMap<String, Object> item = (HashMap<String, Object>) ((LinearLayout)iv.getParent()).getTag();
+				JSONArray cont = (JSONArray)item.get(MyLayout.CONT);	//取出map中的cont
+				cont.put(video_name);	//将pName添加进cont
+				item.put(MyLayout.CONT, (Object)cont);	//在放回map
+				tv.setText(video_name+"\t");
+				tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+			}
+		}
+		else if(requestCode == REQUESTCODEFORPICTURE)
+		{
+			if(data!=null)
+			{
+				 // 没有指定特定存储路径的时候
+                T.showShort(this,"拍照成功");
+				int id = data.getIntExtra("view_id", 0);		// imageView id
+				String pName = data.getStringExtra("pName");	//图片名称
+				ImageView iv = (ImageView) findViewById(id);
+				//拿到父类标签
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> item = (HashMap<String, Object>) ((LinearLayout)iv.getParent()).getTag();
+				JSONArray cont = (JSONArray)item.get(MyLayout.CONT);	//取出map中的cont
+				cont.put(pName);	//将pName添加进cont
+				item.put(MyLayout.CONT, (Object)cont);	//在放回map
+//				if(cont.length()%2 != 0)
+//				{
+					iv.setImageBitmap(Util.getBitmap(root_path+File.separator+pName,2));
+//				}
+//				else
+//				{
+//					ImageView ivv = (ImageView) findViewById(id+1);
+//					ivv.setImageBitmap(Util.getBitmap(root_path+File.separator+pName,2));
+//				}
+				
+            }
+            else
+            {
+            	L.d("data IS null, file saved on target position.");
+            }
+		}
+	}
+	/**
+	 * 有布局生成json字符串
+	 * @param isSave	是否保存
+	 * @return
+	 * @throws JSONException
+	 */
+	private String createJsonStr(boolean isSave) throws JSONException
+	{
+		int count = parentView.getChildCount();	//获得条目数
+		//parentView 下面是itemlayout,itemlayout下面是textview和linearlayout，linearLayout里面是具体的linearLayout
+		JSONObject taskObject = new JSONObject();	//第一层task
+		JSONArray taskValue = new JSONArray();	//task的值
+		for(int i = 0; i < count; i ++) //对应七个模块
+		{
+			LinearLayout module_layout = (LinearLayout)parentView.getChildAt(i);	//模块布局
+			String module_key = ((TextView)module_layout.getChildAt(0)).getText().toString();
+			LinearLayout module_value = (LinearLayout) module_layout.getChildAt(1);
+			JSONObject module_object = new JSONObject();
+			JSONArray module_array = new JSONArray();
+			for(int j = 0; j < module_value.getChildCount(); j++)
+			{
+				JSONObject itemObject = new JSONObject();
+				LinearLayout item_layout = (LinearLayout) module_value.getChildAt(j);//条目布局
+				HashMap<String, Object> itemTag = (HashMap<String, Object>) item_layout.getTag();	//获得条目信息
+				String type = (String)itemTag.get(MyLayout.TYPE);
+				//类型为title/sign/camera时,直接将tag转成jsonObject即可
+				if (type.equals(MyLayout.TYPE_TABLE))
+				{
+					if(isFixPoint)
+					{
+						itemObject = lu.mapToJson(itemTag, null);
+					}
+					else
+					{
+						String cont = companyName+ itemName + Util.getLocalSeq(GatherActivity.this, true);
+						itemObject = lu.mapToJson(itemTag, cont);
+					}
+				}
+				else if(type.equals(MyLayout.TYPE_CAMERA) || type.equals(MyLayout.TYPE_VIDEO))
+				{
+					itemObject = lu.mapToJson(itemTag, null);
+					if(isSave)	//保存的时候清空图片
+					{
+						if(type.equals(MyLayout.TYPE_CAMERA) || type.equals(MyLayout.TYPE_VIDEO))
+						{
+							JSONArray jsonArray = new JSONArray();
+							itemTag.put(MyLayout.CONT, jsonArray);	//放入一个空的数组
+							item_layout.setTag(itemTag);
+							if(type.equals(MyLayout.TYPE_CAMERA))
+							{
+								((ImageView)item_layout.getChildAt(2)).setImageBitmap(null);
+								((ImageView)item_layout.getChildAt(3)).setImageBitmap(null);
+							}
+							else
+							{
+								((TextView)item_layout.getChildAt(2)).setText(null);
+							}
+						}
+					}
+				}	
+				else if(type.equals(MyLayout.TYPE_AUTO))
+				{
+					String cont = ((TextView)item_layout.getChildAt(1)).getText().toString();	//输入的内容
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_INPUT) || type.equals(MyLayout.TYPE_ADDR)
+						|| type.equals(MyLayout.TYPE_COMPANY) || type.equals(MyLayout.TYPE_ITEMS))			
+				{
+					String cont = ((EditText)item_layout.getChildAt(1)).getText().toString();	//输入的内容
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_NUMBER)||type.equals(MyLayout.TYPE_COLLDATE))			
+				{
+					String cont = ((TextView)item_layout.getChildAt(1)).getText().toString();	//自动生成的编号
+					if(type.equals(MyLayout.TYPE_NUMBER))
+					{
+						num = cont;
+					}
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_DATE))			
+				{
+					String cont = ((Button)item_layout.getChildAt(1)).getText().toString();	//日期内容
+					if(cont.equals(MyLayout.CHOOSE_DATE))
+					{
+						cont = "";
+					}
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_SIGN))			
+				{
+					String cont = (String) ((ImageView)item_layout.getChildAt(1)).getTag();	//签名图片名称
+					itemObject = lu.mapToJson(itemTag, cont);
+					if(isSave)
+					{
+						cont = "";
+						itemTag.put(MyLayout.CONT, (Object)cont);	//更换Tag为空
+						((ImageView)item_layout.getChildAt(1)).setTag(cont);
+						((ImageView)item_layout.getChildAt(1)).setImageBitmap(null);
+						((ImageView)item_layout.getChildAt(1)).setImageResource(R.drawable.edit_query);
+					}
+				}
+				else if (type.equals(MyLayout.TYPE_GPS))			
+				{
+					String cont = ((TextView)item_layout.getChildAt(1)).getText().toString();
+//					JSONArray contArray = new JSONArray();
+//					contArray.put((String)cont.substring(0,cont.indexOf(",")));	//GPS 经度
+//					contArray.put((String)cont.substring(cont.indexOf(",")+1,cont.length()));	//GPS纬度
+					itemObject = lu.mapToJson(itemTag, cont);	//
+				}
+				else if (type.equals(MyLayout.TYPE_SELECT))			
+				{
+					JSONArray multi_value = new JSONArray();
+					for(int s = 1;s < item_layout.getChildCount(); s ++)
+					{
+						if(((CheckBox)item_layout.getChildAt(s)).isChecked())	//判断是否被选择
+						{
+							//获得多选框内的内容
+							String multi_array_value = ((CheckBox)item_layout.getChildAt(s)).getText().toString();
+							multi_value.put(multi_array_value);
+						}
+					}
+					itemObject = lu.mapToJson(itemTag, multi_value);	//这里传的是jsonArray
+				}
+				module_array.put(itemObject);
+			}
+			module_object.put(lu.getNameKey(module_key), module_array);
+			taskValue.put(module_object);	//将itemObject 放入task里面
+		}
+		taskObject.put(MyLayout.TASK, taskValue);
+		return taskObject.toString();
+	}
+	@Override
+	protected void onDestroy()
+	{
+		// TODO Auto-generated method stub
+		mLocationClient.unRegisterLocationListener(myListener);	//取消监听函数
+		mSearch.destroy();	//释放地理编码检索实例
+		super.onDestroy();
+	}
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {	//监控back键
+			AlertDialog alertDialog;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder= new AlertDialog.Builder(this);
+			builder.setTitle("温馨提示");
+			builder.setMessage("确定放弃填表?");
+			builder.setPositiveButton("是", new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					// TODO Auto-generated method stub
+					finish();	//退出
+				}
+			});
+			builder.setNegativeButton("否", null);
+			alertDialog = builder.create();
+			alertDialog.show();	//显示对话框
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+}

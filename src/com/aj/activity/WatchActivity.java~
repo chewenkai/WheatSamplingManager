@@ -1,0 +1,319 @@
+package com.aj.activity;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.aj.collection.R;
+import com.aj.tools.FileStream;
+import com.aj.tools.T;
+import com.aj.tools.Util;
+import com.aj.ui.HeadControlPanel;
+import com.aj.ui.MyLayout;
+import com.aj.ui.HeadControlPanel.LeftImageOnClick;
+import com.aj.ui.HeadControlPanel.RightImageOnClick;
+import com.aj.ui.HeadControlPanel.ThirdOnClick;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class WatchActivity extends Activity
+{
+	Intent intent ;			//传递时间的意图
+	String jsonStr;			//目标字符串
+	String label;			//文件夹名称
+	String file_name;		//文件名
+	String root_path;		//跟目录
+	FileStream fs ;			//文件流
+	MyLayout lu ;		//布局生成类
+	String username;		//采集人登录名
+	TextView tv_gps;		//gps显示控件
+	String strVideoPath=""; //视频文件的绝对路径
+	String num;		//编号
+	LinearLayout parentView;
+	HeadControlPanel headPanel = null;
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.form_layout);
+		parentView = (LinearLayout) findViewById(R.id.form_parent);
+		
+		
+		fs = new FileStream();		//写文件用到的流
+		intent = getIntent();
+		jsonStr = intent.getStringExtra("res");		//获得文件
+		label = intent.getStringExtra("label");		//文件名称
+		root_path = fs.getTaskFile().getPath();		//task file
+		root_path = root_path 						//组装成新的根目录来存储新的文件和图片
+				+ File.separator 
+				+ label;							//文件夹的名称
+		file_name = intent.getStringExtra("file_name");
+		headPanel = (HeadControlPanel)findViewById(R.id.head_layout);  
+		headPanel.setRightVisible(View.VISIBLE);
+		headPanel.setThirdVisible(View.VISIBLE);
+        if(headPanel != null){  
+            headPanel.initHeadPanel();  
+            headPanel.setMiddleTitle("已抽样品");
+            headPanel.setLeftImage(R.drawable.ic_menu_back);
+            LeftImageOnClick l = new LeftImageOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					finish();
+				}
+			};
+			headPanel.setLeftImageOnClick(l);
+			headPanel.setRightImage(R.drawable.save_file);
+			headPanel.setRightText("保存");
+			RightImageOnClick r = new RightImageOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					try
+					{
+						String mes = createJsonStr(true);	//生成json字符串
+						//写入txt
+						if(!fs.createSpmsFile(mes, root_path,file_name.substring(0,file_name.length()-5)))
+						{
+							T.showShort(WatchActivity.this,"保存失败");
+						}
+						else
+						{
+							T.showShort(WatchActivity.this,"保存成功");
+						}
+						WatchActivity.this.finish();
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+			headPanel.setRightImageOnClick(r);
+			headPanel.setThirdImage(R.drawable.print);
+			headPanel.setThirdText("打印");
+			ThirdOnClick t = new ThirdOnClick()
+			{
+				
+				@Override
+				public void onImageClickListener()
+				{
+					// TODO Auto-generated method stub
+					Intent i = new Intent(WatchActivity.this, PrintActivity.class);
+					try
+					{
+						i.putExtra("jsonStr", createJsonStr(false));
+						startActivity(i);
+					}
+					catch (JSONException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						T.showShort(WatchActivity.this, "创建json失败");
+					}
+				}
+			};
+			headPanel.setThirdOnClick(t);
+        }
+		File task = new File(root_path);	//先创建文件夹
+		if(!task.exists())
+		{
+			task.mkdirs();
+		}
+		lu = new MyLayout(parentView,this, fs,root_path,MyLayout.SEE_FORM);	//生成布局的类
+		lu.initLayout(jsonStr);
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+//		CameraView cv=new CameraView();
+		super.onActivityResult(requestCode, resultCode, data);
+		System.out.println("recieve--requestCode-->"+requestCode);
+		if(requestCode==GatherActivity.REQUESTCODEFORDATE)
+		{
+			if(data!=null)
+			{
+				String ymd=data.getStringExtra("ymd");
+				int id = data.getIntExtra("btn_id", 0);
+				Button btn=(Button)findViewById(id);
+				if(ymd!=null)
+				{
+					btn.setText(ymd);
+				}
+				else
+				{
+					btn.setText("重新获取日期");
+				}
+			}
+		}
+		else if(requestCode == GatherActivity.REQUESTCODEFORVIDEO)
+		{
+			if (resultCode == RESULT_OK) {    
+                Uri uriVideo = data.getData(); 
+                String video_path = uriVideo.toString();
+                String video_name = video_path.substring(video_path.lastIndexOf("/")+1, video_path.length());
+                ImageView iv = (ImageView) findViewById(GatherActivity.REQUESTCODEFORVIDEO);
+                TextView tv = (TextView)findViewById(GatherActivity.REQUESTCODEFORVIDEO+1);
+//                TextView tvv = (TextView)findViewById(REQUESTCODEFORVIDEO+2);
+                T.showShort(this,"录像保存成功"+video_name);
+                HashMap<String, Object> item = (HashMap<String, Object>) ((LinearLayout)iv.getParent()).getTag();
+				JSONArray cont = (JSONArray)item.get(MyLayout.CONT);	//取出map中的cont
+				cont.put(video_name);	//将pName添加进cont
+				item.put(MyLayout.CONT, (Object)cont);	//在放回map
+				tv.setText(video_name+"\t");
+				tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+			}
+		}
+		else if(requestCode == GatherActivity.REQUESTCODEFORPICTURE)
+		{
+			if(data!=null)
+			{
+				 // 没有指定特定存储路径的时候
+                T.showShort(this,"拍照成功");
+				int id = data.getIntExtra("view_id", 0);		// imageView id
+				String pName = data.getStringExtra("pName");	//图片名称
+				ImageView iv = (ImageView) findViewById(id);
+				//拿到父类标签
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> item = (HashMap<String, Object>) ((LinearLayout)iv.getParent()).getTag();
+				JSONArray cont = (JSONArray)item.get(MyLayout.CONT);	//取出map中的cont
+				cont.put(pName);	//将pName添加进cont
+				item.put(MyLayout.CONT, (Object)cont);	//在放回map
+//				if(cont.length()%2 != 0)
+//				{
+					iv.setImageBitmap(Util.getBitmap(root_path+File.separator+pName,2));
+//				}
+//				else
+//				{
+//					ImageView ivv = (ImageView) findViewById(id+1);
+//					ivv.setImageBitmap(Util.getBitmap(root_path+File.separator+pName,2));
+//				}
+				
+            }
+		}
+	}
+	/**
+	 * 有布局生成json字符串
+	 * @param isSave	是否保存
+	 * @return
+	 * @throws JSONException
+	 */
+	private String createJsonStr(boolean isSave) throws JSONException
+	{
+		int count = parentView.getChildCount();	//获得条目数
+		//parentView 下面是itemlayout,itemlayout下面是textview和linearlayout，linearLayout里面是具体的linearLayout
+		JSONObject taskObject = new JSONObject();	//第一层task
+		JSONArray taskValue = new JSONArray();	//task的值
+		for(int i = 0; i < count; i ++) //对应七个模块
+		{
+			LinearLayout module_layout = (LinearLayout)parentView.getChildAt(i);	//模块布局
+			String module_key = ((TextView)module_layout.getChildAt(0)).getText().toString();
+			LinearLayout module_value = (LinearLayout) module_layout.getChildAt(1);
+			JSONObject module_object = new JSONObject();
+			JSONArray module_array = new JSONArray();
+			for(int j = 0; j < module_value.getChildCount(); j++)
+			{
+				JSONObject itemObject = new JSONObject();
+				LinearLayout item_layout = (LinearLayout) module_value.getChildAt(j);//条目布局
+				HashMap<String, Object> itemTag = (HashMap<String, Object>) item_layout.getTag();	//获得条目信息
+				String type = (String)itemTag.get(MyLayout.TYPE);
+				//类型为title/sign/camera时,直接将tag转成jsonObject即可
+				if (type.equals(MyLayout.TYPE_TABLE))
+				{
+					itemObject = lu.mapToJson(itemTag, null);
+				}
+				else if(type.equals(MyLayout.TYPE_CAMERA) || type.equals(MyLayout.TYPE_VIDEO))
+				{
+					itemObject = lu.mapToJson(itemTag, null);
+				}	
+				else if(type.equals(MyLayout.TYPE_AUTO) || type.equals(MyLayout.TYPE_COMPANY) || type.equals(MyLayout.TYPE_ITEMS))
+				{
+					String cont = ((TextView)item_layout.getChildAt(1)).getText().toString();	//输入的内容
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_INPUT) || type.equals(MyLayout.TYPE_ADDR))			
+				{
+					String cont = ((EditText)item_layout.getChildAt(1)).getText().toString();	//输入的内容
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_NUMBER)||type.equals(MyLayout.TYPE_COLLDATE))			
+				{
+					String cont = ((TextView)item_layout.getChildAt(1)).getText().toString();	//自动生成的编号
+					if(type.equals(MyLayout.TYPE_NUMBER))
+					{
+						num = cont;
+					}
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_DATE))			
+				{
+					String cont = ((Button)item_layout.getChildAt(1)).getText().toString();	//日期内容
+					if(cont.equals(MyLayout.CHOOSE_DATE))
+					{
+						cont = "";
+					}
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_SIGN))			
+				{
+					String cont = (String) ((ImageView)item_layout.getChildAt(1)).getTag();	//签名图片名称
+					itemObject = lu.mapToJson(itemTag, cont);
+				}
+				else if (type.equals(MyLayout.TYPE_GPS))			
+				{
+					itemObject = lu.mapToJson(itemTag, null);	//这里传的是jsonArray
+				}
+				else if (type.equals(MyLayout.TYPE_SELECT))			
+				{
+					JSONArray multi_value = new JSONArray();
+					for(int s = 1;s < item_layout.getChildCount(); s ++)
+					{
+						if(((CheckBox)item_layout.getChildAt(s)).isChecked())	//判断是否被选择
+						{
+							//获得多选框内的内容
+							String multi_array_value = ((CheckBox)item_layout.getChildAt(s)).getText().toString();
+							multi_value.put(multi_array_value);
+						}
+					}
+					itemObject = lu.mapToJson(itemTag, multi_value);	//这里传的是jsonArray
+				}
+				module_array.put(itemObject);
+			}
+			module_object.put(lu.getNameKey(module_key), module_array);
+			taskValue.put(module_object);	//将itemObject 放入task里面
+		}
+		taskObject.put(MyLayout.TASK, taskValue);
+		return taskObject.toString();
+	}
+}

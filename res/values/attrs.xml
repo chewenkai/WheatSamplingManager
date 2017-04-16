@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ExpandableLayout">
+        <attr name="el_headerLayout" format="reference"/>
+        <attr name="el_contentLayout" format="reference" />
+        <attr name="el_duration" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="expandable_selector">
+        <attr name="hide_background_if_collapsed" format="boolean"/>
+        <attr name="animation_duration" format="integer"/>
+        <attr name="hide_first_item_on_collapse" format="boolean"/>
+        <attr name="expand_interpolator" format="reference"/>
+        <attr name="collapse_interpolator" format="reference"/>
+        <attr name="container_interpolator" format="reference"/>
+    </declare-styleable>
+
+    <attr name="expandableItemStyle"/>
+
+    <declare-styleable name="NumberPicker">
+        <attr name="normalTextColor" format="color" />
+        <attr name="normalTextSize" format="dimension" />
+        <attr name="selecredTextColor" format="color" />
+        <attr name="selecredTextSize" format="dimension" />
+        <attr name="unitHight" format="dimension" />
+        <attr name="itemNumber" format="integer"/>
+        <attr name="lineColor" format="color" />
+        <attr name="maskHight" format="dimension"/>
+        <attr name="noEmpty" format="boolean"/>
+        <attr name="isEnable" format="boolean"/>
+    </declare-styleable>
+
+</resources>
