@@ -21,6 +21,9 @@ public class ReturnCode {
      */
     public final static String Code0 = "0";
 
+    public final static String USER_NAME_EXIST = "10188";
+    public final static String USER_NAME_EXIST_STRING = "该用户名已存在，请更换后再试";
+
     /**
      * 密码错误
      */
@@ -143,6 +146,10 @@ public class ReturnCode {
 
     public ReturnCode(Context context, String returnCode, boolean showToast) {
         switch (returnCode) {
+            case USER_NAME_EXIST:
+                if (showToast)
+                    Toast.makeText(context, USER_NAME_EXIST_STRING, Toast.LENGTH_LONG).show();
+                break;
             case PASSWORD_INVALIDE:
                 if (showToast)
                     Toast.makeText(context, PASSWORD_INVALIDE_STRING, Toast.LENGTH_LONG).show();

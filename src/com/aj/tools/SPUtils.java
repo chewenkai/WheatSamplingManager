@@ -20,6 +20,17 @@ public class SPUtils {
     /**
      * 保存在手机里面的文件名
      */
+    // Farmer information
+    public static final String FARMER_NAME = "farmer_name";
+    public static final String FARMER_PHONE_NUMBER = "farmer_phone_number";
+    public static final String FARMER_IDENTITY_NUMBER = "farmer_identity_number";
+    public static final String FARMER_ADDRESS = "farmer_address";
+    public static final String FARMER_POST_NUMBER = "farmer_postnumber";
+    public static final String FARMER_DEPOSIT_CARD_NAME = "bank_card_name";
+    public static final String FARMER_DEPOSIT_CARD_NUMBER = "bank_card_number";
+    public static final String FARMER_BANK_NAME = "band_name";
+    public static final String SAMPLING_COMPANY_ID="company_id";
+
     public static final String USER_DATA = "user_data";
     public static final String UNIT_NAME = "unit_name";
     public static final String UNIT_PHONE = "unit_phone";

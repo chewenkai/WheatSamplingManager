@@ -16,7 +16,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.aj.Constant;
-import com.aj.bean.UserInfo;
 import com.aj.collection.R;
 import com.aj.database.DaoMaster;
 import com.aj.database.DaoSession;

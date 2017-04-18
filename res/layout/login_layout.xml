@@ -74,16 +74,34 @@
             android:hint="请输入密码"
             android:textColorHint="@color/hint_color_text"/>
         <!-- 登录button -->
-        <Button
-            android:id="@+id/l_signin_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/l_password_edit"
             android:layout_alignRight="@id/l_password_edit"
-            android:layout_below="@id/l_password_edit"
-            android:background="@drawable/bt_normal_bg"
-            android:text="登录"
-            android:textSize="20sp" />
+            android:layout_below="@id/l_password_edit">
+            <Button
+                android:id="@+id/l_signin_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bt_normal_bg"
+                android:text="登录"
+                android:textSize="20sp" />
+            <Button
+                android:id="@+id/l_signup_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bt_normal_bg"
+                android:text="注册"
+                android:textSize="20sp" />
+        </LinearLayout>
+
     </RelativeLayout>
 
     <TextView

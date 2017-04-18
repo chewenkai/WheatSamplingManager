@@ -6,10 +6,8 @@ package com.aj.http;
 public class URLs {
 
 
-    //	 public final static String HOST ="baby.miqulai.com";
-
     //正式版
-    public final static String HOST = "222.171.78.156:32002/heiljcydc";
+    public final static String HOST = "120.25.69.38/heiljcydc";
 
     //测试版
 //    public final static String HOST = "222.171.78.156:32002/heiljcydctest";
@@ -41,6 +39,12 @@ public class URLs {
     public final static String CONTACT = "samplingcontact";
     public final static String CONTACTPHONE = "samplingphone";
     public final static String SERIAL_NUMBER = "devSN";
+    public final static String POST_CODE = "postcode";
+    public final static String IDENTITY_NUMBER = "idcode";
+    public final static String BANK_CARD_POSSESSOR = "cardholder";
+    public final static String BANK_CARD_NUMBER = "accountnumber";
+    public final static String BANK_NAME = "depositbank";
+    //	 $list = array('depositbank'=>$result['depositbank']);
 
     /**
      * 注销
@@ -65,11 +69,17 @@ public class URLs {
     public final static String RESETPWD = URL_API_HOST + "user/find_reset_pwd";
 
     /**
-     * 获取用户信息
+     * 注册
      */
-    public final static String USERINFO = URL_API_HOST + "getuserinfo.php";
 
+    public final static String JIEKOU = URL_API_HOST + "jiekou.php";
+    public final static String GET_COMPANY_INFO = "getCompanyInfo";
+    public final static String REGIST_NEW_USER = "registerNewUser";
 
+    /**
+     * 修改用户信息
+     */
+    public final static String EDIT_USER_INFO="editUser";
     /***************************DOWNLOAD**********************/
 
     /**

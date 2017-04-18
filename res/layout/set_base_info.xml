@@ -23,24 +23,25 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:text="个人信息"
                 android:textColor="@android:color/holo_blue_dark"
                 android:textSize="@dimen/text_size"
-                android:visibility="gone" />
+                android:visibility="visible"/>
 
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:background="@drawable/selector_setting_button_style"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/user_img"
@@ -75,18 +76,6 @@
             </RelativeLayout>
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="30dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="15dp"
-                android:text="抽样单位信息"
-                android:textColor="@android:color/holo_blue_dark"
-                android:textSize="@dimen/text_size"
-                android:visibility="gone" />
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,85 +83,21 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
-                android:paddingTop="3dp"
+                android:paddingTop="10dp"
                 android:paddingBottom="3dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="名称:"
+                    android:text="大户姓名:"
                     android:textColor="@color/text_color_theme_dark2"
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/unit_name_set"
+                    android:id="@+id/user_real_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:textColor="@color/text_color_gray"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="#4e646a"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/selector_setting_button_style"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="地址:"
-                    android:textColor="@color/text_color_theme_dark2"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/unit_addr_set"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="@color/text_color_gray"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="#4e646a"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/selector_setting_button_style"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="邮编:"
-                    android:textColor="@color/text_color_theme_dark2"
-                    android:textSize="@dimen/text_size" />
-
-                <EditText
-                    android:id="@+id/unit_post_set"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:inputType="number"
                     android:textColor="@color/text_color_gray"
                     android:textSize="15sp" />
             </LinearLayout>
@@ -200,7 +125,82 @@
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/unit_phone_set"
+                    android:id="@+id/phone_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/text_color_gray"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#4e646a"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_setting_button_style"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="大户身份证号:"
+                    android:textColor="@color/text_color_theme_dark2"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/identity_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="number"
+                    android:textColor="@color/text_color_gray"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="补助信息"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="@dimen/text_size"
+                android:visibility="visible" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#4e646a"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_setting_button_style"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="通讯地址:"
+                    android:textColor="@color/text_color_theme_dark2"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/user_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -223,17 +223,17 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="传真:"
+                    android:text="邮编:"
                     android:textColor="@color/text_color_theme_dark2"
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/unit_cz_set"
+                    android:id="@+id/post_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -241,6 +241,112 @@
                     android:textSize="15sp" />
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#4e646a"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_setting_button_style"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="持卡人:"
+                    android:textColor="@color/text_color_theme_dark2"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/bank_card_possessor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/text_color_gray"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#4e646a"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_setting_button_style"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="银行卡号:"
+                    android:textColor="@color/text_color_theme_dark2"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/bank_card_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/text_color_gray"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#4e646a"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_setting_button_style"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="开户行:"
+                    android:textColor="@color/text_color_theme_dark2"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/bank_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/text_color_gray"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/save_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="保存"
+                android:textColor="@color/text_white_87"
+                android:background="@color/text_color_theme_dark2"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_margin="10dp"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -271,7 +377,8 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/selector_setting_button_style"
                 android:orientation="horizontal"
-                android:padding="5dip">
+                android:padding="5dip"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -23,6 +23,117 @@ import java.util.Map;
 public class API {
 
     /***************************ABOUT USER**********************/
+    /**
+     * 用户注册
+     */
+    public static StringRequest getSuperiorInfo(Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        StringRequest request = new StringRequest(Request.Method.POST, URLs.JIEKOU, listener, errorListener) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("act", URLs.GET_COMPANY_INFO);
+                return map;
+            }
+        };
+
+        return request;
+    }
+
+    /**
+     * 用户注册
+     * @param listener
+     * @param errorListener
+     * @param user
+     * @param pwd
+     * @param company
+     * @param company_id
+     * @param farmer_name
+     * @param farmer_phone
+     * @param farmer_identity
+     * @param farmer_address
+     * @param farmer_post
+     * @param farmer_possessor
+     * @param farmer_bank_number
+     * @param farmer_bank_name
+     * @return
+     */
+    public static StringRequest registUser(Response.Listener<String> listener, Response.ErrorListener errorListener,
+                                           final String user, final String pwd, final String company, final String company_id, final String farmer_name,
+                                           final String farmer_phone, final String farmer_identity, final String farmer_address,
+                                           final String farmer_post, final String farmer_possessor, final String farmer_bank_number,
+                                           final String farmer_bank_name) {
+        StringRequest request = new StringRequest(Request.Method.POST, URLs.JIEKOU, listener, errorListener) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("act", URLs.REGIST_NEW_USER);
+                map.put("username", user);
+                map.put("password", pwd);
+                map.put("companyid", company_id);
+                map.put("company", company);
+                map.put("companyaddress", farmer_address);
+                map.put("name", farmer_name);
+                map.put("contact", farmer_phone);
+                map.put("postcode", farmer_post);
+                map.put("idcode", farmer_identity);
+                map.put("cardholder", farmer_possessor);
+                map.put("accountnumber", farmer_bank_number);
+                map.put("depositbank", farmer_bank_name);
+                map.put("UDID", Constant.DeviceID);
+                return map;
+            }
+        };
+
+        return request;
+    }
+
+    /**
+     * 修改用户信息
+     * @param listener
+     * @param errorListener
+     * @param user
+     * @param pwd
+     * @param company
+     * @param company_id
+     * @param farmer_name
+     * @param farmer_phone
+     * @param farmer_identity
+     * @param farmer_address
+     * @param farmer_post
+     * @param farmer_possessor
+     * @param farmer_bank_number
+     * @param farmer_bank_name
+     * @return
+     */
+    public static StringRequest editUser(Response.Listener<String> listener, Response.ErrorListener errorListener,
+                                           final String user, final String pwd, final String company, final String company_id, final String farmer_name,
+                                           final String farmer_phone, final String farmer_identity, final String farmer_address,
+                                           final String farmer_post, final String farmer_possessor, final String farmer_bank_number,
+                                           final String farmer_bank_name) {
+        StringRequest request = new StringRequest(Request.Method.POST, URLs.JIEKOU, listener, errorListener) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("act", URLs.EDIT_USER_INFO);
+                map.put("username", user);
+                map.put("password", pwd);
+                map.put("companyid", company_id);
+                map.put("company", company);
+                map.put("companyaddress", farmer_address);
+                map.put("name", farmer_name);
+                map.put("contact", farmer_phone);
+                map.put("postcode", farmer_post);
+                map.put("idcode", farmer_identity);
+                map.put("cardholder", farmer_possessor);
+                map.put("accountnumber", farmer_bank_number);
+                map.put("depositbank", farmer_bank_name);
+                map.put("UDID", Constant.DeviceID);
+                return map;
+            }
+        };
+
+        return request;
+    }
 
     /**
      * 登录验证
@@ -59,26 +170,6 @@ public class API {
         return request;
     }
 
-    /**
-     * 用户注册
-     */
-    public static StringRequest regist(Response.Listener<String> listener, Response.ErrorListener errorListener,
-                                       final String user, final String pwd, final String email) {
-        StringRequest request = new StringRequest(Request.Method.GET, URLs.REGISTER, listener, errorListener) {
-            @Override
-            public Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("act", URLs.REGISTERACT);
-                map.put("username", user);
-                map.put("password", pwd);
-                map.put("email", email);
-                map.put("UDID", Constant.DeviceID);
-                return map;
-            }
-        };
-
-        return request;
-    }
 
     /***************************DOWNLOAD**********************/
 

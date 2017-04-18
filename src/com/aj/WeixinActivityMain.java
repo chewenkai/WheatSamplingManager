@@ -1819,6 +1819,7 @@ public class WeixinActivityMain extends Activity {
 //                                    if (j + 1 == samplingsArray.length())
 //                                        progressDialog.dismiss();
 
+                                    // TODO 从抽样单Json中读取样品信息，如果为空，则应该显示默认“未填写”字样
                                     String samplingID = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLINGID);
                                     String samplingCont = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLINGCONT);
                                     String samplingName = samplingsArray.getJSONObject(j).getString(URLs.KEY_ITEMS);

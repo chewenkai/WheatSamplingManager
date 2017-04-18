@@ -1,15 +1,5 @@
 package com.aj.ui;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -62,7 +52,17 @@ import com.aj.ui.viewimage.PictureViewActivity;
 import com.aj.ui.widget.AutoCompleteEditText;
 import com.baidu.panosdk.plugin.indoor.util.ScreenUtils;
 
-public class MyLayout {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class MyLayout_NEW {
     public static final String TASK = "task";            //第一层的键
     public static final String NAME = "name";            //条目名称
     public static final String TYPE = "type";            //条目类型
@@ -183,8 +183,8 @@ public class MyLayout {
      * @param root_path
      * @param doORwatch
      */
-    public MyLayout(LinearLayout linearLayout, Activity activity,
-                    FileStream fs, String root_path, int doORwatch, long taskID, SAMPLINGTABLE samplingtable) {
+    public MyLayout_NEW(LinearLayout linearLayout, Activity activity,
+                        FileStream fs, String root_path, int doORwatch, long taskID, SAMPLINGTABLE samplingtable) {
         parentView = linearLayout;
         this.activity = activity;
         this.fs = fs;
@@ -199,47 +199,6 @@ public class MyLayout {
         samplingtableDao = daoSession.getSAMPLINGTABLEDao();
     }
 
-//    public void initLayout(String jsonStr) {
-//        try {
-//            JSONObject task = new JSONObject(jsonStr);    //第一层的对象
-//            JSONArray task_value = task.getJSONArray(TASK);    //通过key取得value	key--"task".
-//            for (int i = 0; i < task_value.length(); i++)    //循环取出第一层的值
-//            {
-//                JSONObject jsonObject = task_value.optJSONObject(i);    //第二层的对象
-//                JSONArray item_value = jsonObject.getJSONArray(getName(i));
-//                LinearLayout item_layout = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.item_layout, null);//第一层的布局文件 块条目 包括两部分 分别是名 和内容
-//                TextView module_key = (TextView) item_layout.getChildAt(0);//第一层的大字“基本信息”
-//                System.out.println(jsonObject.names() + "***  " + i);
-//                module_key.setText(getNameInfo(getName(i)));
-//                module_key.setTextSize(TypedValue.COMPLEX_UNIT_SP, SIZE_THRIRD);
-//                LinearLayout module_value = (LinearLayout) item_layout.getChildAt(1);
-//                for (int j = 0; j < item_value.length(); j++)    //循环取出第二层的值
-//                {
-//                    JSONObject itemObject = item_value.optJSONObject(j);    //第三层的对象
-//                    HashMap<String, Object> item = new HashMap<String, Object>();    //将取出的值全部放进hashmap里
-//                    System.out.println(jsonObject.names());        //打印出第二层所包含的
-//                    item.put(NAME, itemObject.optString(NAME));        //条目名称
-//                    item.put(TYPE, itemObject.optString(TYPE));        //条目类型
-//                    item.put(CONT, itemObject.opt(CONT));                //条目内容
-//                    item.put(CHAN, itemObject.optString(CHAN));        //条目内容是否可以改写
-//                    item.put(PRINT, itemObject.optString(PRINT));        //条目是否可以打印
-//                    item.put(SIZE, itemObject.optString(SIZE));        //条目的字体大小
-//                    item.put(NECESSARY, itemObject.optString(NECESSARY)); //条目必填项
-//                    System.out.println(item);
-//                    LinearLayout parentLayout = createWidget(item, j, true);    //生成一个linearLayout（一个条目）
-//
-//                    module_value.addView(parentLayout);    //将条目添加至父类视图
-//
-//                }
-//                parentView.addView(item_layout);
-//            }
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//            L.d("解析json失败 MyLayout >line:175");
-//            Toast.makeText(activity.getApplicationContext(), "解析json失败", Toast.LENGTH_LONG).show();
-//        }
-//    }
 
     public void initLayout(String jsonStr, final boolean canUserEdit) {
 
@@ -403,7 +362,7 @@ public class MyLayout {
                 gpsIdTV = getSamplingGpsIdTV(samplingBlockSubitems.size() - 1);
                 if(gpsIdTV==null){
                     T.showShort(parentView.getContext(),"删除样品失败，获取不到之前控件！");
-                    Log.e(MyLayout.class.getName(),"line:"+Util.getLineInfo());
+                    Log.e(MyLayout_NEW.class.getName(),"line:"+Util.getLineInfo());
                     return;
                 }
                 gpsIdTV.setTextColor(parentView.getContext().getResources().getColor(R.color.text_color_gray));
@@ -413,7 +372,7 @@ public class MyLayout {
                 TextView gpsPauseButton=getSamplingGPSBtnTV(samplingBlockSubitems.size() - 1);
                 if (gpsPauseButton==null){
                     T.showShort(parentView.getContext(),"删除样品失败，获取不到之前控件！");
-                    Log.e(MyLayout.class.getName(),"line:"+Util.getLineInfo());
+                    Log.e(MyLayout_NEW.class.getName(),"line:"+Util.getLineInfo());
                     return;
                 }
                 gpsPauseButton.setVisibility(View.VISIBLE);
@@ -425,7 +384,7 @@ public class MyLayout {
 
                 if (ItemsET == null ||ItemsIDET == null ||numberIdTV == null) {
                     T.showShort(parentView.getContext(),"删除样品失败，获取不到之前控件！");
-                    Log.e(MyLayout.class.getName(),"line:"+Util.getLineInfo());
+                    Log.e(MyLayout_NEW.class.getName(),"line:"+Util.getLineInfo());
                     return;
                 }
 
@@ -622,7 +581,7 @@ public class MyLayout {
             bt_gps.setTextColor(myWidget.getContext().getResources().getColor(R.color.text_color_gray));
             bt_gps.setTextSize(20);
             bt_gps.setText("暂停GPS");
-            bt_gps.setOnClickListener(new View.OnClickListener() {
+            bt_gps.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (bt_gps.getText().toString().equals("暂停GPS")) {
@@ -1109,7 +1068,7 @@ public class MyLayout {
         imageView.setVisibility(View.GONE);
         picture = imageView;
         imageView.setTag(root_path);
-        imageView.setOnClickListener(new View.OnClickListener()    //监听控件
+        imageView.setOnClickListener(new OnClickListener()    //监听控件
         {
             @Override
             public void onClick(View v) {
@@ -1180,7 +1139,7 @@ public class MyLayout {
         imageView.setVisibility(View.GONE);
         video = imageView;
         imageView.setTag(root_path);
-        imageView.setOnClickListener(new View.OnClickListener()    //监听控件
+        imageView.setOnClickListener(new OnClickListener()    //监听控件
         {
 
             @Override
@@ -1336,7 +1295,7 @@ public class MyLayout {
 //		imageView.setLayoutParams(new LayoutParams(60,40));	//设置控件的长和宽
 
         imageView.setImageResource(R.drawable.edit_query);        //设置控件的背景图片
-        imageView.setOnClickListener(new View.OnClickListener()    //监听控件
+        imageView.setOnClickListener(new OnClickListener()    //监听控件
         {
             @Override
             public void onClick(View v) {
@@ -1433,7 +1392,7 @@ public class MyLayout {
         Bitmap bm = Util.getBitmap(imagePath, 2);
         if (bm == null) {
             iv.setImageResource(R.drawable.edit_query);
-            iv.setOnClickListener(new View.OnClickListener()    //监听控件
+            iv.setOnClickListener(new OnClickListener()    //监听控件
             {
                 @Override
                 public void onClick(View v) {

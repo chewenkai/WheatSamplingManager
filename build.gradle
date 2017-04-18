@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+dependencies {
+    //    compile fileTree(dir: 'libs', include: '*.jar')
+    //    compile project(':slidemenu_library')
+    //    compile project(':circularimageview')
+    //    compile project(':material-sheet-fab')
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:cardview-v7:22.2.1'
+    compile 'com.android.support:recyclerview-v7:22.2.1'
+    compile 'com.android.support:support-v4:22.2.1'
+    compile files('libs/BaiduLBS_Android.jar')
+    compile files('libs/ftpserver-core-1.0.6.jar')
+    compile files('libs/IndoorscapeAlbumPlugin.jar')
+    compile files('libs/log4j-1.2.14.jar')
+    compile files('libs/mina-core-2.0.4.jar')
+    compile files('libs/slf4j-api-1.5.2.jar')
+    compile files('libs/slf4j-log4j12-1.5.2.jar')
+    compile project(':circularimageview')
+    compile project(':volley')
+    compile 'com.squareup.okhttp3:okhttp:3.4.2'
+    //    compile 'com.zhy:okhttputils:2.6.2'
+    //    compile files('libs/okhttputils-2_6_2.jar')
+    compile files('libs/httpcore-4.3.2.jar')
+    compile files('libs/httpmime-4.3.5.jar')
+    compile files('libs/httpclient-4.3.5.jar')
+    compile files('libs/universal-image-loader-1.9.3-with-sources.jar')
+    compile files('libs/gson-2.2.4.jar')
+    compile files('libs/android_api_3.7.0.5.jar')
+    compile files('libs/android-viewbadger.jar')
+    compile 'de.greenrobot:greendao:2.0.0'
+    compile project(':utillib')
+
+    // Kotlin and Anko
+    compile "org.jetbrains.anko:anko-sdk15:$anko_version"
+    // sdk19, sdk21, sdk23 are also available
+    compile "org.jetbrains.anko:anko-support-v4:$anko_version"
+    // In case you need support-v4 bindings
+    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
+    // For appcompat-v7 bindings
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+}
+
+android {
+    signingConfigs {
+    }
+    compileSdkVersion 22
+    buildToolsVersion '25.0.2'
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
+        }
+
+
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
+    productFlavors {
+        dev {
+            minSdkVersion 15 //The important bit.
+        }
+        prod {
+            minSdkVersion 15 //Example. Set to your real requirement.
+        }
+    }
+    
+    dexOptions {
+        incremental true
+        jumboMode = true
+    }
+}
