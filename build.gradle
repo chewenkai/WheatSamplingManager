@@ -6,11 +6,11 @@ dependencies {
     //    compile project(':slidemenu_library')
     //    compile project(':circularimageview')
     //    compile project(':material-sheet-fab')
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
-    compile 'com.android.support:cardview-v7:22.2.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.android.support:support-v4:22.2.1'
+    compile "com.android.support:appcompat-v7:$build_version"
+    compile "com.android.support:design:$build_version"
+    compile "com.android.support:cardview-v7:$build_version"
+    compile "com.android.support:recyclerview-v7:$build_version"
+    compile "com.android.support:support-v4:$build_version"
     compile files('libs/BaiduLBS_Android.jar')
     compile files('libs/ftpserver-core-1.0.6.jar')
     compile files('libs/IndoorscapeAlbumPlugin.jar')
@@ -32,7 +32,6 @@ dependencies {
     compile files('libs/android-viewbadger.jar')
     compile 'de.greenrobot:greendao:2.0.0'
     compile project(':utillib')
-
     // Kotlin and Anko
     compile "org.jetbrains.anko:anko-sdk15:$anko_version"
     // sdk19, sdk21, sdk23 are also available
@@ -47,7 +46,7 @@ dependencies {
 android {
     signingConfigs {
     }
-    compileSdkVersion 22
+    compileSdkVersion 25
     buildToolsVersion '25.0.2'
     sourceSets {
         main {

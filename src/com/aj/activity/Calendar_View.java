@@ -48,7 +48,7 @@ public class Calendar_View extends Activity
 				Intent i=new Intent();
 				i.putExtra("ymd", ymd);
 				i.putExtra("btn_id", id);
-				setResult(GatherActivity.REQUESTCODEFORDATE, i);
+				setResult(GatherActivity.Companion.getREQUESTCODEFORDATE(), i);
 				finish();
 			}
 		});

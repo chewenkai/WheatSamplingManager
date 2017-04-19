@@ -401,7 +401,7 @@ public class WatchActivity extends Activity {
 //		CameraView cv=new CameraView();
         super.onActivityResult(requestCode, resultCode, data);
         System.out.println("recieve--requestCode-->" + requestCode);
-        if (requestCode == GatherActivity.REQUESTCODEFORDATE) {
+        if (requestCode == GatherActivity.Companion.getREQUESTCODEFORDATE()) {
             if (data != null) {
                 String ymd = data.getStringExtra("ymd");
                 int id = data.getIntExtra("btn_id", 0);
@@ -412,7 +412,7 @@ public class WatchActivity extends Activity {
                     btn.setText("重新获取日期");
                 }
             }
-        } else if (requestCode == GatherActivity.REQUESTCODEFORVIDEO) {
+        } else if (requestCode == GatherActivity.Companion.getREQUESTCODEFORVIDEO()) {
             if (resultCode == RESULT_OK) {
                 Uri uriVideo = data.getData();
                 String video_path = uriVideo.toString();
@@ -420,7 +420,7 @@ public class WatchActivity extends Activity {
                 savedVedioNames.add(video_name);
                 updateVideoGridView(canUserEdit);
             }
-        } else if (requestCode == GatherActivity.REQUESTCODEFORPICTURE) {
+        } else if (requestCode == GatherActivity.Companion.getREQUESTCODEFORPICTURE()) {
             if (data != null) {
                 // 没有指定特定存储路径的时候
                 T.showShort(this, "拍照成功");
@@ -675,10 +675,10 @@ public class WatchActivity extends Activity {
 
                                         Intent intent = new Intent(WatchActivity.this, CameraView.class);
                                         intent.putExtra("root_path", child_path);    //将存储图片根目录传递过去
-                                        intent.putExtra("view_id", GatherActivity.REQUESTCODEFORPICTURE + 0);        //控件ID
+                                        intent.putExtra("view_id", GatherActivity.Companion.getREQUESTCODEFORPICTURE() + 0);        //控件ID
                                         intent.putExtra("location", tv_gps.getText());
                                         intent.putExtra("number", cameraSearch.getName());
-                                        startActivityForResult(intent, GatherActivity.REQUESTCODEFORPICTURE);
+                                        startActivityForResult(intent, GatherActivity.Companion.getREQUESTCODEFORPICTURE());
                                         return;
                                     }
                                     //其他的是查看照片
@@ -847,7 +847,7 @@ public class WatchActivity extends Activity {
                                         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);//更改录像质量 min=0 max =1
                                         // /intent.putExtra("view_id", v.getId());
                                         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(video_name));
-                                        startActivityForResult(intent, GatherActivity.REQUESTCODEFORVIDEO);
+                                        startActivityForResult(intent, GatherActivity.Companion.getREQUESTCODEFORVIDEO());
                                         return;
                                     }
                                     //其他的是查看照片

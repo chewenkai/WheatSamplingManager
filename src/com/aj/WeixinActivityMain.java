@@ -36,6 +36,7 @@ import android.provider.Settings;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -1111,12 +1112,6 @@ public class WeixinActivityMain extends Activity {
     }
 
 
-    public String getLocalIpAddress() {
-        WifiManager wifiManager = (WifiManager) WeixinActivityMain.this.getSystemService(WeixinActivityMain.this.WIFI_SERVICE);
-        int ip = wifiManager.getConnectionInfo().getIpAddress();
-        String realIp = intToIp(ip);
-        return realIp;
-    }
 
     public String intToIp(int ip) {
         return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) +
@@ -1517,20 +1512,31 @@ public class WeixinActivityMain extends Activity {
      * Show a notification while this service is running.
      */
     private void showNotification() {
-        CharSequence text = getText(R.string.app_name);
-        Notification notification = new Notification(
-                R.drawable.ic_launcher1, null, System.currentTimeMillis());
-        notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
-        notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE;
-        Intent pedometerIntent = new Intent();
-        pedometerIntent.setComponent(new ComponentName(this, WeixinActivityMain.class));
-        pedometerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                pedometerIntent, 0);
-        notification
-                .setLatestEventInfo(this, text, "您有一个新任务!", contentIntent);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.ic_launcher1);
+        mBuilder.setContentTitle(getResources().getString(R.string.app_name));
+        mBuilder.setContentText("您有一个新任务!");
 
-        mNM.notify(R.string.app_name, notification);
+        Intent intent = new Intent(this, WeixinActivityMain.class);
+        mBuilder.setContentIntent(PendingIntent.getBroadcast(this, 0, intent, 0));
+        NotificationManager notificationManager = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, mBuilder.build());
+
+//        CharSequence text = getText(R.string.app_name);
+//        Notification notification = new Notification(
+//                R.drawable.ic_launcher1, null, System.currentTimeMillis());
+//        notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
+//        notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE;
+//        Intent pedometerIntent = new Intent();
+//        pedometerIntent.setComponent(new ComponentName(this, WeixinActivityMain.class));
+//        pedometerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+//                pedometerIntent, 0);
+//        notification
+//                .setLatestEventInfo(this, text, "您有一个新任务!", contentIntent);
+//
+//        mNM.notify(R.string.app_name, notification);
     }
 
     /**
@@ -1547,8 +1553,8 @@ public class WeixinActivityMain extends Activity {
         pedometerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 pedometerIntent, 0);
-        notification
-                .setLatestEventInfo(this, text, s, contentIntent);
+//        notification
+//                .setLatestEventInfo(this, text, s, contentIntent);
 
         mNM.notify(R.string.app_name, notification);
     }

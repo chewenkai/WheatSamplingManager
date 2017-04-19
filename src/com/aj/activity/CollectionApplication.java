@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Environment;
 import android.os.Vibrator;
 import android.util.Log;
 import android.widget.TextView;
@@ -50,9 +49,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
 
 /**
  * Collection Application
@@ -248,6 +244,10 @@ public class CollectionApplication extends AppContext {
         public void onReceiveLocation(BDLocation location) {
 
             global_location = location;
+
+            Intent intent = new Intent().setAction(Constant.LOCATION_BROADCAST_ACT);
+            intent.putExtra(Constant.LOCATION_BROADCAST_VALUE, location);
+            sendBroadcast(intent);
 
             //upload location information between five minute
             if(location_timer> FIVE_MINUTE){

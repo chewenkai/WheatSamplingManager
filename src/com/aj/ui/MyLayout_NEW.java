@@ -652,7 +652,7 @@ public class MyLayout_NEW {
                         JSONArray camera_value = (JSONArray) item.get(CONT);
                         ImageView iv = createCameraImageView(myWidget.getContext(), id);
                         ImageView ivv = new ImageView(myWidget.getContext());
-                        ivv.setId(GatherActivity.REQUESTCODEFORPICTURE + id);
+                        ivv.setId(GatherActivity.Companion.getREQUESTCODEFORPICTURE() + id);
                         if (camera_value.length() > 0) {
                             String ipath = root_path + File.separator + camera_value.getString(camera_value.length() - 1);
                             Bitmap bm = Util.getBitmap(ipath, 2);
@@ -681,7 +681,7 @@ public class MyLayout_NEW {
                         JSONArray video_value = (JSONArray) item.get(CONT);
                         ImageView iv = createVideoImageView(myWidget.getContext(), id);
                         TextView tvv = new TextView(myWidget.getContext());
-                        tvv.setId(GatherActivity.REQUESTCODEFORVIDEO + 1);
+                        tvv.setId(GatherActivity.Companion.getREQUESTCODEFORVIDEO() + 1);
                         tvv.setTextColor(activity.getResources().getColor(R.color.text_color_gray));
                         if (video_value.length() > 0) {
                             tvv.setText(video_value.getString(video_value.length() - 1));
@@ -725,7 +725,7 @@ public class MyLayout_NEW {
                         myWidget.setTag(item);    //重新设置标签
                         ImageView iv = createCameraImageView(myWidget.getContext(), id);
                         ImageView ivv = new ImageView(myWidget.getContext());
-                        ivv.setId(GatherActivity.REQUESTCODEFORPICTURE + id);
+                        ivv.setId(GatherActivity.Companion.getREQUESTCODEFORPICTURE() + id);
                         myWidget.addView(iv);
                         myWidget.addView(createImageGridView(myWidget.getContext()));
 
@@ -737,7 +737,7 @@ public class MyLayout_NEW {
                         ImageView iv = createVideoImageView(myWidget.getContext(), id);
                         TextView tvv = new TextView(myWidget.getContext());
                         tvv.setTextColor(activity.getResources().getColor(R.color.text_color_gray));
-                        tvv.setId(GatherActivity.REQUESTCODEFORVIDEO + 1);
+                        tvv.setId(GatherActivity.Companion.getREQUESTCODEFORVIDEO() + 1);
 //					TextView tvvv = new TextView(myWidget.getContext());
 //					tvvv.setId(GatherActivity.REQUESTCODEFORVIDEO+2);
                         myWidget.addView(iv);
@@ -1087,10 +1087,10 @@ public class MyLayout_NEW {
 //				}
                 Intent intent = new Intent(activity, CameraView.class);
                 intent.putExtra("root_path", root_path);    //将存储图片根目录传递过去
-                intent.putExtra("view_id", GatherActivity.REQUESTCODEFORPICTURE + id);        //控件ID
+                intent.putExtra("view_id", GatherActivity.Companion.getREQUESTCODEFORPICTURE() + id);        //控件ID
                 intent.putExtra("location", tv_gps.getText().toString());
                 intent.putExtra("number", tv_num.getText().toString());
-                activity.startActivityForResult(intent, GatherActivity.REQUESTCODEFORPICTURE);
+                activity.startActivityForResult(intent, GatherActivity.Companion.getREQUESTCODEFORPICTURE());
                 //imageView.setVisibility(View.GONE);
             }
         });
@@ -1154,7 +1154,7 @@ public class MyLayout_NEW {
                 intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
                 intent.putExtra("view_id", v.getId());
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(video_name));
-                activity.startActivityForResult(intent, GatherActivity.REQUESTCODEFORVIDEO);
+                activity.startActivityForResult(intent, GatherActivity.Companion.getREQUESTCODEFORVIDEO());
                 //imageView.setVisibility(View.GONE);
             }
         });
@@ -1263,13 +1263,13 @@ public class MyLayout_NEW {
         btn.setBackgroundResource(R.drawable.background_date_choose);
         btn.setTextColor(Color.argb(255, 0, 187, 212));
         btn.setTextSize(20);
-        btn.setId(GatherActivity.REQUESTCODEFORDATE + id);    //设置触发按钮ID
+        btn.setId(GatherActivity.Companion.getREQUESTCODEFORDATE() + id);    //设置触发按钮ID
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(activity, Calendar_View.class);
                 i.putExtra("btn_id", btn.getId());    //将触发按钮ID传入下个activity
-                activity.startActivityForResult(i, GatherActivity.REQUESTCODEFORDATE);
+                activity.startActivityForResult(i, GatherActivity.Companion.getREQUESTCODEFORDATE());
             }
         });
         String cont = (String) item.get(CONT);

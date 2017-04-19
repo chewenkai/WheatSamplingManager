@@ -2,24 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:background="#CCCCCC" >
-	
-    <include  
-        android:id="@+id/head_layout"  
-        layout="@layout/head_panel_layout" /> 
-    <ScrollView 
+    android:background="#fff"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/head_layout"
+        layout="@layout/head_panel_layout" />
+
+    <ScrollView
+        android:id="@+id/sheet_scroll_view"
         android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:orientation="vertical" 
-	    android:background="#CCCCCC">
-        
-        <LinearLayout
-        android:id="@+id/form_parent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:background="#fff"
         android:orientation="vertical"
-        android:background="#CCCCCC" >
-    	</LinearLayout>
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <LinearLayout
+            android:id="@+id/form_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:padding="10dp"
+            android:background="@drawable/background_item_block_div"
+            android:orientation="vertical"/>
     </ScrollView>
 </LinearLayout>

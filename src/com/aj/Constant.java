@@ -70,5 +70,7 @@ public class Constant {
     public static int SHOW_MSG_AND_OPEN_SETTING = 101;
     public static int SHOW_MSG = 100;
 
+    public static final String LOCATION_BROADCAST_ACT = "com.kevin.location.broadcast";
+    public static final String LOCATION_BROADCAST_VALUE = "broadcast_location_value";
 
 }

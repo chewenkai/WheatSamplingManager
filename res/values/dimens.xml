@@ -41,4 +41,7 @@
     <dimen name="note_title_textsize">24sp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
+    <!--抽样单-->
+    <dimen name="sheet_cell_name_font">18sp</dimen>
+    <dimen name="sheet_cell_value_font">18sp</dimen>
 </resources>

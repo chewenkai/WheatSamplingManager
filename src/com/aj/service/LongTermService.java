@@ -18,6 +18,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.aj.Constant;
@@ -179,20 +180,17 @@ public class LongTermService extends Service {
      * Show a notification while this service is running.
      */
     private void showNotification() {
-        CharSequence text = getText(R.string.app_name);
-        Notification notification = new Notification(
-                R.drawable.ic_launcher1, null, System.currentTimeMillis());
-        notification.flags = Notification.FLAG_AUTO_CANCEL;
-        notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE;
-        Intent pedometerIntent = new Intent();
-        pedometerIntent.setComponent(new ComponentName(this, WeixinActivityMain.class));
-        pedometerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                pedometerIntent, 0);
-        notification
-                .setLatestEventInfo(this, text, "您有一个新任务!", contentIntent);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.ic_launcher1);
+        mBuilder.setContentTitle(getResources().getString(R.string.app_name));
+        mBuilder.setContentText("您有一个新任务!");
 
-        mNM.notify(R.string.app_name, notification);
+        Intent intent = new Intent(this, WeixinActivityMain.class);
+        mBuilder.setContentIntent(PendingIntent.getBroadcast(this, 0, intent, 0));
+        NotificationManager notificationManager = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, mBuilder.build());
+
     }
 
     // BroadcastReceiver for handling ACTION_SCREEN_OFF.

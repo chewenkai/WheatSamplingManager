@@ -144,4 +144,6 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="sheet_parse_error">抽样单解析错误</string>
+    <string name="search_signal">正在搜索信号...</string>
 </resources>

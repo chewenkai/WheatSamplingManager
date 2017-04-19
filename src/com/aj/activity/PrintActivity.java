@@ -144,7 +144,7 @@ public class PrintActivity extends Activity {
         }
         strPrintTV = (TextView) findViewById(R.id.print_content);
         Intent i = getIntent();
-        //strPrint = i.getStringExtra("jsonStr");
+        //strPrint = i.getStringExtra("sheetJsonStr");
         strPrint = i.getStringExtra("toPrint");
         num = i.getStringExtra("num");
         //strPrint = parseJsonStr(strPrint);
