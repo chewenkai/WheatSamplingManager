@@ -8,7 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 
-        <com.aj.ui.viewimage.PicGallery
+        <com.aj.collection.activity.ui.viewimage.PicGallery
             android:id="@+id/pic_gallery"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

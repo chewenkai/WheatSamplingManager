@@ -5,7 +5,7 @@
     android:versionName="1.0">
 
     <uses-sdk
-        android:minSdkVersion="15"
+        android:minSdkVersion="16"
         android:targetSdkVersion="22" />
 
     <!-- 这个权限用于进行网络定位-->
@@ -130,7 +130,7 @@
         android:normalScreens="true" />
 
     <application
-        android:name="com.aj.activity.CollectionApplication"
+        android:name=".activity.CollectionApplication"
         android:allowBackup="true"
         android:enabled="true"
         android:icon="@drawable/ic_launcher1"
@@ -183,11 +183,11 @@
             android:value="true" />
 
         <activity
-            android:name="com.aj.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.aj.activity.LoginActivity"
+            android:name=".activity.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -198,43 +198,43 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.aj.activity.GatherActivity"
+            android:name=".activity.GatherActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize"/>
         <activity
-            android:name="com.aj.activity.RegistActivity"
+            android:name=".activity.RegistActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.aj.activity.WatchActivity"
+            android:name=".activity.WatchActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.aj.activity.Calendar_View"
+            android:name=".activity.Calendar_View"
             android:screenOrientation="portrait" />
-        <activity android:name="com.aj.activity.CameraView" />
+        <activity android:name=".activity.CameraView" />
         <activity
-            android:name="com.aj.activity.PrintActivity"
+            android:name=".activity.PrintActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.aj.activity.DetecedUnit"
+            android:name=".activity.DetecedUnit"
             android:screenOrientation="portrait" />
-        <activity android:name="com.aj.activity.Navigation.MapActivity" />
-        <activity android:name="com.aj.activity.Navigation.BNGuideActivity" />
+        <activity android:name=".activity.Navigation.MapActivity" />
+        <activity android:name=".activity.Navigation.BNGuideActivity" />
 
-        <activity android:name="com.aj.activity.Navigation.MapOffline" />
-        <activity android:name="com.aj.ui.viewimage.PictureViewActivity" />
-        <activity android:name="com.aj.activity.AboutActivity" />
-        <activity android:name="com.aj.activity.Agreement" />
+        <activity android:name=".activity.Navigation.MapOffline" />
+        <activity android:name=".activity.ui.viewimage.PictureViewActivity" />
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.Agreement" />
         <activity
-            android:name="com.aj.activity.DebugActivity"
+            android:name=".activity.DebugActivity"
             android:label="@string/title_activity_debug"
             android:theme="@style/Theme.AppCompat.Light"/>
-
+        <activity android:name=".activity.GalleryActivity"/>
 
 
         <!-- 开机自启动的广播 -->
-        <receiver android:name="com.aj.BroadCastReceiver.BootBroadcastReceiver">
+        <receiver android:name=".BroadCastReceiver.BootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
 
@@ -332,7 +332,7 @@
             android:name="com.aj.WeixinActivityMain"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.aj.activity.ThirdModify_WeiXin.Exit"
+            android:name=".activity.ThirdModify_WeiXin.Exit"
             android:theme="@style/MyDialogStyle" />
 
         <service
@@ -349,9 +349,9 @@
         <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote">
         </service>
 
-        <service android:name="com.aj.service.MsgService"/>
+        <service android:name=".activity.service.MsgService"/>
 
-        <service android:name="com.aj.service.LongTermService" />
+        <service android:name=".activity.service.LongTermService" />
 
     </application>
 

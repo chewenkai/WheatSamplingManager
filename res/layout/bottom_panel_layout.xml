@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.aj.ui.BottomControlPanel xmlns:android="http://schemas.android.com/apk/res/android"
+<com.aj.collection.activity.ui.BottomControlPanel xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"  
     android:layout_height="@dimen/head_bottom_panel_height"  
     android:layout_alignParentBottom="true"  
     android:gravity="center_vertical"  
      >
     
-    <com.aj.ui.ImageText  
+    <com.aj.collection.activity.ui.ImageText
         android:id="@+id/btn_do"  
         android:layout_width="wrap_content"  
         android:layout_height="wrap_content"  
         android:layout_alignParentLeft="true" />  
   
-    <com.aj.ui.ImageText  
+    <com.aj.collection.activity.ui.ImageText
         android:id="@+id/btn_see"  
         android:layout_width="wrap_content"  
         android:layout_height="wrap_content"  
         android:layout_toRightOf="@id/btn_do" />  
   
   
-    <com.aj.ui.ImageText  
+    <com.aj.collection.activity.ui.ImageText
         android:id="@+id/btn_setting"  
         android:layout_width="wrap_content"  
         android:layout_height="wrap_content"  
         android:layout_toRightOf="@id/btn_see" />
     
 
-</com.aj.ui.BottomControlPanel>
+</com.aj.collection.activity.ui.BottomControlPanel>

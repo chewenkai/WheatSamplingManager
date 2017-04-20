@@ -3,7 +3,7 @@ package com.aj;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 
-import com.aj.activity.CollectionApplication;
+import com.aj.collection.activity.CollectionApplication;
 
 public class Constant {
     final static public String DeviceID = ((TelephonyManager) CollectionApplication.applicationContext.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
@@ -72,5 +72,13 @@ public class Constant {
 
     public static final String LOCATION_BROADCAST_ACT = "com.kevin.location.broadcast";
     public static final String LOCATION_BROADCAST_VALUE = "broadcast_location_value";
+
+    public static final int DEFAULT_IMAGE_HEIGHT_DP = 180;
+
+    // type photo
+    public static final String GALLERY_CLICK_POSITION = "click_position";
+    public static final String AUTO_GENERATED_SHEETID = "generated_sheet_ID";
+    public static final String CELL_ID_EXTRA_KEY = "cell_id_extra_key";
+    public static final String NEW_PHOTO_BROADCAST_ACT = "com.kevin.new_photo_coming";
 
 }

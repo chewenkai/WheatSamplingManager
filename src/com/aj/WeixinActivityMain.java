@@ -26,7 +26,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -56,19 +55,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aj.activity.AboutActivity;
-import com.aj.activity.CollectionApplication;
-import com.aj.activity.DebugActivity;
-import com.aj.activity.DetecedUnit;
-import com.aj.activity.LoginActivity;
-import com.aj.activity.Navigation.MapActivity;
-import com.aj.activity.ThirdModify_WeiXin.Exit;
-import com.aj.adapters.DoingChildListAdapter;
-import com.aj.adapters.DoingParentListAdapter;
-import com.aj.adapters.DoneChildListAdapter;
-import com.aj.adapters.DoneParentListAdapter;
-import com.aj.adapters.ParentListItem;
-import com.aj.bean.TaskInfo;
+import com.aj.collection.activity.AboutActivity;
+import com.aj.collection.activity.CollectionApplication;
+import com.aj.collection.activity.DebugActivity;
+import com.aj.collection.activity.DetecedUnit;
+import com.aj.collection.activity.LoginActivity;
+import com.aj.collection.activity.Navigation.MapActivity;
+import com.aj.collection.activity.ThirdModify_WeiXin.Exit;
+import com.aj.collection.adapters.DoingChildListAdapter;
+import com.aj.collection.adapters.DoingParentListAdapter;
+import com.aj.collection.adapters.DoneChildListAdapter;
+import com.aj.collection.adapters.DoneParentListAdapter;
+import com.aj.collection.adapters.ParentListItem;
+import com.aj.collection.bean.TaskInfo;
 import com.aj.collection.R;
 import com.aj.database.DaoMaster;
 import com.aj.database.DaoSession;
@@ -78,15 +77,15 @@ import com.aj.database.TASKINFO;
 import com.aj.database.TASKINFODao;
 import com.aj.database.TEMPLETTABLE;
 import com.aj.database.TEMPLETTABLEDao;
-import com.aj.http.API;
-import com.aj.http.ReturnCode;
-import com.aj.http.URLs;
-import com.aj.service.MsgService;
-import com.aj.tools.ExitApplication;
-import com.aj.tools.FileStream;
-import com.aj.tools.SPUtils;
-import com.aj.tools.T;
-import com.aj.tools.Util;
+import com.aj.collection.activity.http.API;
+import com.aj.collection.activity.http.ReturnCode;
+import com.aj.collection.activity.http.URLs;
+import com.aj.collection.activity.service.MsgService;
+import com.aj.collection.activity.tools.ExitApplication;
+import com.aj.collection.activity.tools.FileStream;
+import com.aj.collection.activity.tools.SPUtils;
+import com.aj.collection.activity.tools.T;
+import com.aj.collection.activity.tools.Util;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -1531,7 +1530,7 @@ public class WeixinActivityMain extends Activity {
 //        Intent pedometerIntent = new Intent();
 //        pedometerIntent.setComponent(new ComponentName(this, WeixinActivityMain.class));
 //        pedometerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+//        PendingIntent contentIntent = PendingIntent.getMContext(this, 0,
 //                pedometerIntent, 0);
 //        notification
 //                .setLatestEventInfo(this, text, "您有一个新任务!", contentIntent);
@@ -1670,7 +1669,7 @@ public class WeixinActivityMain extends Activity {
 
                     if (errorCode.equals(ReturnCode.Code0)) {//connected
                         if (result.equals(URLs.RESULT_NEWTASK)) {
-                            // 1.send msg to main activity 2.save to sharedPreference 3.show a notification
+                            // 1.send msg to main mContext 2.save to sharedPreference 3.show a notification
                             getNewTask();
                         } else if (result.equals(URLs.RESULT_NOTHING)) {
                             // don't have new task. just TOast
@@ -1777,7 +1776,7 @@ public class WeixinActivityMain extends Activity {
 
                     if (errorCode.equals(ReturnCode.Code0)) {//connected
                         if (result.equals(URLs.RESULT_RECEIVEDOK)) {
-                            //TODO get new task  1.send msg to main activity 2.save to sharedPreference 3.show a notification
+                            //TODO get new task  1.send msg to main mContext 2.save to sharedPreference 3.show a notification
                             String tasks = (String) SPUtils.get(mContext, SPUtils.RECEIVED_TASK, "", SPUtils.TEMPORARY_SAVE);
 
                             if (tasks.isEmpty()) {

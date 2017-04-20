@@ -2,34 +2,31 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 dependencies {
-    //    compile fileTree(dir: 'libs', include: '*.jar')
-    //    compile project(':slidemenu_library')
-    //    compile project(':circularimageview')
-    //    compile project(':material-sheet-fab')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+    // Android Support Library
     compile "com.android.support:appcompat-v7:$build_version"
     compile "com.android.support:design:$build_version"
     compile "com.android.support:cardview-v7:$build_version"
     compile "com.android.support:recyclerview-v7:$build_version"
     compile "com.android.support:support-v4:$build_version"
-    compile files('libs/BaiduLBS_Android.jar')
-    compile files('libs/ftpserver-core-1.0.6.jar')
-    compile files('libs/IndoorscapeAlbumPlugin.jar')
-    compile files('libs/log4j-1.2.14.jar')
-    compile files('libs/mina-core-2.0.4.jar')
-    compile files('libs/slf4j-api-1.5.2.jar')
-    compile files('libs/slf4j-log4j12-1.5.2.jar')
+
     compile project(':circularimageview')
     compile project(':volley')
     compile 'com.squareup.okhttp3:okhttp:3.4.2'
-    //    compile 'com.zhy:okhttputils:2.6.2'
-    //    compile files('libs/okhttputils-2_6_2.jar')
-    compile files('libs/httpcore-4.3.2.jar')
-    compile files('libs/httpmime-4.3.5.jar')
-    compile files('libs/httpclient-4.3.5.jar')
-    compile files('libs/universal-image-loader-1.9.3-with-sources.jar')
-    compile files('libs/gson-2.2.4.jar')
-    compile files('libs/android_api_3.7.0.5.jar')
-    compile files('libs/android-viewbadger.jar')
+
+    // image picker
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    // image loader
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
+    compile 'com.github.markushi:circlebutton:1.1'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.daimajia.slider:library:1.1.5@aar'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
     compile 'de.greenrobot:greendao:2.0.0'
     compile project(':utillib')
     // Kotlin and Anko
@@ -72,10 +69,10 @@ android {
 
     productFlavors {
         dev {
-            minSdkVersion 15 //The important bit.
+            minSdkVersion 16 //The important bit.
         }
         prod {
-            minSdkVersion 15 //Example. Set to your real requirement.
+            minSdkVersion 16 //Example. Set to your real requirement.
         }
     }
     

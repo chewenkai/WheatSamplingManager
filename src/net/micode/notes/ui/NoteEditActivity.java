@@ -162,8 +162,8 @@ public class NoteEditActivity extends Activity implements OnClickListener,
     }
 
     /**
-     * Current activity may be killed when the memory is low. Once it is killed, for another time
-     * user load this activity, we should restore the former state
+     * Current mContext may be killed when the memory is low. Once it is killed, for another time
+     * user load this mContext, we should restore the former state
      */
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -175,7 +175,7 @@ public class NoteEditActivity extends Activity implements OnClickListener,
                 finish();
                 return;
             }
-            Log.d(TAG, "Restoring from killed activity");
+            Log.d(TAG, "Restoring from killed mContext");
         }
     }
 

@@ -7,6 +7,6 @@
             android:id="@+id/pic_fra"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            class="com.aj.ui.viewimage.PictureViewFra" />
+            class="com.aj.collection.activity.ui.viewimage.PictureViewFra" />
 
 </LinearLayout>

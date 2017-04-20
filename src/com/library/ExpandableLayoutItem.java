@@ -35,10 +35,9 @@ import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.aj.adapters.DoingChildListAdapter;
+import com.aj.collection.adapters.DoingChildListAdapter;
 import com.aj.collection.R;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class ExpandableLayoutItem extends RelativeLayout {

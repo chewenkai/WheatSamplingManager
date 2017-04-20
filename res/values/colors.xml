@@ -26,6 +26,8 @@
     <color name="sheet_cell_name_color">#2d2d2d</color>
     <color name="sheet_cell_value_color">#1b1b1b</color>
 
+    <color name="remove_photos_button_color">#ae3438</color>
+
     <array name="note_neutral_colors">
         <item>#9E9E9E</item>
         <item>#455A64</item>

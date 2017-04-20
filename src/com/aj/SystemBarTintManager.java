@@ -52,9 +52,9 @@ public class SystemBarTintManager {
      */
     public static void setStatusBarTint(Activity activity, int color) {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            setTranslucentStatus(activity, true);
+//            setTranslucentStatus(mContext, true);
 //        }
-//        SystemBarTintManager tintManager = new SystemBarTintManager(activity);
+//        SystemBarTintManager tintManager = new SystemBarTintManager(mContext);
 //        tintManager.setStatusBarTintEnabled(true);
 //        tintManager.setStatusBarTintColor(color);
     }
@@ -104,11 +104,11 @@ public class SystemBarTintManager {
     private View mNavBarTintView;
 
     /**
-     * Constructor. Call this in the host activity onCreate method after its
+     * Constructor. Call this in the host mContext onCreate method after its
      * content view has been set. You should always create new instances when
-     * the host activity is recreated.
+     * the host mContext is recreated.
      *
-     * @param activity The host activity.
+     * @param activity The host mContext.
      */
     @TargetApi(19)
     public SystemBarTintManager(Activity activity) {

@@ -32,17 +32,17 @@
 //import android.widget.TextView;
 //import android.widget.Toast;
 //
-//import com.aj.activity.DetecedUnit;
-//import com.aj.activity.Navigation.MapActivity;
+//import com.aj.mContext.DetecedUnit;
+//import com.aj.mContext.Navigation.MapActivity;
 //import com.aj.collection.R;
-//import com.aj.tools.ExitApplication;
-//import com.aj.tools.FileStream;
-//import com.aj.tools.SPUtils;
-//import com.aj.tools.Util;
-//import com.aj.ui.widget.FileUtil;
+//import com.aj.collection.activity.tools.ExitApplication;
+//import com.aj.collection.activity.tools.FileStream;
+//import com.aj.collection.activity.tools.SPUtils;
+//import com.aj.collection.activity.tools.Util;
+//import com.aj.collection.activity.ui.widget.FileUtil;
 //import com.gordonwong.materialsheetfab.MaterialSheetFab;
 //import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
-//import com.aj.adapters.MainPagerAdapter;
+//import com.aj.collection.adapters.MainPagerAdapter;
 //import com.jrs.utils.FileUtils;
 //
 //import net.micode.compass.CompassActivity;
@@ -63,7 +63,7 @@
 ///**
 // * Created by Gordon Wong on 7/17/2015.
 // *
-// * Main activity for material sheet fab sample.
+// * Main mContext for material sheet fab sample.
 // */
 //public class NiceActivity extends AppCompatActivity implements View.OnClickListener {
 //
