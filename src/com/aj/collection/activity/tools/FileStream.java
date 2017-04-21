@@ -343,7 +343,10 @@ public class FileStream
 	{
 		ByteArrayOutputStream baos = null;  
         try 
-        {  
+        {
+			File signImagePath = new File(path);
+			if (!signImagePath.exists())
+				signImagePath.mkdirs();
             baos = new ByteArrayOutputStream();  
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);  
             byte[] photoBytes = baos.toByteArray();  

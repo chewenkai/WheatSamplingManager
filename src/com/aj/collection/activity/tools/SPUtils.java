@@ -63,6 +63,8 @@ public class SPUtils {
     public static final String SYSVARIABLE="system_variable";
     public static final String DEV_SN="device_serial_number";
 
+    public static final String SHEET_SERIAL_NUMBER_KEY = "sheet_serial_number";
+    public static final String SHEET_SERIAL_NUMBER_FILE = "sheet_serial_number_file";
     /**
      * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
      *

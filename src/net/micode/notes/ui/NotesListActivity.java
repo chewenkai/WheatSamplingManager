@@ -145,7 +145,7 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.note_list);
         //SystemBarTintManager.setStatusBarTint(NotesListActivity.this, Color.argb(0, 0, 188, 212));
-        getActionBar().setTitle("记事本");
+//        getActionBar().setTitle("记事本");
         initResources();
 
         /**

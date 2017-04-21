@@ -77,9 +77,9 @@ public class Constant {
 
     // type photo
     public static final String GALLERY_CLICK_POSITION = "click_position";
-    public static final String AUTO_GENERATED_SHEETID = "generated_sheet_ID";
+    public static final String PHOTO_MEDIA_FOLDER = "photo_media_folder";
     public static final String CELL_ID_EXTRA_KEY = "cell_id_extra_key";
     public static final String NEW_PHOTO_BROADCAST_ACT = "com.kevin.new_photo_coming";
     public static final String NEW_VEDIO_BROADCAST_ACT = "com.kevin.new_vedio_coming";
-
+    public static final String NEW_DATE_PICKER_BROADCAST_ACT = "com.kevin.date_picker";
 }

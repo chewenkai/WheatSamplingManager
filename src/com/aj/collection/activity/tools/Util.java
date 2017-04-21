@@ -130,8 +130,7 @@ public class Util {
     public static String getLocalSeq(Context context, boolean inc) {
         String num = "暂未实现";
         int sequence = 0;
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sequence = sp.getInt(KEY_SEQUENCE, 0);
+        sequence = (int)SPUtils.get(context, SPUtils.SHEET_SERIAL_NUMBER_KEY, 0, SPUtils.SHEET_SERIAL_NUMBER_FILE);
         if (inc) {
             sequence = sequence + 1;
             if (sequence >= 10000) //1~99999循环
@@ -139,9 +138,7 @@ public class Util {
             {
                 sequence = 1;
             }
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putInt(KEY_SEQUENCE, sequence);
-            editor.commit();
+            SPUtils.put(context, SPUtils.SHEET_SERIAL_NUMBER_KEY, sequence, SPUtils.SHEET_SERIAL_NUMBER_FILE);
         }
         num = Integer.toString(sequence);
         while (num.length() != 4) {
