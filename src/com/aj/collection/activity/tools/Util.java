@@ -29,6 +29,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.widget.Toast;
@@ -437,4 +438,17 @@ public class Util {
     public static String sdPath = Environment.getExternalStorageDirectory()
             .getAbsolutePath();
 
+    /**
+     * 获取Bitmap图像的Uri
+     * 由于Picasso不能Load Bitmap图像，所以将Bitmap转为Uri后再Load
+     * @param inContext
+     * @param inImage
+     * @return
+     */
+    public static Uri getBitmapUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
 }

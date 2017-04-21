@@ -55,7 +55,8 @@ import java.util.Locale;
  */
 public class CollectionApplication extends AppContext {
 
-    public int cellIdentity = 0;  //抽样单单元格的身份标示，在应用中自加
+    public int cellIdentity = 0;  //抽样单单元格的身份标示，在应用中自加,用于减少拍照单元格拍完照片后的数据处理量，去除后除了影响稍许性能没有其他影响
+
     public static Context applicationContext;
     private static CollectionApplication instance;
 

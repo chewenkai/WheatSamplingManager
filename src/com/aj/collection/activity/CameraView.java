@@ -43,6 +43,7 @@ import android.widget.TextView;
 import com.aj.collection.R;
 import com.aj.collection.activity.service.CameraPreview;
 import com.aj.collection.activity.tools.MyOrientationDetector;
+import com.aj.collection.activity.tools.ScreenUtil;
 import com.aj.collection.activity.tools.Util;
 
 //import com.baidu.location.BDLocation;
@@ -455,7 +456,7 @@ public class CameraView extends Activity implements OnClickListener
         Typeface font = Typeface.create(familyName, Typeface.BOLD);  
         p.setColor(Color.WHITE);
         p.setTypeface(font);  
-        p.setTextSize(22);  
+        p.setTextSize(ScreenUtil.spToPx(this, 13f));
         canvas.drawBitmap(src, 0, 0, p);
 		canvas.translate(20, 20);//从20，20开始画
 //        canvas.drawText(mstrTime, 0, 20, p);
@@ -464,10 +465,10 @@ public class CameraView extends Activity implements OnClickListener
 		TextPaint textPaint = new TextPaint();
 //		textPaint.setARGB(0xFF, 0xFF, 0xFF, 0xFF);
 		textPaint.setColor(getResources().getColor(R.color.camera_text_color));
-		textPaint.setTextSize(25);
+		textPaint.setTextSize(ScreenUtil.spToPx(this, 13f));
 		textPaint.setTypeface(font);
 		textPaint.setAntiAlias(true);
-		StaticLayout layout = new StaticLayout(mstrTime+"\n"+mstrGps+"\n"+number, textPaint, 300,
+		StaticLayout layout = new StaticLayout(mstrTime+"\n"+mstrGps+"\n"+number, textPaint, ScreenUtil.getScreenWidth(this),
 				Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, true);
 		layout.draw(canvas);
 

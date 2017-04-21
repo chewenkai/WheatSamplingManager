@@ -75,9 +75,5 @@ android {
             minSdkVersion 16 //Example. Set to your real requirement.
         }
     }
-    
-    dexOptions {
-        incremental true
-        jumboMode = true
-    }
+
 }
