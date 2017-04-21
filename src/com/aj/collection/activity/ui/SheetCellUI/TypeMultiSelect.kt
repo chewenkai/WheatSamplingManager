@@ -1,32 +1,27 @@
 package com.aj.collection
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
+import android.support.v7.widget.AppCompatCheckBox
+import android.support.v7.widget.AppCompatRadioButton
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.aj.Constant
 import com.aj.collection.bean.SheetCell
 import com.aj.collection.activity.tools.SheetProtocol
-import com.baidu.location.BDLocation
-import com.baidu.navisdk.comapi.mapcontrol.MapParams
-import org.jetbrains.anko.toast
 import org.json.JSONObject
 
 /**
- * 地理位置坐标单元格(type_geographic_coordinates): 显示采样人员所在的经纬度。单元格值、单元格是否可编辑属性对其无效
- * Created by kevin on 17-4-19.
+ * 多选单元格(type_multi_select): 用于进行多项选择，如单元格名称为“喷洒农药名称”，可能喷洒多种农药，单元格值为“A药,B药”。单元格是否可编辑属性对其无效
+ * Created by kevin on 17-4-18.
  * Mail: chewenkaich@gmail.com
  */
-class TypeGeographicCoordinates(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
+class TypeMultiSelect(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
     /**
      *获取单元格名称(cell_name)
      */
@@ -45,7 +40,7 @@ class TypeGeographicCoordinates(var mContext: Context, var sheetCell: SheetCell)
      * 获取单元格值(cell_value)
      */
     override fun get_cell_value(): String {
-        return cell_value!!.text.toString()
+        return getSelectedRadio()
     }
 
     /**
@@ -103,12 +98,11 @@ class TypeGeographicCoordinates(var mContext: Context, var sheetCell: SheetCell)
      * 必填的内容是否已经填写
      */
     override fun isFilled(): Boolean {
-        if (sheetCell.cell_fill_required==(SheetProtocol().False))
+        if (get_cell_fill_required()){
+            return getSelectedRadio() != null
+        }else
             return true
-        else{
-            return location_info_type == BDLocation.TypeGpsLocation||
-                    location_info_type == BDLocation.TypeNetWorkLocation
-        }
+
     }
 
     /**
@@ -118,70 +112,34 @@ class TypeGeographicCoordinates(var mContext: Context, var sheetCell: SheetCell)
         return linearLayout!!
     }
 
-    fun registerLocationBroadcast(){
-        // 注册位置信息广播接收器
-        val filter = IntentFilter(Constant.LOCATION_BROADCAST_ACT)
-        mContext.registerReceiver(locationReceiver, filter)
-    }
-
-    fun unregisterLocationBroadcast(){
-        mContext.unregisterReceiver(locationReceiver)
-    }
-
     var contentView: View? = null  // 设计的界面
     var linearLayout: LinearLayout? = null
-    var cell_name: TextInputLayout? = null
-    var cell_value: TextInputEditText? = null
+    var cell_name: TextView? = null
+    var cell_value: LinearLayout? = null  // 盛放Checkbox的容器
+    var checkBoxes = ArrayList<AppCompatCheckBox>() // 用于储存多选选项
     var cell_fill_required: TextView? = null
     var cell_printable: CheckBox? = null
-
-    // Location Info
-    var locationPause = false  // 是否暂停定位
-    var longitude = ""  // 经度信息
-    var latitude = ""  // 纬度信息
-    var location_info_type = BDLocation.TypeOffLineLocation  // 定位类型
-    var location_type_str = ""  // 定位类型字符
-
-    /**
-     * Receive notification of scanned cards
-     */
-    private val locationReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val action = intent.action
-            if (Constant.LOCATION_BROADCAST_ACT == action) {
-                if (locationPause)
-                    return
-                val location = intent.getParcelableExtra<BDLocation>(Constant.LOCATION_BROADCAST_VALUE)
-                longitude = location.longitude.toString()  // 经度信息
-                latitude = location.latitude.toString()  // 纬度信息
-                location_info_type = location.locType  // 定位类型
-                when (location_info_type){
-                    BDLocation.TypeGpsLocation -> location_type_str="GPS定位"
-                    BDLocation.TypeCacheLocation -> location_type_str="缓存的位置(此状态无法保存)"
-                    BDLocation.TypeNetWorkLocation-> location_type_str="网络定位"
-                    BDLocation.TypeNone-> location_type_str="无(此状态无法保存)"
-                    BDLocation.TypeOffLineLocation-> location_type_str="离线定位(此状态无法保存)"
-                }
-                cell_value!!.setText("经度:$longitude\n纬度:$latitude\n定位类型：$location_type_str")
-            }
-        }
-    }
 
     init {
         // 导入界面
         val mInflater: LayoutInflater = LayoutInflater.from(mContext)
-        contentView = mInflater.inflate(R.layout.sheet_cell_geographic_coordinates, null)
+        contentView = mInflater.inflate(R.layout.sheet_cell_radio, null)
         // LinearLayout
         linearLayout = contentView!!.findViewById(R.id.cell_edit_text_linear_layout) as LinearLayout
         // 填写单元格的名字
-        cell_name = contentView!!.findViewById(R.id.cell_name) as TextInputLayout
-        cell_name!!.hint = sheetCell.cell_name
-        cell_name!!.isHintEnabled =true
-        // 填写单元格的内容(不受内容的影响)
-        cell_value = contentView!!.findViewById(R.id.cell_value) as TextInputEditText
-        cell_value!!.setText(mContext.getString(R.string.search_signal))
-        // 设置单元格可编辑状态(不受内容的影响)
-        cell_value!!.isEnabled=false
+        cell_name = contentView!!.findViewById(R.id.cell_name) as TextView
+        cell_name!!.text = sheetCell.cell_name
+        // 填写单元格的内容
+        cell_value = contentView!!.findViewById(R.id.cell_value) as LinearLayout
+        val choices = sheetCell.cell_value.splitKeeping(",")
+        for (choice in choices){
+            val radio = AppCompatCheckBox(mContext)
+            radio.setText(choice)
+            cell_value!!.addView(radio)
+            checkBoxes.add(radio)
+        }
+        // 设置单元格可编辑状态(不受该属性影响)
+        // ？@##￥￥%%%@#￥！
         // 设置单元格必填状态
         cell_fill_required= contentView!!.findViewById(R.id.cell_fill_required) as TextView
         if (sheetCell.cell_fill_required==(SheetProtocol().False))
@@ -193,7 +151,37 @@ class TypeGeographicCoordinates(var mContext: Context, var sheetCell: SheetCell)
         if (sheetCell.cell_printable==(SheetProtocol().False))
             cell_printable!!.visibility = View.INVISIBLE
         cell_printable!!.isChecked = sheetCell.cell_default_print == (SheetProtocol().True)
-        // 注册位置广播接收器
-        registerLocationBroadcast()
     }
+
+    /**
+     * 分割字符串
+     */
+    fun String.splitKeeping(str: String): List<String> {
+        return this.split(str).flatMap {listOf(it)}.dropLast(0).filterNot {it.isEmpty()}
+    }
+
+    /**
+     * 清除所有选项
+     */
+    fun clearAllCheckBoxes(){
+        for (checkBox in checkBoxes)
+            checkBox.isChecked = false
+    }
+
+    /**
+     * 获取选中的选项,多个选项之间通过英文逗号分割
+     */
+    fun getSelectedRadio():String{
+        var result = ""
+        for (radio in checkBoxes) {
+            if(radio.isChecked){
+                if (result.isEmpty())
+                    result = radio.text.toString()
+                else
+                    result = result + "," + radio.text.toString()
+            }
+        }
+        return result
+    }
+
 }

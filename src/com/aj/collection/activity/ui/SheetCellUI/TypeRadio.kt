@@ -131,7 +131,7 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
         linearLayout = contentView!!.findViewById(R.id.cell_edit_text_linear_layout) as LinearLayout
         // 填写单元格的名字
         cell_name = contentView!!.findViewById(R.id.cell_name) as TextView
-        cell_name!!.hint = sheetCell.cell_name
+        cell_name!!.text = sheetCell.cell_name
         // 填写单元格的内容
         cell_value = contentView!!.findViewById(R.id.cell_value) as LinearLayout
         val choices = sheetCell.cell_value.splitKeeping(",")
@@ -159,6 +159,7 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
         if (sheetCell.cell_printable==(SheetProtocol().False))
             cell_printable!!.visibility = View.INVISIBLE
         cell_printable!!.isChecked = sheetCell.cell_default_print == (SheetProtocol().True)
+
     }
 
     /**

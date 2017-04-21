@@ -1,29 +1,20 @@
 package com.aj.collection
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.telephony.TelephonyManager
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
-import cn.qqtheme.framework.picker.DateTimePicker
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.LinearLayout
+import android.widget.TextView
+import cn.qqtheme.framework.picker.DatePicker
 import com.aj.collection.activity.GatherActivity
-import com.aj.collection.activity.WritePadDialog
-import com.aj.collection.activity.tools.DialogListener
-import com.aj.collection.activity.tools.FileStream
 import com.aj.collection.activity.tools.SheetProtocol
-import com.aj.collection.activity.tools.Util
 import com.aj.collection.bean.SheetCell
-import com.squareup.picasso.Picasso
 import org.jetbrains.anko.onClick
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.io.File
-import cn.qqtheme.framework.picker.CarNumberPicker
-import cn.qqtheme.framework.picker.DatePicker
 
 
 /**
@@ -151,12 +142,10 @@ class TypeDateSelect(var mContext: Context, var sheetCell: SheetCell): CellBaseA
         // 定义按钮功能
         pickDate = contentView!!.findViewById(R.id.pickDate) as Button
         pickDate!!.text = "选择日期"
+        var datePicker:DatePicker? = null
+        if (GatherActivity::class.java.isInstance(mContext))
+            datePicker = DatePicker(mContext as GatherActivity, DatePicker.YEAR_MONTH_DAY)
         pickDate!!.onClick {
-            var datePicker:DatePicker? = null
-            if (GatherActivity::class.java.isInstance(mContext))
-                datePicker = DatePicker(mContext as GatherActivity, DatePicker.YEAR_MONTH_DAY)
-            else
-                return@onClick
             datePicker!!.setOnWheelListener(object :DatePicker.OnWheelListener{
                 override fun onMonthWheeled(index: Int, month: String?) {
                     selected_month = month!!
@@ -174,12 +163,12 @@ class TypeDateSelect(var mContext: Context, var sheetCell: SheetCell): CellBaseA
 
             })
             if (isDatePickerOpen) {
-                linearLayout!!.removeViewAt(linearLayout!!.childCount-1)
+                linearLayout!!.removeView(datePicker!!.contentView)
                 isDatePickerOpen = false
                 pickDate!!.text = "选择日期"
             }
             else {
-                linearLayout!!.addView(datePicker.contentView)
+                linearLayout!!.addView(datePicker!!.contentView)
                 isDatePickerOpen = true
                 pickDate!!.text = "完成选择"
             }
