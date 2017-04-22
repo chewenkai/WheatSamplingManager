@@ -1086,7 +1086,7 @@ public class MyLayout_NEW {
 //					return;
 //				}
                 Intent intent = new Intent(activity, CameraView.class);
-                intent.putExtra("root_path", root_path);    //将存储图片根目录传递过去
+                intent.putExtra("mediaRootPath", root_path);    //将存储图片根目录传递过去
                 intent.putExtra("view_id", GatherActivity.Companion.getREQUESTCODEFORPICTURE() + id);        //控件ID
                 intent.putExtra("location", tv_gps.getText().toString());
                 intent.putExtra("number", tv_num.getText().toString());
@@ -1388,7 +1388,7 @@ public class MyLayout_NEW {
         ImageView iv = new ImageView(context);
         iv.setTag(item.get(CONT));
         String imagePath = root_path + File.separator + numberIdTV.getText() + File.separator + (String) item.get(CONT);
-        System.out.println("imagePath -->" + imagePath + "\nroot_path" + root_path);
+        System.out.println("imagePath -->" + imagePath + "\nmediaRootPath" + root_path);
         Bitmap bm = Util.getBitmap(imagePath, 2);
         if (bm == null) {
             iv.setImageResource(R.drawable.edit_query);

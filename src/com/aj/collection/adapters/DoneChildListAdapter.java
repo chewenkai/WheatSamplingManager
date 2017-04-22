@@ -298,7 +298,7 @@ public class DoneChildListAdapter extends ArrayAdapter {
                     Intent startForm = new Intent((Activity) mContext, GatherActivity.class);
                     startForm.putExtra("res", templettable.getTemplet_content());    //字符串
                     startForm.putExtra("templetID", templettable.getTempletID()); //文件名不包含后缀
-                    startForm.putExtra("whichTask", templettable.getTaskID());    //哪个任务被点击了
+                    startForm.putExtra("taskID", templettable.getTaskID());    //哪个任务被点击了
                     startForm.putExtra("isMakeUp", false);
                     ((Activity) mContext).startActivityForResult(startForm, Constant.WEIXINTASKREFRESHITEM_FROMDO);
                 }
@@ -384,10 +384,10 @@ public class DoneChildListAdapter extends ArrayAdapter {
                 public void onClick(View view) {
                     SAMPLINGTABLE samplingtable = (SAMPLINGTABLE) ItemView.mRelativeLayout.getTag();
                     String res = samplingtable.getSampling_content();
-                    Intent startForm = new Intent(mContext, WatchActivity.class);
+                    Intent startForm = new Intent(mContext, GatherActivity.class);
                     startForm.putExtra("res", res);    //字符串
                     startForm.putExtra("sampleID", samplingtable.getId()); //文件名不包含后缀
-                    startForm.putExtra("canUserEdit", false);//设置为不能修改
+                    startForm.putExtra("Mode", GatherActivity.Companion.getMODE_LOOK_THROUGH());//设置为查看模式
                     mContext.startActivity(startForm);
 
                 }

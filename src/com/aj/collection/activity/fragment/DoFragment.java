@@ -81,7 +81,7 @@ public class DoFragment extends BaseFragment
 						Intent startForm = new Intent(DoFragment.this.getActivity(), GatherActivity.class);
 						startForm.putExtra("res", res);	//字符串
 						startForm.putExtra("label", templetName); //文件名不包含后缀
-						startForm.putExtra("whichTask", fileList[which]);	//哪个任务被点击了
+						startForm.putExtra("taskID", fileList[which]);	//哪个任务被点击了
 						startForm.putExtra("filepath", name);	
 						startActivity(startForm);
 					}

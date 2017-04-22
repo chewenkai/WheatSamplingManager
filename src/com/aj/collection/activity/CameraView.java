@@ -148,7 +148,7 @@ public class CameraView extends Activity implements OnClickListener
         //接收意图里的信息
         rIntent=getIntent();
         view_id = rIntent.getIntExtra("view_id", 0);
-        root_path = rIntent.getStringExtra("root_path");
+        root_path = rIntent.getStringExtra("mediaRootPath");
         num = rIntent.getStringExtra("number");
         gps_info = rIntent.getStringExtra("location");
         gpsDisplay.setText(gps_info);

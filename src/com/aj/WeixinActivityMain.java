@@ -116,7 +116,7 @@ public class WeixinActivityMain extends Activity {
     private ViewPager mTabPager;
     private ImageView mTabImg;// 动画图片
     private ImageView mTabImage1, mTabImage2, mTabImage3;
-    private LinearLayout mTabL1,mTabL2,mTabL3;
+    private LinearLayout mTabL1, mTabL2, mTabL3;
     private TextView mTabText1, mTabText2, mTabText3;
     public TextView badgeView1, badgeView2, badgeView3;
     View view1, view2, view3;
@@ -145,6 +145,10 @@ public class WeixinActivityMain extends Activity {
     private NotificationManager mNM;
 
     RequestQueue queue;
+    private StringRequest getNewTaskRequest;
+    private StringRequest setTaskReceivedRequest;
+    private StringRequest getSamplingStatusRequest;
+    private StringRequest getTaskStatusRequest;
     Context mContext = this;
 
     @Override
@@ -171,9 +175,9 @@ public class WeixinActivityMain extends Activity {
         mTabPager = (ViewPager) findViewById(R.id.tabpager);
         mTabPager.setOnPageChangeListener(new MyOnPageChangeListener());
 
-        mTabL1=(LinearLayout) findViewById(R.id.LL_task_doing);
-        mTabL2=(LinearLayout) findViewById(R.id.LL_task_done);
-        mTabL3=(LinearLayout) findViewById(R.id.LL_task_setting);
+        mTabL1 = (LinearLayout) findViewById(R.id.LL_task_doing);
+        mTabL2 = (LinearLayout) findViewById(R.id.LL_task_done);
+        mTabL3 = (LinearLayout) findViewById(R.id.LL_task_setting);
 
         mTabImage1 = (ImageView) findViewById(R.id.img_weixin);
         mTabImage2 = (ImageView) findViewById(R.id.img_address);
@@ -204,7 +208,6 @@ public class WeixinActivityMain extends Activity {
         one = displayWidth / 3; //设置水平动画平移大小
         two = one * 2;
         //three = one*3;
-
 
 
         //将要分页显示的View装入数组中
@@ -521,6 +524,7 @@ public class WeixinActivityMain extends Activity {
         // Unregister our receiver.
         unregisterReceiver(mReceiver);
         unbindMsgService();
+        cancleRequestFromQueue();
         super.onStop();
     }
 
@@ -1111,7 +1115,6 @@ public class WeixinActivityMain extends Activity {
     }
 
 
-
     public String intToIp(int ip) {
         return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) +
                 "." + ((ip >> 24) & 0xFF);
@@ -1645,7 +1648,17 @@ public class WeixinActivityMain extends Activity {
     }
 
 
-    /************************接口*********************************/
+    /************************网络操作接口*********************************/
+    void cancleRequestFromQueue() {
+        if (getNewTaskRequest != null)
+            getNewTaskRequest.cancel();
+        if (setTaskReceivedRequest != null)
+            setTaskReceivedRequest.cancel();
+        if (getSamplingStatusRequest != null)
+            getSamplingStatusRequest.cancel();
+        if (getTaskStatusRequest != null)
+            getTaskStatusRequest.cancel();
+    }
 
     /**
      * 检查是否有新任务
@@ -1750,10 +1763,10 @@ public class WeixinActivityMain extends Activity {
                 Log.e("GetNewTaskFail", volleyError.toString());
             }
         };
-        StringRequest stringRequest = API.getNewTask(listener, errorListener
+        getNewTaskRequest = API.getNewTask(listener, errorListener
                 , (String) SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE)
                 , (String) SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE));
-        queue.add(stringRequest);
+        queue.add(getNewTaskRequest);
     }
 
     /**
@@ -1834,7 +1847,7 @@ public class WeixinActivityMain extends Activity {
 
                                     SAMPLINGTABLE samplingtable = new SAMPLINGTABLE(null, Long.valueOf(taskID), templettable.getTempletID(), samplingName + "-" + samplingNum, companyAddress,
                                             samplingCont, mediaFolderChild, false, false, true, false, Constant.S_STATUS_HAVE_NOT_UPLOAD, System.currentTimeMillis(),
-                                            null, Long.valueOf(samplingID), null, null, null,mediaFolderChild);
+                                            null, Long.valueOf(samplingID), null, null, null, mediaFolderChild);
 
 
                                     samplingtableDao.insertOrReplace(samplingtable);
@@ -1881,9 +1894,9 @@ public class WeixinActivityMain extends Activity {
                 Log.e("Received", volleyError.toString());
             }
         };
-        StringRequest stringRequest = API.setTaskReceived(listener, errorListener
+        setTaskReceivedRequest = API.setTaskReceived(listener, errorListener
                 , (String) SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE));
-        queue.add(stringRequest);
+        queue.add(setTaskReceivedRequest);
     }
 
     /**
@@ -1975,11 +1988,11 @@ public class WeixinActivityMain extends Activity {
                 }
             }
         };
-        StringRequest stringRequest = API.getSamplingStatus(listener, errorListener,
+        getSamplingStatusRequest = API.getSamplingStatus(listener, errorListener,
                 (String) SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE),
                 (String) SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE), jsonArray.toString());
 
-        queue.add(stringRequest);
+        queue.add(getSamplingStatusRequest);
     }
 
     /**
@@ -2108,13 +2121,12 @@ public class WeixinActivityMain extends Activity {
                 }
             }
         };
-        StringRequest stringRequest = API.getTaskStatus(listener, errorListener,
+        getTaskStatusRequest = API.getTaskStatus(listener, errorListener,
                 (String) SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE),
                 (String) SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE), jsonArray.toString());
 
-        queue.add(stringRequest);
+        queue.add(getTaskStatusRequest);
     }
-
 
 }
     

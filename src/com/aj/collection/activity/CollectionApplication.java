@@ -106,15 +106,14 @@ public class CollectionApplication extends AppContext {
         // created when it is accessed for the first time
         if (queue == null) {
             queue = Volley.newRequestQueue(getApplicationContext());
+//            File cacheDir = new File(this.getCacheDir(), "/data/data/com.aj.collection/cache/volley/");
+//            DiskBasedCache cache = new DiskBasedCache(cacheDir);
+//            queue.start();
+//
+//            // clear all volley caches.
+//            queue.add(new ClearCacheRequest(cache, null));
+
         }
-
-        File cacheDir = new File(this.getCacheDir(), "/data/data/com.aj.collection/cache/volley/");
-        DiskBasedCache cache = new DiskBasedCache(cacheDir);
-        queue.start();
-
-        // clear all volley caches.
-        queue.add(new ClearCacheRequest(cache, null));
-
         return queue;
     }
 

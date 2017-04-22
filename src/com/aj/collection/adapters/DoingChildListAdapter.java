@@ -23,7 +23,6 @@ import com.aj.Constant;
 import com.aj.WeixinActivityMain;
 import com.aj.collection.activity.CollectionApplication;
 import com.aj.collection.activity.GatherActivity;
-import com.aj.collection.activity.WatchActivity;
 import com.aj.collection.bean.Counter;
 import com.aj.collection.bean.TaskInfo;
 import com.aj.collection.R;
@@ -352,8 +351,8 @@ public class DoingChildListAdapter extends ArrayAdapter {
                     Intent startForm = new Intent((Activity) mContext, GatherActivity.class);
                     startForm.putExtra("res", templettable.getTemplet_content());    //字符串
                     startForm.putExtra("templetID", templettable.getTempletID()); //文件名不包含后缀
-                    startForm.putExtra("whichTask", templettable.getTaskID());    //哪个任务被点击了
-                    startForm.putExtra("isMakeUp", false);
+                    startForm.putExtra("taskID", templettable.getTaskID());    //哪个任务被点击了
+                    startForm.putExtra("Mode", GatherActivity.Companion.getMODE_TEMPLATE());
                     ((Activity) mContext).startActivityForResult(startForm, Constant.WEIXINTASKREFRESHITEM_FROMDO);
                 }
             });
@@ -526,11 +525,9 @@ public class DoingChildListAdapter extends ArrayAdapter {
                 @Override
                 public void onClick(View view) {
                     SAMPLINGTABLE samplingtable = (SAMPLINGTABLE) ItemView.mRelativeLayout.getTag();
-                    String res = samplingtable.getSampling_content();
-                    Intent startForm = new Intent((Activity) mContext, WatchActivity.class);
-                    startForm.putExtra("res", res);    //字符串
+                    Intent startForm = new Intent(mContext, GatherActivity.class);
                     startForm.putExtra("sampleID", samplingtable.getId()); //文件名不包含后缀
-                    startForm.putExtra("canUserEdit", true);//设置为不能修改
+                    startForm.putExtra("Mode", GatherActivity.Companion.getMODE_EDIT()); // 编辑模式，编辑模式下不可加样
                     mContext.startActivity(startForm);
                 }
             });
@@ -614,11 +611,8 @@ public class DoingChildListAdapter extends ArrayAdapter {
                     SAMPLINGTABLE samplingtable = (SAMPLINGTABLE) ItemView.mRelativeLayout.getTag();
 
                     Intent startForm = new Intent(mContext, GatherActivity.class);
-                    startForm.putExtra("res", samplingtable.getSampling_content());    //字符串
-                    startForm.putExtra("templetID", samplingtable.getTempletID()); //文件名不包含后缀
-                    startForm.putExtra("whichTask", samplingtable.getTaskID());    //哪个任务被点击了
                     startForm.putExtra("samplingID", samplingtable.getId());//get the id of sampling
-                    startForm.putExtra("isMakeUp", true);
+                    startForm.putExtra("Mode", GatherActivity.Companion.getMODE_MAKE_UP());
                     startForm.putExtra("sid_of_server", samplingtable.getSid_of_server());//补采的时候通过存在服务器上的id来判断这是对 哪个抽样单进行的补采
                     ((Activity) mContext).startActivityForResult(startForm, Constant.WEIXINTASKREFRESHITEM_FROMDO);
                 }
@@ -636,10 +630,10 @@ public class DoingChildListAdapter extends ArrayAdapter {
                 public void onClick(View view) {
                     SAMPLINGTABLE samplingtable = (SAMPLINGTABLE) ItemView.mRelativeLayout.getTag();
                     String res = samplingtable.getSampling_content();
-                    Intent startForm = new Intent(mContext, WatchActivity.class);
+                    Intent startForm = new Intent(mContext, GatherActivity.class);
                     startForm.putExtra("res", res);    //字符串
                     startForm.putExtra("sampleID", samplingtable.getId()); //文件名不包含后缀
-                    startForm.putExtra("canUserEdit", false);//设置为不能修改
+                    startForm.putExtra("Mode", GatherActivity.Companion.getMODE_LOOK_THROUGH());//设置为查看模式
                     mContext.startActivity(startForm);
                 }
             });

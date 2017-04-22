@@ -674,7 +674,7 @@ public class WatchActivity extends Activity {
                                     if (i == 0) {//点击第一个是拍照控件
 
                                         Intent intent = new Intent(WatchActivity.this, CameraView.class);
-                                        intent.putExtra("root_path", child_path);    //将存储图片根目录传递过去
+                                        intent.putExtra("mediaRootPath", child_path);    //将存储图片根目录传递过去
                                         intent.putExtra("view_id", GatherActivity.Companion.getREQUESTCODEFORPICTURE() + 0);        //控件ID
                                         intent.putExtra("location", tv_gps.getText());
                                         intent.putExtra("number", cameraSearch.getName());
