@@ -10,24 +10,30 @@
 
     <ImageView
         android:id="@+id/child_listview_title_img"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
         android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="5dp"
-        android:src="@drawable/form"/>
+        android:src="@drawable/sampledoc"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/child_listview_save_status"
+        android:layout_toLeftOf="@+id/child_listview_upload_status"
+        android:layout_toStartOf="@+id/child_listview_upload_status"
         android:layout_toRightOf="@+id/child_listview_title_img"
+        android:layout_toEndOf="@+id/child_listview_title_img"
         android:orientation="vertical"
-        android:paddingRight="10dp">
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp">
 
         <TextView
             android:id="@+id/child_listview_title"
@@ -39,17 +45,19 @@
             android:textColor="#444444"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/child_listview_describe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="123"
-            android:textColor="#777777"
-            android:textSize="12sp"
-            android:singleLine="true"
-            android:visibility="visible"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/child_listview_upload_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:layout_toLeftOf="@+id/child_LL_right_btn"
+        android:background="@drawable/shape_upload_indicator"
+        android:text="1/5"
+        android:textColor="#fff"
+        android:textSize="13sp" />
 
     <RelativeLayout
         android:id="@+id/child_LL_right_btn"
@@ -64,33 +72,9 @@
 
         <TextView
             android:id="@+id/child_listview_right_btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/ellipsis" />
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/wifi" />
     </RelativeLayout>
 
-
-    <TextView
-        android:id="@+id/child_listview_upload_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_margin="5dp"
-        android:layout_toLeftOf="@+id/child_LL_right_btn"
-        android:background="@drawable/shape_second_status_gray"
-        android:text="未上传"
-        android:textColor="#fff"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/child_listview_save_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_margin="5dp"
-        android:layout_toLeftOf="@+id/child_listview_upload_status"
-        android:background="@drawable/shape_second_status_gray"
-        android:text="未保存"
-        android:textColor="#fff"
-        android:textSize="10sp" />
 </RelativeLayout>

@@ -40,42 +40,42 @@ class TypeMultiSelect(var mContext: Context, var sheetCell: SheetCell): CellBase
      * 获取单元格值(cell_value)
      */
     override fun get_cell_value(): String {
-        return getSelectedRadio()
+        return getSelectedRadio()?:""
     }
 
     /**
      * 获取单元格是否可编辑(cell_editable)
      */
-    override fun get_cell_editable(): Boolean {
-        return sheetCell.cell_editable == SheetProtocol().True
+    override fun get_cell_editable(): String {
+        return if (sheetCell.cell_editable == SheetProtocol().True)SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否为必填(cell_fill_required)
      */
-    override fun get_cell_fill_required(): Boolean {
-        return sheetCell.cell_fill_required == SheetProtocol().True
+    override fun get_cell_fill_required(): String {
+        return if (sheetCell.cell_fill_required == SheetProtocol().True)SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否可打印(cell_printable)
      */
-    override fun get_cell_printable(): Boolean {
-        return sheetCell.cell_printable == SheetProtocol().True
+    override fun get_cell_printable(): String {
+        return if (sheetCell.cell_printable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否默认勾选打印(cell_default_print)
      */
-    override fun get_cell_default_print(): Boolean {
-        return sheetCell.cell_default_print == SheetProtocol().True
+    override fun get_cell_default_print(): String {
+        return if (sheetCell.cell_default_print == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格可否被加样(cell_copyable)
      */
-    override fun get_cell_copyable(): Boolean {
-        return sheetCell.cell_copyable == SheetProtocol().True
+    override fun get_cell_copyable(): String {
+        return if (sheetCell.cell_copyable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
@@ -98,7 +98,7 @@ class TypeMultiSelect(var mContext: Context, var sheetCell: SheetCell): CellBase
      * 必填的内容是否已经填写
      */
     override fun isFilled(): Boolean {
-        if (get_cell_fill_required()){
+        if (get_cell_fill_required() == SheetProtocol().True){
             return getSelectedRadio() != null
         }else
             return true
@@ -171,11 +171,11 @@ class TypeMultiSelect(var mContext: Context, var sheetCell: SheetCell): CellBase
     /**
      * 获取选中的选项,多个选项之间通过英文逗号分割
      */
-    fun getSelectedRadio():String{
-        var result = ""
+    fun getSelectedRadio():String?{
+        var result:String? = null
         for (radio in checkBoxes) {
             if(radio.isChecked){
-                if (result.isEmpty())
+                if (result == null)
                     result = radio.text.toString()
                 else
                     result = result + "," + radio.text.toString()

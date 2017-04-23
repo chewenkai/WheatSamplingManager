@@ -570,7 +570,6 @@ public class DoingChildListAdapter extends ArrayAdapter {
             ItemView.LL_upload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO connect upload URL,post .spms and media file 上传toUploadFile文件
 
                     SAMPLINGTABLE samplingtable = (SAMPLINGTABLE) ItemView.mRelativeLayout.getTag();
 
@@ -880,7 +879,7 @@ public class DoingChildListAdapter extends ArrayAdapter {
         final Callback callback = new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                WeixinActivityMain.instance.runOnUiThread(new Runnable() {
+                WeixinActivityMain.Companion.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         progressDialog.dismiss();
@@ -899,7 +898,7 @@ public class DoingChildListAdapter extends ArrayAdapter {
                     String message = resultJson.getString(URLs.KEY_MESSAGE);
 
                     if (!errorCode.equals(ReturnCode.Code0)) {
-                        WeixinActivityMain.instance.runOnUiThread(new Runnable() {
+                        WeixinActivityMain.Companion.getInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progressDialog.dismiss();
@@ -908,7 +907,7 @@ public class DoingChildListAdapter extends ArrayAdapter {
                         });
                     }
                     if (errorCode.equals(ReturnCode.Code0) && progressDialog.getProgress() == files.size() - 1) {  // The final file
-                        WeixinActivityMain.instance.runOnUiThread(new Runnable() {
+                        WeixinActivityMain.Companion.getInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progressDialog.dismiss();
@@ -918,7 +917,7 @@ public class DoingChildListAdapter extends ArrayAdapter {
 
                     } else {
                         counter.increase_one_step();
-                        WeixinActivityMain.instance.runOnUiThread(new Runnable() {
+                        WeixinActivityMain.Companion.getInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progressDialog.setProgress(progressDialog.getProgress() + 1);
@@ -956,7 +955,7 @@ public class DoingChildListAdapter extends ArrayAdapter {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    WeixinActivityMain.instance.runOnUiThread(new Runnable() {
+                    WeixinActivityMain.Companion.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             progressDialog.dismiss();

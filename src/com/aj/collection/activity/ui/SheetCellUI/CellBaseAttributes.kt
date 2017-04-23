@@ -30,27 +30,27 @@ abstract class CellBaseAttributes {
     /**
      * 获取单元格是否可编辑(cell_editable)
      */
-    abstract fun get_cell_editable():Boolean
+    abstract fun get_cell_editable():String
 
     /**
      * 获取单元格是否为必填(cell_fill_required)
      */
-    abstract fun get_cell_fill_required():Boolean
+    abstract fun get_cell_fill_required():String
 
     /**
      * 获取单元格是否可打印(cell_printable)
      */
-    abstract fun get_cell_printable():Boolean
+    abstract fun get_cell_printable():String
 
     /**
      * 获取单元格是否默认勾选打印(cell_default_print)
      */
-    abstract fun get_cell_default_print():Boolean
+    abstract fun get_cell_default_print():String
 
     /**
      * 获取单元格可否被加样(cell_copyable)
      */
-    abstract fun get_cell_copyable():Boolean
+    abstract fun get_cell_copyable():String
 
     //获取其他信息
 

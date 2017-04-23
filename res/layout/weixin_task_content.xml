@@ -14,7 +14,7 @@
             android:layout_height="match_parent">
 
 
-            <com.library.ExpandableLayoutListView
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/expandablelistview_doingtask"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

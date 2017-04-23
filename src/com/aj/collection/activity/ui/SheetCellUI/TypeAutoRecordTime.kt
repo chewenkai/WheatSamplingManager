@@ -20,7 +20,7 @@ import org.json.JSONObject
  * Created by kevin on 17-4-18.
  * Mail: chewenkaich@gmail.com
  */
-class TypeAutoRecordTime(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
+class TypeAutoRecordTime(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttributes() {
     /**
      *获取单元格名称(cell_name)
      */
@@ -45,36 +45,36 @@ class TypeAutoRecordTime(var mContext: Context, var sheetCell: SheetCell): CellB
     /**
      * 获取单元格是否可编辑(cell_editable)
      */
-    override fun get_cell_editable(): Boolean {
-        return sheetCell.cell_editable == SheetProtocol().True
+    override fun get_cell_editable(): String {
+        return if (sheetCell.cell_editable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否为必填(cell_fill_required)
      */
-    override fun get_cell_fill_required(): Boolean {
-        return sheetCell.cell_fill_required == SheetProtocol().True
+    override fun get_cell_fill_required(): String {
+        return if (sheetCell.cell_fill_required == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否可打印(cell_printable)
      */
-    override fun get_cell_printable(): Boolean {
-        return sheetCell.cell_printable == SheetProtocol().True
+    override fun get_cell_printable(): String {
+        return if (sheetCell.cell_printable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否默认勾选打印(cell_default_print)
      */
-    override fun get_cell_default_print(): Boolean {
-        return sheetCell.cell_default_print == SheetProtocol().True
+    override fun get_cell_default_print(): String {
+        return if (sheetCell.cell_default_print == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格可否被加样(cell_copyable)
      */
-    override fun get_cell_copyable(): Boolean {
-        return sheetCell.cell_copyable == SheetProtocol().True
+    override fun get_cell_copyable(): String {
+        return if (sheetCell.cell_copyable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
@@ -123,7 +123,7 @@ class TypeAutoRecordTime(var mContext: Context, var sheetCell: SheetCell): CellB
         // 填写单元格的名字
         cell_name = contentView!!.findViewById(R.id.cell_name) as TextInputLayout
         cell_name!!.hint = sheetCell.cell_name
-        cell_name!!.isHintEnabled =true
+        cell_name!!.isHintEnabled = true
         // 填写单元格的内容
         cell_value = contentView!!.findViewById(R.id.cell_value) as TextInputEditText
         cell_value!!.setText(getCurrentTime("HH-mm-ss"))
@@ -131,13 +131,13 @@ class TypeAutoRecordTime(var mContext: Context, var sheetCell: SheetCell): CellB
         // 设置单元格可编辑状态(不受该属性影响)
         // ？@##￥￥%%%@#￥！
         // 设置单元格必填状态(不受该属性影响，默认隐藏红星号)
-        cell_fill_required= contentView!!.findViewById(R.id.cell_fill_required) as TextView
-        cell_fill_required!!.visibility= View.INVISIBLE
+        cell_fill_required = contentView!!.findViewById(R.id.cell_fill_required) as TextView
+        cell_fill_required!!.visibility = View.INVISIBLE
         // 设置单元格默认打印状态
         cell_printable = contentView!!.findViewById(R.id.cell_printable) as CheckBox
         cell_printable!!.setBackgroundResource(R.drawable.selector_checkbox_print)
         cell_printable!!.setButtonDrawable(ColorDrawable(Color.TRANSPARENT))
-        if (sheetCell.cell_printable==(SheetProtocol().False))
+        if (sheetCell.cell_printable == (SheetProtocol().False))
             cell_printable!!.visibility = View.INVISIBLE
         cell_printable!!.isChecked = sheetCell.cell_default_print == (SheetProtocol().True)
     }

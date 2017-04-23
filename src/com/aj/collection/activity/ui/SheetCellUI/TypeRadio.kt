@@ -20,7 +20,7 @@ import org.json.JSONObject
  * Created by kevin on 17-4-18.
  * Mail: chewenkaich@gmail.com
  */
-class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
+class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttributes() {
     /**
      *获取单元格名称(cell_name)
      */
@@ -40,7 +40,7 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
      */
     override fun get_cell_value(): String {
         var value = ""
-        if (getSelectedRadio() != null){
+        if (getSelectedRadio() != null) {
             value = getSelectedRadio()!!.text.toString()
         }
         return value
@@ -49,36 +49,36 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
     /**
      * 获取单元格是否可编辑(cell_editable)
      */
-    override fun get_cell_editable(): Boolean {
-        return sheetCell.cell_editable == SheetProtocol().True
+    override fun get_cell_editable(): String {
+        return if (sheetCell.cell_editable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否为必填(cell_fill_required)
      */
-    override fun get_cell_fill_required(): Boolean {
-        return sheetCell.cell_fill_required == SheetProtocol().True
+    override fun get_cell_fill_required(): String {
+        return if (sheetCell.cell_fill_required == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否可打印(cell_printable)
      */
-    override fun get_cell_printable(): Boolean {
-        return sheetCell.cell_printable == SheetProtocol().True
+    override fun get_cell_printable(): String {
+        return if (sheetCell.cell_printable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否默认勾选打印(cell_default_print)
      */
-    override fun get_cell_default_print(): Boolean {
-        return sheetCell.cell_default_print == SheetProtocol().True
+    override fun get_cell_default_print(): String {
+        return if (sheetCell.cell_default_print == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格可否被加样(cell_copyable)
      */
-    override fun get_cell_copyable(): Boolean {
-        return sheetCell.cell_copyable == SheetProtocol().True
+    override fun get_cell_copyable(): String {
+        return if (sheetCell.cell_copyable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
@@ -101,9 +101,9 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
      * 必填的内容是否已经填写
      */
     override fun isFilled(): Boolean {
-        if (get_cell_fill_required()){
+        if (get_cell_fill_required() == SheetProtocol().True) {
             return getSelectedRadio() != null
-        }else
+        } else
             return true
 
     }
@@ -135,7 +135,7 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
         // 填写单元格的内容
         cell_value = contentView!!.findViewById(R.id.cell_value) as LinearLayout
         val choices = sheetCell.cell_value.splitKeeping(",")
-        for (choice in choices){
+        for (choice in choices) {
             val radio = AppCompatRadioButton(mContext)
             radio.setText(choice)
             cell_value!!.addView(radio)
@@ -149,14 +149,14 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
         // 设置单元格可编辑状态(不受该属性影响)
         // ？@##￥￥%%%@#￥！
         // 设置单元格必填状态
-        cell_fill_required= contentView!!.findViewById(R.id.cell_fill_required) as TextView
-        if (sheetCell.cell_fill_required==(SheetProtocol().False))
-            cell_fill_required!!.visibility= View.INVISIBLE
+        cell_fill_required = contentView!!.findViewById(R.id.cell_fill_required) as TextView
+        if (sheetCell.cell_fill_required == (SheetProtocol().False))
+            cell_fill_required!!.visibility = View.INVISIBLE
         // 设置单元格默认打印状态
         cell_printable = contentView!!.findViewById(R.id.cell_printable) as CheckBox
         cell_printable!!.setBackgroundResource(R.drawable.selector_checkbox_print)
         cell_printable!!.setButtonDrawable(ColorDrawable(Color.TRANSPARENT))
-        if (sheetCell.cell_printable==(SheetProtocol().False))
+        if (sheetCell.cell_printable == (SheetProtocol().False))
             cell_printable!!.visibility = View.INVISIBLE
         cell_printable!!.isChecked = sheetCell.cell_default_print == (SheetProtocol().True)
 
@@ -166,13 +166,13 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
      * 分割字符串
      */
     fun String.splitKeeping(str: String): List<String> {
-        return this.split(str).flatMap {listOf(it)}.dropLast(0).filterNot {it.isEmpty()}
+        return this.split(str).flatMap { listOf(it) }.dropLast(0).filterNot { it.isEmpty() }
     }
 
     /**
      * 清除所有选项
      */
-    fun clearAllRadios(){
+    fun clearAllRadios() {
         for (radio in radios)
             radio.isChecked = false
     }
@@ -180,9 +180,9 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell): CellBaseAttrib
     /**
      * 获取选中的选项
      */
-    fun getSelectedRadio():AppCompatRadioButton?{
+    fun getSelectedRadio(): AppCompatRadioButton? {
         for (radio in radios) {
-            if(radio.isChecked)
+            if (radio.isChecked)
                 return radio
         }
         return null

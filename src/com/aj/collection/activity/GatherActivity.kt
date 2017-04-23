@@ -194,7 +194,7 @@ class GatherActivity : AppCompatActivity() {
         }
 
         // 提取抽样单Json文本
-        val sheetCells = resultJson.getString(SheetProtocol().SHEET_JSON_KEY)
+        var sheetCells = resultJson.getString(SheetProtocol().SHEET_JSON_KEY)
         // 利用Gson将Json文本转为SheetCell列表
         val turnsType = object : TypeToken<List<SheetCell>>() {}.type
         sheetCellList = Gson().fromJson(sheetCells, turnsType)
@@ -576,7 +576,6 @@ class GatherActivity : AppCompatActivity() {
 
 //        lu!!.recycleParentView()
         unregisterAllBroadcast()
-        System.gc()
         super.onDestroy()
     }
 
@@ -619,8 +618,7 @@ class GatherActivity : AppCompatActivity() {
             builder.setMessage("确定要返回吗?")
             builder.setPositiveButton("确定") { dialog, which ->
                 //TODO 判断新拍的照片并删除
-                setResult(Constant.WEIXINTASKREFRESHITEM_FROMDO)
-                Util.decendLocalSeq(applicationContext, 1)
+//                Util.decendLocalSeq(applicationContext, 1)
                 finish()    //退出
             }
             builder.setNegativeButton("取消", null)

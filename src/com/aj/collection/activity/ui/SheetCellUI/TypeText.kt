@@ -44,36 +44,36 @@ class TypeText(var mContext: Context, var sheetCell: SheetCell): CellBaseAttribu
     /**
      * 获取单元格是否可编辑(cell_editable)
      */
-    override fun get_cell_editable(): Boolean {
-        return sheetCell.cell_editable == SheetProtocol().True
+    override fun get_cell_editable(): String {
+        return if (sheetCell.cell_editable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否为必填(cell_fill_required)
      */
-    override fun get_cell_fill_required(): Boolean {
-        return sheetCell.cell_fill_required == SheetProtocol().True
+    override fun get_cell_fill_required(): String {
+        return if (sheetCell.cell_fill_required == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否可打印(cell_printable)
      */
-    override fun get_cell_printable(): Boolean {
-        return sheetCell.cell_printable == SheetProtocol().True
+    override fun get_cell_printable(): String {
+        return if (sheetCell.cell_printable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格是否默认勾选打印(cell_default_print)
      */
-    override fun get_cell_default_print(): Boolean {
-        return sheetCell.cell_default_print == SheetProtocol().True
+    override fun get_cell_default_print(): String {
+        return if (sheetCell.cell_default_print == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
      * 获取单元格可否被加样(cell_copyable)
      */
-    override fun get_cell_copyable(): Boolean {
-        return sheetCell.cell_copyable == SheetProtocol().True
+    override fun get_cell_copyable(): String {
+        return if (sheetCell.cell_copyable == SheetProtocol().True) SheetProtocol().True else SheetProtocol().False
     }
 
     /**
@@ -135,7 +135,7 @@ class TypeText(var mContext: Context, var sheetCell: SheetCell): CellBaseAttribu
         // 设置单元格默认打印状态
         cell_printable = contentView!!.findViewById(R.id.cell_printable) as CheckBox
         cell_printable!!.setBackgroundResource(R.drawable.selector_checkbox_print)
-        cell_printable!!.setButtonDrawable(ColorDrawable(Color.TRANSPARENT))
+        cell_printable!!.buttonDrawable = ColorDrawable(Color.TRANSPARENT)
         if (sheetCell.cell_printable==(SheetProtocol().False))
             cell_printable!!.visibility = View.INVISIBLE
         cell_printable!!.isChecked = sheetCell.cell_default_print == (SheetProtocol().True)
