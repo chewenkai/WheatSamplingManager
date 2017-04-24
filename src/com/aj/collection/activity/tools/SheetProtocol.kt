@@ -28,6 +28,7 @@ class SheetProtocol {
     val TYPE_PRIMARY_TITLE = "type_primary_title"  // 一级标题单元格(type_primary_title): 用于显示一个粗体的标题，如”抽样情况”。单元格是否可编辑、单元格值，单元格是否为必填属性对其无效
     val TYPE_RADIO_WITH_SECONDARY_CHOICE = "type_radio_with_secondary_choice"  // <二级单选单元格> 用于对单选的内容进行补充，如上述自然灾害情况，单元格值为“洪灾,涝灾;轻微,一般,严重”，即可在选择完灾害后，选择严重程度。单元格是否可编辑属性对其无效
     val TYPE_MULTI_SELECT = "type_multi_select"  // <多选单元格> 用于进行多项选择，如单元格名称为“喷洒农药名称”，可能喷洒多种农药，单元格值为“A药,B药”。单元格是否可编辑属性对其无效
+    val TYPE_MULTI_THEN_SINGLE_CHOICE = "type_multi_then_single_choice"  // **二级多选单选单元格(type_multi_then_single_choice):** 一级为多选，二级也为单选。用于对单选的内容进行补充，如上述自然灾害情况，单元格值为“洪灾,涝灾;轻微,一般,严重”，即可在选择完灾害后，选择严重程度。*单元格是否可编辑属性对其无效*
     val TYPE_GEOGRAPHIC_COORDINATES = "type_geographic_coordinates"  // <地理位置坐标单元格> 显示采样人员所在的经纬度。单元格值、单元格是否可编辑属性对其无效
     val TYPE_ADDRESS = "type_address"  // <地址单元格> 用于显示采样人员所在的地址信息，如“XX市，XX区，XX县”
     val TYPE_PHOTOS = "type_photos"  // <拍照单元格> 用于采集照片。单元格值、单元格是否可打印、单元格是否默认勾选打印属性对其无效

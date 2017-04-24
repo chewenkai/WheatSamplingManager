@@ -36,7 +36,7 @@ class TypeMultiSelect(var mContext: Context, var sheetCell: SheetCell): CellBase
     /**
      * 设置单元格为不可打印
      */
-    override fun setCellNotPrinte() {
+    override fun setCellNotPrint() {
         cell_printable?.isChecked = false
         cell_printable?.isClickable = false
     }

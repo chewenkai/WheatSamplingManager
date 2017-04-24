@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
+import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.AppCompatRadioButton
 import android.view.LayoutInflater
 import android.view.View
@@ -13,21 +14,22 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.aj.collection.bean.SheetCell
 import com.aj.collection.activity.tools.SheetProtocol
+import com.aj.collection.bean.RadiosView
 import org.jetbrains.anko.enabled
 import org.json.JSONObject
 
 /**
- * 单选单元格(type_radio): 用于进行单项选择，如单元格名称为“自然灾害情况”，单元格值为“洪灾,涝灾”。单元格是否可编辑属性对其无效
+ * 二级单选单元格(type_radio_with_secondary_choice): 用于对单选的内容进行补充，如上述自然灾害情况，单元格值为“洪灾,涝灾;轻微,一般,严重”，即可在选择完灾害后，选择严重程度。单元格是否可编辑属性对其无效
  * Created by kevin on 17-4-18.
  * Mail: chewenkaich@gmail.com
  */
-class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttributes() {
+class TypeMultiThenSingleChoice(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttributes() {
 
     /**
      * 获取打印的内容
      */
     override fun getPrintContent(): String {
-        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked?:false)
+        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked ?: false)
             return cell_name?.text.toString() + ":" + get_cell_value()
         else
             return ""
@@ -45,14 +47,19 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
      * 将内容填到单元格
      */
     override fun setFilledContent(content: String) {
-        setSelectedRadio(content)
+        val nCheckBoxesStr = content.splitKeeping(";")
+        if (nCheckBoxesStr.isEmpty())
+            return
+        for (checkBox in nCheckBoxesStr){
+            setSelectedCheckBox(checkBox)
+        }
     }
 
     /**
      * 设置单元格为不可更改
      */
     override fun setCellDisable() {
-        setAllRadioDisable()
+        setAllCheckBoxDisable()
     }
 
     /**
@@ -73,9 +80,14 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
      * 获取单元格值(cell_value)
      */
     override fun get_cell_value(): String {
+        val checkBoxes = getSelectedCheckBox()
         var value = ""
-        if (getSelectedRadio() != null) {
-            value = getSelectedRadio()!!.text.toString()
+        for (checkBox in checkBoxes){
+            value += checkBox.text.toString()+","
+            value+=(checkBox.tag as RadiosView).getSelectedRadio()?.text.toString()
+            if (checkBoxes.indexOf(checkBox) != checkBoxes.size){
+                value += ";"
+            }
         }
         return value
     }
@@ -136,7 +148,7 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
      */
     override fun isFilled(): Boolean {
         if (get_cell_fill_required() == SheetProtocol().True) {
-            return getSelectedRadio() != null
+            return !getSelectedCheckBox().isEmpty() && (getSelectedCheckBox()[0].tag as RadiosView).getSelectedRadio()!=null
         } else
             return true
 
@@ -153,33 +165,44 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
     var linearLayout: LinearLayout? = null
     var cell_name: TextView? = null
     var cell_value: LinearLayout? = null  // 盛放Radio Button的容器
-    var radios = ArrayList<AppCompatRadioButton>() // 用于储存多个单选选项
+    var cell_secondary_value: LinearLayout? = null  // 盛放二级Radio Button的容器
+    var checkBoxes = ArrayList<AppCompatCheckBox>() // 用于储存多个单选选项
+    var secondaryRadios = ArrayList<AppCompatRadioButton>() // 用于储存多个二级单选选项
     var cell_fill_required: TextView? = null
     var cell_printable: CheckBox? = null
 
     init {
         // 导入界面
         val mInflater: LayoutInflater = LayoutInflater.from(mContext)
-        contentView = mInflater.inflate(R.layout.sheet_cell_radio, null)
+        contentView = mInflater.inflate(R.layout.sheet_cell_radio_with_secondary_choice, null)
         // LinearLayout
         linearLayout = contentView!!.findViewById(R.id.cell_edit_text_linear_layout) as LinearLayout
         // 填写单元格的名字
         cell_name = contentView!!.findViewById(R.id.cell_name) as TextView
         cell_name!!.text = sheetCell.cell_name
         // 填写单元格的内容
-        cell_value = contentView!!.findViewById(R.id.cell_value) as LinearLayout
-        val choices = sheetCell.cell_value.splitKeeping(",")
+        cell_value = contentView!!.findViewById(R.id.cell_value) as LinearLayout  // 一级选项
+        cell_secondary_value = contentView!!.findViewById(R.id.cell_secondary_value) as LinearLayout  // 二级选项
+        val radioInfo = sheetCell.cell_value.splitKeeping(";")  // 先根据;区分选项级别 干旱,洪涝,高温,低温;严重,一般,轻微
+        val choices = radioInfo[0].splitKeeping(",")  // 再根据,区分各级别中的选项
         for (choice in choices) {
-            val radio = AppCompatRadioButton(mContext)
-            radio.setText(choice)
-            cell_value!!.addView(radio)
-            radios.add(radio)
-            radio.setOnClickListener {
-                clearAllRadios()
-                radio.isChecked = true
+            val checkBox = AppCompatCheckBox(mContext)
+            checkBox.text = choice
+            cell_value!!.addView(checkBox)
+            checkBoxes.add(checkBox)
+            // 添加二级单选
+            val radiosView = RadiosView(cell_value!!, radioInfo[1].splitKeeping(","), mContext)
+            checkBox.tag = radiosView
+            radiosView.hiddenRadios()
+            checkBox.setOnClickListener {
+                if (checkBox.isChecked)  // 如果被选择，就显示二级选项
+                    radiosView.showRadios()
+                else {  // 不被选择则清除二级选项并隐藏之
+                    radiosView.clearRadios()
+                    radiosView.hiddenRadios()
+                }
             }
         }
-        clearAllRadios()
         // 设置单元格可编辑状态(不受该属性影响)
         // ？@##￥￥%%%@#￥！
         // 设置单元格必填状态
@@ -204,32 +227,28 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
     }
 
     /**
-     * 清除所有选项
-     */
-    fun clearAllRadios() {
-        for (radio in radios)
-            radio.isChecked = false
-    }
-
-    /**
      * 获取选中的选项
      */
-    fun getSelectedRadio(): AppCompatRadioButton? {
-        for (radio in radios) {
-            if (radio.isChecked)
-                return radio
+    fun getSelectedCheckBox(): ArrayList<AppCompatCheckBox> {
+        val selectedCB = ArrayList<AppCompatCheckBox>()
+        for (checkBox in checkBoxes) {
+            if (checkBox.isChecked)
+                selectedCB.add(checkBox)
         }
-        return null
+        return selectedCB
     }
 
     /**
-     * 设置已选中的选项
+     * 设置一级选项已选中的选项
+     * 洪涝,轻微
      */
-    fun setSelectedRadio(radioValue: String) {
-        for (radio in radios) {
-            if (radio.text.toString().equals(radioValue)) {
+    fun setSelectedCheckBox(radioValue: String) {
+        var content = radioValue.splitKeeping(",")
+        for (radio in checkBoxes) {
+            if (radio.text.toString().equals(content[0])) {
                 radio.isChecked = true
-                return
+                (radio.tag as RadiosView).setSelectedRadio(content[1])
+                (radio.tag as RadiosView).showRadios()
             }
         }
     }
@@ -237,9 +256,10 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
     /**
      * 设置选项为不可点击状态
      */
-    fun setAllRadioDisable() {
-        for (radio in radios) {
+    fun setAllCheckBoxDisable() {
+        for (radio in checkBoxes) {
             radio.isEnabled = false
+            (radio.tag as RadiosView).setRadiosDisable()
         }
     }
 

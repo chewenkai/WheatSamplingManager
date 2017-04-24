@@ -465,7 +465,7 @@ class GatherActivity : AppCompatActivity() {
                     // 设置当前所有单元格为不可编辑+设置当前所有单元格为不打印
                     for (sheetCellUI in sheetCellUIList) {
                         sheetCellUI.cell.setCellDisable()
-                        sheetCellUI.cell.setCellNotPrinte()
+                        sheetCellUI.cell.setCellNotPrint()
                     }
                     // 滚动到最底下
                     sheetScrollView?.fullScroll(ScrollView.FOCUS_DOWN)

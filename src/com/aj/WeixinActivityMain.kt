@@ -44,6 +44,7 @@ import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import net.micode.compass.CompassActivity
 import net.micode.notes.ui.NotesListActivity
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.onClick
 import org.jetbrains.anko.uiThread
 import org.json.JSONArray
 import org.json.JSONException
@@ -513,6 +514,7 @@ class WeixinActivityMain : Activity() {
 
 
     private var unitBtn: LinearLayout? = null
+    private var manualCheckTask: LinearLayout? = null
     private var clearCacheBtn: LinearLayout? = null
 
     private var versionBtn: LinearLayout? = null
@@ -547,6 +549,11 @@ class WeixinActivityMain : Activity() {
         user_name!!.text = login_user
         company_name!!.text = "所属单位:" + (SPUtils.get(this, SPUtils.SAMPLING_COMPANY, "没有填写", SPUtils.USER_INFO) as String?)!!
 
+        // 手动检查新任务
+        manualCheckTask = v.findViewById(R.id.check_new_task_btn) as LinearLayout
+        manualCheckTask?.onClick {
+            haveNewTask()
+        }
         //清除缓存
         //显示缓存大小
         tv_clearcache = v.findViewById(R.id.clear_cache_tv) as TextView

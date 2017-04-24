@@ -87,6 +87,6 @@ abstract class CellBaseAttributes {
     /**
      * 设置单元格为不可打印
      */
-    abstract fun setCellNotPrinte()
+    abstract fun setCellNotPrint()
 
 }
