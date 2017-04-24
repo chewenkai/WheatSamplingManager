@@ -105,7 +105,7 @@ public class CameraView extends Activity implements OnClickListener
         	i.putExtra("pName", pName);
 			i.putExtra("picture_path",file.getPath());
         	//返回结果代码
-        	setResult(GatherActivity.Companion.getREQUESTCODEFORPICTURE(),i);
+        	setResult(SheetActivity.Companion.getREQUESTCODEFORPICTURE(),i);
         	//停止照片拍摄
         	mCamera.stopPreview();
         	mCamera=null;

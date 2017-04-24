@@ -13,7 +13,7 @@ import com.aj.Constant
 import com.aj.WeixinActivityMain
 import com.aj.collection.R
 import com.aj.collection.activity.CollectionApplication
-import com.aj.collection.activity.GatherActivity
+import com.aj.collection.activity.SheetActivity
 import com.aj.collection.bean.Counter
 import com.aj.collection.bean.TaskInfo
 import com.aj.collection.http.API
@@ -21,7 +21,7 @@ import com.aj.collection.http.ReturnCode
 import com.aj.collection.http.URLs
 import com.aj.collection.tools.SPUtils
 import com.aj.collection.tools.Util
-import com.aj.collection.ui.widget.FileUtil
+import com.aj.collection.tools.FileUtil
 import com.aj.database.*
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -209,9 +209,9 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
 
                 // 编辑
                 sheetViewHolder.edit?.onClick {
-                    val startForm = Intent(mContext, GatherActivity::class.java)
+                    val startForm = Intent(mContext, SheetActivity::class.java)
                     startForm.putExtra("samplingID", sheet.id) //文件名不包含后缀
-                    startForm.putExtra("Mode", GatherActivity.MODE_EDIT) // 编辑模式，编辑模式下不可加样
+                    startForm.putExtra("Mode", SheetActivity.MODE_EDIT) // 编辑模式，编辑模式下不可加样
                     mContext.startActivity(startForm)
                 }
 
@@ -246,19 +246,19 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
 
                 // 补采
                 sheetViewHolder.makeUp?.onClick {
-                    val startForm = Intent(mContext, GatherActivity::class.java)
+                    val startForm = Intent(mContext, SheetActivity::class.java)
                     startForm.putExtra("samplingID",sheet.id)//get the id of sampling
-                    startForm.putExtra("Mode", GatherActivity.MODE_MAKE_UP)
+                    startForm.putExtra("Mode", SheetActivity.MODE_MAKE_UP)
                     startForm.putExtra("sid_of_server", sheet.sid_of_server)//补采的时候通过存在服务器上的id来判断这是对 哪个抽样单进行的补采
                     (mContext as Activity).startActivity(startForm)
                 }
 
                 // 点击进入抽样单
                 sheetViewHolder.upperView?.onClick {
-                    val startForm = Intent(mContext, GatherActivity::class.java)
+                    val startForm = Intent(mContext, SheetActivity::class.java)
                     startForm.putExtra("res", sheet.sampling_content)    //字符串
                     startForm.putExtra("samplingID", sheet.id) //文件名不包含后缀
-                    startForm.putExtra("Mode", GatherActivity.MODE_LOOK_THROUGH)//设置为查看模式
+                    startForm.putExtra("Mode", SheetActivity.MODE_LOOK_THROUGH)//设置为查看模式
                     mContext.startActivity(startForm)
                 }
                 sheetViewHolder.upperView?.onLongClick {
@@ -290,11 +290,11 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
                 }
                 // 点击进去模板界面
                 templetViewHolder.templateLayout.onClick {
-                    val startForm = Intent(mContext as Activity, GatherActivity::class.java)
+                    val startForm = Intent(mContext as Activity, SheetActivity::class.java)
                     startForm.putExtra("res", sheet.sampling_content)    //字符串
                     startForm.putExtra("templetID", sheet.templetID ?: -1L) //文件名不包含后缀
                     startForm.putExtra("taskID", sheet.taskID)    //哪个任务被点击了
-                    startForm.putExtra("Mode", GatherActivity.MODE_TEMPLATE)
+                    startForm.putExtra("Mode", SheetActivity.MODE_TEMPLATE)
                     mContext.startActivity(startForm)
                 }
                 templetViewHolder.templateLayout.onLongClick {
@@ -334,12 +334,6 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
         holder.counterPassed?.text = passedSampling?.size.toString() + "个"
         holder.counterNotPassed?.text = notPassedSampling?.size.toString() + "个"
         holder.counterNotUsed?.text = notUsedSampling?.size.toString() + "个"
-
-        // 点击更新按钮更新数据
-        holder.refreshTaskData?.onClick {
-            (mContext as WeixinActivityMain).updateTaskStatus(true)
-            mContext.updateSamplingStatus(true)
-        }
     }
 
     override fun getChildViewType(position: Int, group: ExpandableGroup<*>?, childIndex: Int): Int {

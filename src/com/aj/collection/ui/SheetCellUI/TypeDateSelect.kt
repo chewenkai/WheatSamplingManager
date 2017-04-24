@@ -10,7 +10,7 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import cn.qqtheme.framework.picker.DatePicker
-import com.aj.collection.activity.GatherActivity
+import com.aj.collection.activity.SheetActivity
 import com.aj.collection.tools.SheetProtocol
 import com.aj.collection.bean.SheetCell
 import org.jetbrains.anko.onClick
@@ -176,8 +176,8 @@ class TypeDateSelect(var mContext: Context, var sheetCell: SheetCell) : CellBase
         pickDate = contentView!!.findViewById(R.id.pickDate) as Button
         pickDate!!.text = "选择日期"
         var datePicker: DatePicker? = null
-        if (GatherActivity::class.java.isInstance(mContext))
-            datePicker = DatePicker(mContext as GatherActivity, DatePicker.YEAR_MONTH_DAY)
+        if (SheetActivity::class.java.isInstance(mContext))
+            datePicker = DatePicker(mContext as SheetActivity, DatePicker.YEAR_MONTH_DAY)
         pickDate!!.onClick {
             datePicker!!.setOnWheelListener(object : DatePicker.OnWheelListener {
                 override fun onMonthWheeled(index: Int, month: String?) {

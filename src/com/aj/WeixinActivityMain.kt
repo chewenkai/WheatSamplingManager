@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.NotificationCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -50,7 +51,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-class WeixinActivityMain : Activity() {
+class WeixinActivityMain : AppCompatActivity() {
 
     private var mTabPager: ViewPager? = null
     private var mTabImg: ImageView? = null// 动画图片
@@ -108,8 +109,7 @@ class WeixinActivityMain : Activity() {
 
         instance = this
 
-        actionBar!!.setDisplayShowHomeEnabled(false)//actionBar不显示程序图标
-
+        actionBar?.setDisplayShowHomeEnabled(false)//actionBar不显示程序图标
 
         mNM = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -284,6 +284,24 @@ class WeixinActivityMain : Activity() {
         override fun onPageScrollStateChanged(arg0: Int) {}
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+
+        val inflater = menuInflater
+        inflater.inflate(R.menu.sheet_menu_main_refresh, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_refresh_task -> {
+                haveNewTask()
+                updateTaskStatus(true)
+                updateSamplingStatus(true)
+            }
+        }
+        return true
+    }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {  //获取 back键
@@ -1024,7 +1042,7 @@ class WeixinActivityMain : Activity() {
                             getNewTask()
                         } else if (result == URLs.RESULT_NOTHING) {
                             // don't have new task. just TOast
-                            Toast.makeText(mContext, "没有新任务", Toast.LENGTH_LONG).show()
+//                            Toast.makeText(mContext, "没有新任务", Toast.LENGTH_LONG).show()
                         } else
                             Log.e("XXXXXXX", "接收到不该出现的结果")
                     } else {

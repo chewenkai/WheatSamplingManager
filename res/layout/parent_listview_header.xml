@@ -150,30 +150,4 @@
 
     </LinearLayout>
 
-
-
-<LinearLayout
-    android:id="@+id/LL_refreshBTN"
-    android:layout_width="50dp"
-    android:layout_height="50dp"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentRight="true"
-    android:layout_centerVertical="true"
-    android:gravity="center">
-    <TextView
-        android:id="@+id/tv_refreshBTN"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:text=""
-        android:textColor="#ff0000"
-        android:textSize="14sp"
-        android:visibility="visible"
-        android:background="@drawable/update"
-        />
-</LinearLayout>
-
-
-
 </RelativeLayout>

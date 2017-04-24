@@ -31,7 +31,7 @@ import com.aj.Constant
 import com.aj.Constant.DEFAULT_IMAGE_HEIGHT_DP
 import com.aj.collection.activity.CameraView
 import com.aj.collection.activity.CollectionApplication
-import com.aj.collection.activity.GatherActivity
+import com.aj.collection.activity.SheetActivity
 import com.aj.collection.bean.SheetCell
 import com.aj.collection.tools.MediaManager
 import com.aj.collection.tools.ScreenUtil
@@ -326,14 +326,14 @@ class TypeVedios(var mContext: Context, var sheetCell: SheetCell, val autoGenera
                 val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
                 intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0)//更改录像质量 min=0 max =1
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(video_name))
-                if (GatherActivity::class.java.isInstance(mContext))
-                    (mContext as GatherActivity).startActivityForResult(intent, GatherActivity.REQUESTCODEFORVIDEO)
+                if (SheetActivity::class.java.isInstance(mContext))
+                    (mContext as SheetActivity).startActivityForResult(intent, SheetActivity.REQUESTCODEFORVIDEO)
             } else
                 mContext.toast("正在定位,请稍后...")
 
         }
         // 生成录像单元格ID
-        cellIdentity = ++((mContext as GatherActivity).application as CollectionApplication).cellIdentity
+        cellIdentity = ++((mContext as SheetActivity).application as CollectionApplication).cellIdentity
         // 设置单元格可编辑状态(不受该属性影响)
         // ？@##￥￥%%%@#￥！
         // 设置单元格必填状态

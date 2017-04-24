@@ -45,6 +45,9 @@ dependencies {
 }
 
 android {
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+    }
     signingConfigs {
     }
     compileSdkVersion 25

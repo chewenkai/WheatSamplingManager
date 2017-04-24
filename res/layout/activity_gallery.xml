@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="0dp"
     android:background="@color/white"
-    tools:context=".activity.GatherActivity">
+    tools:context=".activity.SheetActivity">
 
     <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"

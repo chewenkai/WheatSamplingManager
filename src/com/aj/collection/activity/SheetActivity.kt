@@ -6,9 +6,7 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SmsManager
@@ -17,31 +15,25 @@ import android.view.*
 import android.widget.*
 import com.aj.Constant
 import com.aj.collection.*
+import com.aj.collection.bean.SheetCell
 import com.aj.collection.http.API
 import com.aj.collection.http.ReturnCode
 import com.aj.collection.http.URLs
 import com.aj.collection.tools.*
-import com.aj.collection.ui.HeadControlPanel
-import com.aj.collection.ui.HeadControlPanel.LeftImageOnClick
-import com.aj.collection.ui.HeadControlPanel.RightSecondOnClick
-import com.aj.collection.ui.HeadControlPanel.rightFirstImageOnClick
 import com.aj.collection.ui.SheetCellUI
-import com.aj.collection.bean.SheetCell
 import com.aj.database.*
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.toolbox.Volley
 import com.baidu.location.BDLocation
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.form_layout.*
 import org.jetbrains.anko.toast
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
 
-class GatherActivity : AppCompatActivity() {
+class SheetActivity : AppCompatActivity() {
 
     internal var intent: Intent? = null                 //传递时间的意图
     internal var sheetJsonStr: String = ""                 //抽样单json
@@ -79,19 +71,23 @@ class GatherActivity : AppCompatActivity() {
 
     private var sampleTable: SAMPLINGTABLE? = null
     private var taskinfo: TASKINFO? = null
-    internal var headPanel: HeadControlPanel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
-        dialog = Dialog(this@GatherActivity)
+        dialog = Dialog(this@SheetActivity)
         ExitApplication.getInstance().addActivity(this)
-        //dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.form_layout)
+
+        when(currentMode){
+            MODE_TEMPLATE -> supportActionBar?.title = "填写抽样单"
+            MODE_EDIT -> supportActionBar?.title = "编辑抽样单"
+            MODE_LOOK_THROUGH -> supportActionBar?.title = "查看抽样单"
+            MODE_MAKE_UP -> supportActionBar?.title = "补采抽样单"
+        }
 
         // 初始化网络框架和数据库框架
         queue = (application as CollectionApplication).requestQueue
@@ -191,41 +187,73 @@ class GatherActivity : AppCompatActivity() {
             Toast.makeText(mContext, "没有媒体文件夹", Toast.LENGTH_LONG).show()
             finish()
         }
+    }
 
-        //设置顶部面板按钮
-        headPanel = findViewById(R.id.head_layout) as HeadControlPanel
-        headPanel!!.setRightFirstVisible(View.VISIBLE)
-        headPanel!!.setRightSecondVisible(View.VISIBLE)
-        if (headPanel != null) {
-            headPanel!!.initHeadPanel()
-            when (currentMode) {
-                MODE_EDIT -> headPanel!!.setMiddleTitle("编辑抽样单")
-                MODE_TEMPLATE -> headPanel!!.setMiddleTitle("填写抽样单")
-                MODE_LOOK_THROUGH -> headPanel!!.setMiddleTitle("查看抽样单")
-                MODE_MAKE_UP -> headPanel!!.setMiddleTitle("补采抽样单")
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        when(currentMode){
+            MODE_TEMPLATE -> {
+                val inflater = menuInflater
+                inflater.inflate(R.menu.sheet_menu_add_print_save, menu)
             }
-            headPanel!!.setLeftImage(R.drawable.ic_menu_back)
-            val l = LeftImageOnClick {
-                val alertDialog: AlertDialog
-                val builder = AlertDialog.Builder(this@GatherActivity, AlertDialog.THEME_HOLO_LIGHT)
-                builder.setTitle("温馨提示")
-                builder.setMessage("确定要返回吗?")
-                builder.setPositiveButton("确定") { dialog, which ->
-                    //TODO 判断新拍的照片并删除
-                    setResult(Constant.WEIXINTASKREFRESHITEM_FROMDO)
-                    Util.decendLocalSeq(applicationContext, 1)
-                    finish()    //退出
+            MODE_MAKE_UP, MODE_EDIT -> {
+                val inflater = menuInflater
+                inflater.inflate(R.menu.sheet_menu_print_save, menu)
+            }
+            MODE_LOOK_THROUGH -> {
+                val inflater = menuInflater
+                inflater.inflate(R.menu.sheet_menu_print, menu)
+            }
+        }
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_bar_add_sample -> {
+                //加样前要检查样品信息是否合法
+                // 判断GPS信息
+                for (sheetCellUI in sheetCellUIList) {
+                    if (!sheetCellUI.cell.isFilled()) {
+                        when (sheetCellUI.getCellType()) {
+                            SheetProtocol().TYPE_ADDRESS -> {
+                                toast("正在定位中，请稍后保存")
+                                return true
+                            }
+                            SheetProtocol().TYPE_GEOGRAPHIC_COORDINATES -> {
+                                toast("正在定位中，请稍后保存")
+                                return true
+                            }
+                        }
+                    }
                 }
-                builder.setNegativeButton("取消", null)
-                alertDialog = builder.create()
-                alertDialog.show()    //显示对话框
+                // 设置当前所有单元格为不可编辑+设置当前所有单元格为不打印
+                for (sheetCellUI in sheetCellUIList) {
+                    sheetCellUI.cell.setCellDisable()
+                    sheetCellUI.cell.setCellNotPrint()
+                }
+                // 滚动到最底下
+                sheetScrollView?.fullScroll(ScrollView.FOCUS_DOWN)
+                // 导入分割界面
+                parentView?.addView(importSheetDividerUI())
+                // 设置新的抽样单ID
+                autoGeneratedSheetID = getAutoGeneratedSheetID()
+                // 添加新的抽样单，可复制的单元格生成界面，不可复制的不生成界面，复制原内容到单元格列表
+                addSample()
             }
-            headPanel!!.setLeftImageOnClick(l)
-            headPanel!!.setRightFirstImage(R.drawable.save_file)
-            headPanel!!.setRightFirstText("保存")
-            val r = rightFirstImageOnClick {
-                //抽样单模板的保存按钮！！
-
+            R.id.action_bar_print -> {
+                var toPrint = ""
+                // 获取打印内容
+                for (sheetCellUI in sheetCellUIList) {
+                    toPrint += sheetCellUI.cell.getPrintContent() + "\n"
+                }
+                val i = Intent(this@SheetActivity, PrintActivity::class.java)
+                i.putExtra("toPrint", toPrint)
+                i.putExtra("num", sheetList[0][0].autoGeneratedSheetID)
+                startActivity(i)
+            }
+            R.id.action_bar_save -> {
+                //抽样单模板的保存按钮
                 // 判断必填项是否全部填写
                 var isAllRequiredCellFill = true
                 for (sheetCellUI in sheetCellUIList) {
@@ -236,11 +264,11 @@ class GatherActivity : AppCompatActivity() {
                             }
                             SheetProtocol().TYPE_ADDRESS -> {
                                 toast("正在定位中，请稍后")
-                                return@rightFirstImageOnClick
+                                return true
                             }
                             SheetProtocol().TYPE_GEOGRAPHIC_COORDINATES -> {
                                 toast("正在定位中，请稍后")
-                                return@rightFirstImageOnClick
+                                return true
                             }
                             SheetProtocol().TYPE_RADIO -> {
                                 isAllRequiredCellFill = false
@@ -340,7 +368,7 @@ class GatherActivity : AppCompatActivity() {
                                 if (sid_of_server!!.equals(-1L)) {//原抽样单的sid用于上传给服务器，服务器将原抽样单状态置位为“已补采”，不应为不存在
                                     Toast.makeText(mContext, "没有接受到sid", Toast.LENGTH_LONG).show()
                                     Log.e("XXXXXXXXXXX", "没有接受到sid")
-                                    return@rightFirstImageOnClick
+                                    return true
                                 }
 
                                 val listener = Response.Listener<String> { s ->
@@ -413,7 +441,7 @@ class GatherActivity : AppCompatActivity() {
                             saveProgressDialog.dismiss()
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        T.showLong(this@GatherActivity, "生成jason错误" +
+                        T.showLong(this@SheetActivity, "生成jason错误" +
                                 "" + e.toString())
                         if (saveProgressDialog.isShowing)
                             saveProgressDialog.dismiss()
@@ -421,62 +449,11 @@ class GatherActivity : AppCompatActivity() {
 
                 }
             }
-            headPanel!!.setRightFirstImageOnClick(r)
-            headPanel!!.setRightSecondImage(R.drawable.print)
-            headPanel!!.seRightSecondText("打印")
-            val t = RightSecondOnClick {
-                var toPrint = ""
-                // 获取打印内容
-                for (sheetCellUI in sheetCellUIList) {
-                    toPrint += sheetCellUI.cell.getPrintContent() + "\n"
-                }
-                val i = Intent(this@GatherActivity, PrintActivity::class.java)
-                i.putExtra("toPrint", toPrint)
-                i.putExtra("num", sheetList[0][0].autoGeneratedSheetID)
-                startActivity(i)
-            }
-            headPanel!!.setRightSecondOnClick(t)
-
-            //非补采时，可以点击添加一个样品信息
-            if (currentMode == MODE_TEMPLATE) {
-                headPanel!!.setRightThirdImage(R.drawable.add_sampling)
-                headPanel!!.setRightThirdText("加样")
-                val thirdOnClick = HeadControlPanel.RightThirdOnClick {
-                    //加样前要检查样品信息是否合法
-                    // 判断GPS信息
-                    for (sheetCellUI in sheetCellUIList) {
-                        if (!sheetCellUI.cell.isFilled()) {
-                            when (sheetCellUI.getCellType()) {
-                                SheetProtocol().TYPE_ADDRESS -> {
-                                    toast("正在定位中，请稍后保存")
-                                    return@RightThirdOnClick
-                                }
-                                SheetProtocol().TYPE_GEOGRAPHIC_COORDINATES -> {
-                                    toast("正在定位中，请稍后保存")
-                                    return@RightThirdOnClick
-                                }
-                            }
-                        }
-                    }
-                    // 设置当前所有单元格为不可编辑+设置当前所有单元格为不打印
-                    for (sheetCellUI in sheetCellUIList) {
-                        sheetCellUI.cell.setCellDisable()
-                        sheetCellUI.cell.setCellNotPrint()
-                    }
-                    // 滚动到最底下
-                    sheetScrollView?.fullScroll(ScrollView.FOCUS_DOWN)
-                    // 导入分割界面
-                    parentView?.addView(importSheetDividerUI())
-                    // 设置新的抽样单ID
-                    autoGeneratedSheetID = getAutoGeneratedSheetID()
-                    // 添加新的抽样单，可复制的单元格生成界面，不可复制的不生成界面，复制原内容到单元格列表
-                    addSample()
-                }
-                headPanel!!.setRightThirdOnClick(thirdOnClick)
-                headPanel!!.setmRightThirdVisible(View.VISIBLE)
+            android.R.id.home -> {
+                finish()
             }
         }
-
+        return true
     }
 
     /**
@@ -739,7 +716,7 @@ class GatherActivity : AppCompatActivity() {
             return
         }
 
-        val inflater = this@GatherActivity
+        val inflater = this@SheetActivity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val layout = inflater.inflate(
                 R.layout.dialogview_three_button, null) as RelativeLayout
@@ -786,7 +763,7 @@ class GatherActivity : AppCompatActivity() {
         negativebutton.setOnClickListener {
             dialog!!.dismiss()
             if (!isGpsOpened)
-                this@GatherActivity.finish()
+                this@SheetActivity.finish()
         }
 
 
@@ -814,7 +791,7 @@ class GatherActivity : AppCompatActivity() {
      * 打印行数到日志
      */
     fun printLineInLog() {
-        Log.e(GatherActivity::class.java.name, Util.getLineInfo())
+        Log.e(SheetActivity::class.java.name, Util.getLineInfo())
     }
 
     companion object {
@@ -835,8 +812,8 @@ class GatherActivity : AppCompatActivity() {
      */
     fun sendMes() {
         if (!kaiguan) {
-            SPUtils.put(this@GatherActivity, taskName, true, SPUtils.WHICHTASK)
-            T.showShort(this@GatherActivity, "保存成功")
+            SPUtils.put(this@SheetActivity, taskName, true, SPUtils.WHICHTASK)
+            T.showShort(this@SheetActivity, "保存成功")
             return
         }
         val sms_content = ""
@@ -848,7 +825,7 @@ class GatherActivity : AppCompatActivity() {
         } else {
             smsManager.sendTextMessage(phone_number, null, sms_content, null, null)
         }
-        SPUtils.put(this@GatherActivity, taskName, true, SPUtils.WHICHTASK)
-        T.showShort(this@GatherActivity, "保存成功，并已发送定位短信")
+        SPUtils.put(this@SheetActivity, taskName, true, SPUtils.WHICHTASK)
+        T.showShort(this@SheetActivity, "保存成功，并已发送定位短信")
     }
 }

@@ -194,10 +194,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.GatherActivity"
+            android:name=".activity.SheetActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName="com.aj.WeixinActivityMain"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.aj.WeixinActivityMain" />
+        </activity>
         <activity
             android:name=".activity.RegistActivity"
             android:screenOrientation="portrait"
@@ -319,7 +325,7 @@
         <!-- 仿微信的主界面 -->
         <activity
             android:name="com.aj.WeixinActivityMain"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".ThirdModify_WeiXin.Exit"
             android:theme="@style/MyDialogStyle" />

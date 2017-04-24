@@ -24,7 +24,6 @@ class TaskViewHolder(itemView: View): GroupViewHolder(itemView){
     var counterNotPassed:TextView? = null
     var counterNotUsed:TextView? = null
     var newFlag:TextView? = null
-    var refreshTaskData:LinearLayout? = null
 
     init {
         layout = itemView.findViewById(R.id.relative_layout_task_item) as RelativeLayout
@@ -36,7 +35,6 @@ class TaskViewHolder(itemView: View): GroupViewHolder(itemView){
         counterNotPassed = itemView.findViewById(R.id.counter_not_passed) as TextView
         counterNotUsed = itemView.findViewById(R.id.counter_not_used) as TextView
         newFlag = itemView.findViewById(R.id.newFlag) as TextView
-        refreshTaskData = itemView.findViewById(R.id.LL_refreshBTN) as LinearLayout
     }
 
     override fun expand() {

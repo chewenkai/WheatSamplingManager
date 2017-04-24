@@ -75,7 +75,7 @@ public class RegistActivity extends Activity
 				}
 			};
 			headPanel.setLeftImageOnClick(l);
-			headPanel.setRightFirstImage(R.drawable.save_file);
+			headPanel.setRightFirstImage(R.drawable.save);
 			headPanel.setRightFirstText("保存");
 			//headPanel.getRightImageText().getTextView().setVisibility(View.GONE);
 			HeadControlPanel.rightFirstImageOnClick r = new HeadControlPanel.rightFirstImageOnClick()
