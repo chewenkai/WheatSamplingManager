@@ -19,7 +19,38 @@ import org.json.JSONObject
  * Created by kevin on 17-4-18.
  * Mail: chewenkaich@gmail.com
  */
-class TypeText(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
+class TypeText(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttributes() {
+
+    /**
+     * 获取打印的内容
+     */
+    override fun getPrintContent(): String {
+        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked?:false)
+            return cell_name?.hint.toString() + ":" + get_cell_value()
+        else
+            return ""
+    }
+
+    /**
+     * 设置单元格为不可打印
+     */
+    override fun setCellNotPrinte() {
+        cell_printable?.isChecked = false
+        cell_printable?.isClickable = false
+    }
+
+    /**
+     * 将内容填到单元格
+     */
+    override fun setFilledContent(content: String) {
+    }
+
+    /**
+     * 设置单元格为不可更改
+     */
+    override fun setCellDisable() {
+    }
+
     /**
      *获取单元格名称(cell_name)
      */
@@ -122,7 +153,7 @@ class TypeText(var mContext: Context, var sheetCell: SheetCell): CellBaseAttribu
         // 填写单元格的名字
         cell_name = contentView!!.findViewById(R.id.cell_name) as TextInputLayout
         cell_name!!.hint = sheetCell.cell_name
-        cell_name!!.isHintEnabled =true
+        cell_name!!.isHintEnabled = true
         // 填写单元格的内容
         cell_value = contentView!!.findViewById(R.id.cell_value) as TextInputEditText
         cell_value!!.setText(sheetCell.cell_value)
@@ -130,13 +161,13 @@ class TypeText(var mContext: Context, var sheetCell: SheetCell): CellBaseAttribu
         // 设置单元格可编辑状态(不受该属性影响)
         // ？@##￥￥%%%@#￥！
         // 设置单元格必填状态(不受该属性影响，默认隐藏红星号)
-        cell_fill_required= contentView!!.findViewById(R.id.cell_fill_required) as TextView
-        cell_fill_required!!.visibility= View.INVISIBLE
+        cell_fill_required = contentView!!.findViewById(R.id.cell_fill_required) as TextView
+        cell_fill_required!!.visibility = View.INVISIBLE
         // 设置单元格默认打印状态
         cell_printable = contentView!!.findViewById(R.id.cell_printable) as CheckBox
         cell_printable!!.setBackgroundResource(R.drawable.selector_checkbox_print)
         cell_printable!!.buttonDrawable = ColorDrawable(Color.TRANSPARENT)
-        if (sheetCell.cell_printable==(SheetProtocol().False))
+        if (sheetCell.cell_printable == (SheetProtocol().False))
             cell_printable!!.visibility = View.INVISIBLE
         cell_printable!!.isChecked = sheetCell.cell_default_print == (SheetProtocol().True)
     }

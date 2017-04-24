@@ -20,6 +20,39 @@ import org.json.JSONObject
  * Mail: chewenkaich@gmail.com
  */
 class TypeEditText(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
+
+    /**
+     * 获取打印的内容
+     */
+    override fun getPrintContent(): String {
+        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked?:false)
+            return cell_name?.hint.toString() + ":" + get_cell_value()
+        else
+            return ""
+    }
+
+    /**
+     * 设置单元格为不可打印
+     */
+    override fun setCellNotPrinte() {
+        cell_printable?.isChecked = false
+        cell_printable?.isClickable = false
+    }
+
+    /**
+     * 将内容填到单元格
+     */
+    override fun setFilledContent(content: String) {
+        cell_value?.setText(content)
+    }
+
+    /**
+     * 设置单元格为不可更改
+     */
+    override fun setCellDisable() {
+        cell_value?.isEnabled = false
+    }
+
     /**
      *获取单元格名称(cell_name)
      */

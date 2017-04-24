@@ -17,17 +17,17 @@ import org.jetbrains.anko.enabled
 import org.json.JSONObject
 
 /**
- * 单选单元格(type_radio): 用于进行单项选择，如单元格名称为“自然灾害情况”，单元格值为“洪灾,涝灾”。单元格是否可编辑属性对其无效
+ * 二级单选单元格(type_radio_with_secondary_choice): 用于对单选的内容进行补充，如上述自然灾害情况，单元格值为“洪灾,涝灾;轻微,一般,严重”，即可在选择完灾害后，选择严重程度。单元格是否可编辑属性对其无效
  * Created by kevin on 17-4-18.
  * Mail: chewenkaich@gmail.com
  */
-class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttributes() {
+class TypeRadioWithSecondaryChoice(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttributes() {
 
     /**
      * 获取打印的内容
      */
     override fun getPrintContent(): String {
-        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked?:false)
+        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked ?: false)
             return cell_name?.text.toString() + ":" + get_cell_value()
         else
             return ""
@@ -45,7 +45,17 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
      * 将内容填到单元格
      */
     override fun setFilledContent(content: String) {
-        setSelectedRadio(content)
+        val twoPart = content.splitKeeping(";")
+        if (twoPart.isEmpty())
+            return
+        else if (twoPart.size == 2) {
+            val primaryValue = twoPart[0]
+            val secondaryValue = twoPart[1]
+            setPrimarySelectedRadio(primaryValue)
+            setSecondarySelectedRadio(secondaryValue)
+            cell_secondary_value?.visibility = View.VISIBLE
+        } else
+            return
     }
 
     /**
@@ -74,8 +84,12 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
      */
     override fun get_cell_value(): String {
         var value = ""
-        if (getSelectedRadio() != null) {
-            value = getSelectedRadio()!!.text.toString()
+        if (getPrimarySelectedRadio() != null) {
+            value = getPrimarySelectedRadio()!!.text.toString()
+        }
+        value += ";"
+        if (getSecondarySelectedRadio() != null) {
+            value += getSecondarySelectedRadio()?.text.toString()
         }
         return value
     }
@@ -136,7 +150,7 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
      */
     override fun isFilled(): Boolean {
         if (get_cell_fill_required() == SheetProtocol().True) {
-            return getSelectedRadio() != null
+            return getPrimarySelectedRadio() != null
         } else
             return true
 
@@ -153,33 +167,52 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
     var linearLayout: LinearLayout? = null
     var cell_name: TextView? = null
     var cell_value: LinearLayout? = null  // 盛放Radio Button的容器
+    var cell_secondary_value: LinearLayout? = null  // 盛放二级Radio Button的容器
     var radios = ArrayList<AppCompatRadioButton>() // 用于储存多个单选选项
+    var secondaryRadios = ArrayList<AppCompatRadioButton>() // 用于储存多个二级单选选项
     var cell_fill_required: TextView? = null
     var cell_printable: CheckBox? = null
 
     init {
         // 导入界面
         val mInflater: LayoutInflater = LayoutInflater.from(mContext)
-        contentView = mInflater.inflate(R.layout.sheet_cell_radio, null)
+        contentView = mInflater.inflate(R.layout.sheet_cell_radio_with_secondary_choice, null)
         // LinearLayout
         linearLayout = contentView!!.findViewById(R.id.cell_edit_text_linear_layout) as LinearLayout
         // 填写单元格的名字
         cell_name = contentView!!.findViewById(R.id.cell_name) as TextView
         cell_name!!.text = sheetCell.cell_name
         // 填写单元格的内容
-        cell_value = contentView!!.findViewById(R.id.cell_value) as LinearLayout
-        val choices = sheetCell.cell_value.splitKeeping(",")
+        cell_value = contentView!!.findViewById(R.id.cell_value) as LinearLayout  // 一级选项
+        cell_secondary_value = contentView!!.findViewById(R.id.cell_secondary_value) as LinearLayout  // 二级选项
+        val radioInfo = sheetCell.cell_value.splitKeeping(";")  // 先根据;区分选项级别 干旱,洪涝,高温,低温;严重,一般,轻微
+        val choices = radioInfo[0].splitKeeping(",")  // 再根据,区分各级别中的选项
         for (choice in choices) {
             val radio = AppCompatRadioButton(mContext)
             radio.setText(choice)
             cell_value!!.addView(radio)
             radios.add(radio)
             radio.setOnClickListener {
-                clearAllRadios()
+                clearPrimaryRadios()
+                clearSecondaryRadios()
+                cell_secondary_value?.visibility = View.VISIBLE
                 radio.isChecked = true
             }
         }
-        clearAllRadios()
+
+        val secondaryChoices = radioInfo[1].splitKeeping(",")  // 再根据,区分各级别中的选项
+        for (choice in secondaryChoices) {
+            val radio = AppCompatRadioButton(mContext)
+            radio.setText(choice)
+            cell_secondary_value!!.addView(radio)
+            secondaryRadios.add(radio)
+            radio.setOnClickListener {
+                clearSecondaryRadios()
+                radio.isChecked = true
+            }
+        }
+        clearSecondaryRadios()
+        clearPrimaryRadios()
         // 设置单元格可编辑状态(不受该属性影响)
         // ？@##￥￥%%%@#￥！
         // 设置单元格必填状态
@@ -204,17 +237,25 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
     }
 
     /**
-     * 清除所有选项
+     * 清除所有一级选项
      */
-    fun clearAllRadios() {
+    fun clearPrimaryRadios() {
         for (radio in radios)
             radio.isChecked = false
     }
 
     /**
-     * 获取选中的选项
+     * 清除所有二级选项
      */
-    fun getSelectedRadio(): AppCompatRadioButton? {
+    fun clearSecondaryRadios() {
+        for (radio in secondaryRadios)
+            radio.isChecked = false
+    }
+
+    /**
+     * 获取一级选项选中的选项
+     */
+    fun getPrimarySelectedRadio(): AppCompatRadioButton? {
         for (radio in radios) {
             if (radio.isChecked)
                 return radio
@@ -223,10 +264,33 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
     }
 
     /**
-     * 设置已选中的选项
+     * 获取二级选项选中的选项
      */
-    fun setSelectedRadio(radioValue: String) {
+    fun getSecondarySelectedRadio(): AppCompatRadioButton? {
+        for (radio in secondaryRadios) {
+            if (radio.isChecked)
+                return radio
+        }
+        return null
+    }
+
+    /**
+     * 设置一级选项已选中的选项
+     */
+    fun setPrimarySelectedRadio(radioValue: String) {
         for (radio in radios) {
+            if (radio.text.toString().equals(radioValue)) {
+                radio.isChecked = true
+                return
+            }
+        }
+    }
+
+    /**
+     * 设置二级选项已选中的选项
+     */
+    fun setSecondarySelectedRadio(radioValue: String) {
+        for (radio in secondaryRadios) {
             if (radio.text.toString().equals(radioValue)) {
                 radio.isChecked = true
                 return
@@ -239,6 +303,9 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
      */
     fun setAllRadioDisable() {
         for (radio in radios) {
+            radio.isEnabled = false
+        }
+        for (radio in secondaryRadios) {
             radio.isEnabled = false
         }
     }

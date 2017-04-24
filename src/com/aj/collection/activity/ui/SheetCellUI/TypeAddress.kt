@@ -29,6 +29,40 @@ import org.json.JSONObject
  */
 class TypeAddress(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
     /**
+     * 获取打印的内容
+     */
+    override fun getPrintContent(): String {
+        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked?:false)
+            return cell_name?.text.toString() + ":" + get_cell_value()
+        else
+            return ""
+    }
+
+    /**
+     * 设置单元格为不可打印
+     */
+    override fun setCellNotPrinte() {
+        cell_printable?.isChecked = false
+        cell_printable?.isClickable = false
+    }
+
+    /**
+     * 将内容填到单元格
+     */
+    override fun setFilledContent(content: String) {
+        country_province_city?.text = content
+
+    }
+
+    /**
+     * 设置单元格为不可更改
+     */
+    override fun setCellDisable() {
+        locationPause = true
+        streetET?.visibility = View.GONE
+    }
+
+    /**
      *获取单元格名称(cell_name)
      */
     override fun get_cell_name(): String {
@@ -49,8 +83,7 @@ class TypeAddress(var mContext: Context, var sheetCell: SheetCell): CellBaseAttr
         if (streetET!!.text.toString().isEmpty())
             return country_province_city!!.text.toString()
         else
-            return country_province_city!!.text.toString() + "，补充位置："
-                streetET!!.text.toString()
+            return country_province_city!!.text.toString() + "，补充位置：" + streetET?.text.toString()
     }
 
     /**

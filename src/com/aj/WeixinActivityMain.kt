@@ -1,20 +1,9 @@
 package com.aj
 
 
-import android.app.Activity
-import android.app.Dialog
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.ProgressDialog
-import android.content.ActivityNotFoundException
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.ServiceConnection
+import android.app.*
+import android.content.*
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
@@ -25,45 +14,24 @@ import android.support.v7.app.NotificationCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.Display
-import android.view.Gravity
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.Window
+import android.view.*
 import android.view.WindowManager.LayoutParams
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.*
-
 import com.aj.collection.R
-import com.aj.collection.activity.AboutActivity
-import com.aj.collection.activity.CollectionApplication
-import com.aj.collection.activity.DebugActivity
-import com.aj.collection.activity.DetecedUnit
-import com.aj.collection.activity.LoginActivity
+import com.aj.collection.activity.*
 import com.aj.collection.activity.Navigation.MapActivity
 import com.aj.collection.activity.ThirdModify_WeiXin.Exit
 import com.aj.collection.activity.http.API
 import com.aj.collection.activity.http.ReturnCode
 import com.aj.collection.activity.http.URLs
 import com.aj.collection.activity.service.MsgService
-import com.aj.collection.activity.tools.ExitApplication
-import com.aj.collection.activity.tools.FileStream
-import com.aj.collection.activity.tools.SPUtils
-import com.aj.collection.activity.tools.T
-import com.aj.collection.activity.tools.Util
-import com.aj.collection.adapters.*
+import com.aj.collection.activity.tools.*
+import com.aj.collection.adapters.TaskAdapter
+import com.aj.collection.adapters.TaskData
 import com.aj.collection.bean.Sheet
-import com.aj.collection.bean.TaskInfo
-import com.aj.collection.bean.Template
-import com.aj.database.DaoSession
-import com.aj.database.SAMPLINGTABLE
-import com.aj.database.SAMPLINGTABLEDao
-import com.aj.database.TASKINFO
-import com.aj.database.TASKINFODao
-import com.aj.database.TEMPLETTABLE
-import com.aj.database.TEMPLETTABLEDao
+import com.aj.database.*
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.VolleyError
@@ -71,22 +39,15 @@ import com.android.volley.toolbox.StringRequest
 import com.baidu.mobstat.SendStrategyEnum
 import com.baidu.mobstat.StatService
 import com.jrs.utils.FileUtils
-import com.library.ExpandableLayoutListView
-import com.library.ExpandableLayoutListViewItemListener
 import com.thoughtbot.expandablerecyclerview.listeners.GroupExpandCollapseListener
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
-
 import net.micode.compass.CompassActivity
 import net.micode.notes.ui.NotesListActivity
-import org.jetbrains.anko.UI
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-
-import kotlin.collections.ArrayList
 
 class WeixinActivityMain : Activity() {
 
@@ -279,8 +240,7 @@ class WeixinActivityMain : Activity() {
                     mTabText3!!.setTextColor(Color.parseColor("#585858"))
 
                     //refresh doing page
-                    notifyDoingChildListDataChanged()
-                    notifyDoingParentListDataChanged()
+                    refreshDoingTaskData(showProgDialog = false)
                 }
                 1 -> {
                     mTabImage2!!.setImageDrawable(resources.getDrawable(R.drawable.tab_address_pressed))
@@ -296,8 +256,7 @@ class WeixinActivityMain : Activity() {
                     mTabText3!!.setTextColor(Color.parseColor("#585858"))
 
                     //refresh history page
-                    notifyDoneChildListDataChanged()
-                    notifyDoneParentListDataChanged()
+                    refreshDoneTaskData(showProgDialog = true)
                 }
                 2 -> {
                     mTabImage3!!.setImageDrawable(resources.getDrawable(R.drawable.tab_settings_pressed))
@@ -392,7 +351,7 @@ class WeixinActivityMain : Activity() {
 
     override fun onStop() {
         // Unregister our receiver.
-        unregisterReceiver(mReceiver)
+        unregisterReceiver(timeTickReceiver)
         unbindMsgService()
         cancleRequestFromQueue()
         super.onStop()
@@ -400,24 +359,22 @@ class WeixinActivityMain : Activity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        taskAdapter?.onSaveInstanceState(outState)
+        doingTaskAdapter?.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        taskAdapter?.onRestoreInstanceState(savedInstanceState)
+        doingTaskAdapter?.onRestoreInstanceState(savedInstanceState)
     }
     public override fun onResume() {
         bindMsgService()
 
         val filter1 = IntentFilter(Intent.ACTION_TIME_TICK)
-        registerReceiver(mReceiver, filter1)// just remember unregister it
+        registerReceiver(timeTickReceiver, filter1)// just remember unregister it
 
         // refresh data
-        refreshTaskData()
-        //refresh doing page
-        notifyDoingChildListDataChanged()
-        notifyDoingParentListDataChanged()
+        refreshDoingTaskData(showProgDialog = false)
+        refreshDoneTaskData(showProgDialog = false)
 
         //refresh history page
         //        notifyDoneChildListDataChanged();
@@ -426,19 +383,43 @@ class WeixinActivityMain : Activity() {
     }
 
     /**
-     * 更新任务数据列表
+     * 更新已完成的任务数据列表
      */
-    fun refreshTaskData() {
+    fun refreshDoneTaskData(showProgDialog : Boolean) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        progressDialog.setMessage("任务更新...")
-        progressDialog.show()
+        progressDialog.setMessage("数据加载中...")
+        if (showProgDialog)
+            progressDialog.show()
         doAsync {
-            val taskData = queryTaskData()
+            val taskData = queryDoneTaskData()
             uiThread {
-                taskAdapter?.taskList?.removeAll(taskAdapter?.taskList!!)
-                taskAdapter?.taskList?.addAll(taskData)
-                taskAdapter?.notifyDataSetChanged()
-                progressDialog.dismiss()
+                doneTaskAdapter?.taskList?.removeAll(doneTaskAdapter?.taskList!!)
+                doneTaskAdapter?.taskList?.addAll(taskData)
+                doneTaskAdapter?.notifyDataSetChanged()
+                refreshBadgeView1()
+                if (showProgDialog)
+                    progressDialog.dismiss()
+            }
+        }
+    }
+
+    /**
+     * 更新正在进行的任务数据列表
+     */
+    fun refreshDoingTaskData(showProgDialog : Boolean) {
+        val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
+        progressDialog.setMessage("数据加载中...")
+        if (showProgDialog)
+            progressDialog.show()
+        doAsync {
+            val taskData = queryDoingTaskData()
+            uiThread {
+                doingTaskAdapter?.taskList?.removeAll(doingTaskAdapter?.taskList!!)
+                doingTaskAdapter?.taskList?.addAll(taskData)
+                doingTaskAdapter?.notifyDataSetChanged()
+                refreshBadgeView1()
+                if (showProgDialog)
+                    progressDialog.dismiss()
             }
         }
     }
@@ -451,12 +432,7 @@ class WeixinActivityMain : Activity() {
 
     private var mFileStream: FileStream? = null
     private var doingParentListView: RecyclerView? = null
-    var taskAdapter:TaskAdapter? = null
-
-    //private ArrayAdapter<String> doingParentArrayAdapter;
-    private val doingParentArrayAdapter: DoingParentListAdapter? = null
-    //private ArrayList<String> doingParentAdapterDataSet=new ArrayList<String>();
-    private val doingParentAdapterDataSet: List<ParentListItem>? = null
+    var doingTaskAdapter:TaskAdapter? = null
 
     /**
      * 初始化任务界面
@@ -473,15 +449,15 @@ class WeixinActivityMain : Activity() {
         progressDialog.setMessage("数据加载中...")
         progressDialog.show()
         doAsync {
-            taskData = queryTaskData()
+            taskData = queryDoingTaskData()
             uiThread {
                 // 判断是否显示空列表时的图片
                 if (taskData.size == 0) emptyview.visibility=View.VISIBLE else emptyview.visibility = View.GONE
                 // 加载任务列表
-                taskAdapter = TaskAdapter(mContext, taskData)
+                doingTaskAdapter = TaskAdapter(mContext, taskData)
                 doingParentListView!!.layoutManager = layoutManager
-                doingParentListView!!.adapter = taskAdapter
-                taskAdapter?.setOnGroupExpandCollapseListener(object : GroupExpandCollapseListener{
+                doingParentListView!!.adapter = doingTaskAdapter
+                doingTaskAdapter?.setOnGroupExpandCollapseListener(object : GroupExpandCollapseListener{
                     override fun onGroupCollapsed(group: ExpandableGroup<*>?) {
 
                     }
@@ -502,10 +478,8 @@ class WeixinActivityMain : Activity() {
     }
 
 
-    private var doneParentListView: ExpandableLayoutListView? = null
-    //private ArrayAdapter<String> doingParentArrayAdapter;
-    private var doneParentArrayAdapter: DoneParentListAdapter? = null
-    private var doneParentAdapterDataSet: MutableList<ParentListItem>? = null
+    private var doneTaskListView: RecyclerView? = null
+    var doneTaskAdapter:TaskAdapter? = null
 
     /**
      * 初始化历史完成任务界面
@@ -516,51 +490,25 @@ class WeixinActivityMain : Activity() {
         if (mFileStream == null)
             mFileStream = FileStream(this@WeixinActivityMain)
 
-        doneParentListView = view.findViewById(R.id.expandablelistview_doingtask) as ExpandableLayoutListView
-        doneParentAdapterDataSet = refreshDoneParentListDataSet()
-        doneParentArrayAdapter = DoneParentListAdapter(this, doneParentAdapterDataSet, doneParentListView, Constant.HISTORY_PAGE)
-
-        doneParentListView!!.adapter = doneParentArrayAdapter
-        doneParentListView!!.setExpandableLayoutListViewItemListener(object : ExpandableLayoutListViewItemListener {
-            override fun onCollapse() {
-
-            }
-
-            override fun onExpand() {
-
-                //                doneParentListView.currentExpandableLayout.refreshExpandableItemHeight();//更新内层的高度
-                doneParentArrayAdapter!!.refreshExpandableItemHeight()
-                //				doingParentListView.smoothScrollToPositionFromTop(doingParentListView.currentPosition, 0);
-                //				doingParentListView.setSelection(doingParentListView.currentPosition);
-            }
-
-            override fun onCollapsed() {
-                //                doneParentListView.currentExpandableLayout.refreshExpandableItemHeight();//更新内层的高度
-                doneParentArrayAdapter!!.refreshExpandableItemHeight()
-
-            }
-
-            override fun onExpanded() {
-                doneParentListView!!.setSelection(doneParentListView!!.currentPosition)
-                //				doingParentListView.smoothScrollToPosition(doingParentListView.currentPosition * 150);
-
-            }
-        })
-
-        doneParentListView!!.onItemClickListener = object : AdapterView.OnItemClickListener {
-            override fun onItemClick(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
-                //				doingParentListView.currentExpandableLayout = (ExpandableLayoutItem) doingParentListView.getChildAt(i).findViewWithTag(ExpandableLayoutItem.class.getName());
-                //				doingParentListView.currentExpandableLayout.setSampleFileDir(doingParentListView.getTaskDir().listFiles()[i]);
-                //				doingParentListView.currentExpandableLayout.initChildListView(doingParentListView, doingParentAdapterDataSet.get(i).getTitle());
-
-
+        doneTaskListView = view.findViewById(R.id.expandablelistview_doingtask) as RecyclerView
+        val emptyview = view.findViewById(R.id.taskEmptyView) as RelativeLayout
+        val layoutManager = LinearLayoutManager(this)
+        var taskData = ArrayList<TaskData>()
+        val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
+        progressDialog.setMessage("数据加载中...")
+        progressDialog.show()
+        doAsync {
+            taskData = queryDoneTaskData()
+            uiThread {
+                // 判断是否显示空列表时的图片
+                if (taskData.size == 0) emptyview.visibility=View.VISIBLE else emptyview.visibility = View.GONE
+                // 加载任务列表
+                doneTaskAdapter = TaskAdapter(mContext, taskData)
+                doneTaskListView!!.layoutManager = layoutManager
+                doneTaskListView!!.adapter = doneTaskAdapter
+                progressDialog.dismiss()
             }
         }
-
-        val emptyview = view.findViewById(R.id.taskEmptyView) as RelativeLayout
-        doneParentListView!!.emptyView = emptyview
-        doneParentListView!!.divider = ColorDrawable(Color.GRAY)
-        doneParentListView!!.dividerHeight = 1
     }
 
 
@@ -827,65 +775,30 @@ class WeixinActivityMain : Activity() {
     }
 
     /**
-     * 通知子listview的内容变化
+     * 查找正在进行的多级列表的任务数据
      */
-    fun notifyDoingChildListDataChanged() {
-        //        if (doingParentListView.currentExpandableLayout != null) {
-        //            refreshDoingChildListData(doingParentArrayAdapter.doingChildrenAdapter);
-        //            doingParentArrayAdapter.refreshExpandableItemHeight();
-        //        }
-    }
-
-    /**
-     * 通知任务列表的内容变化
-     */
-    fun notifyDoingParentListDataChanged() {
-
-        refreshBadgeView1()
-    }
-
-    /**
-     * 刷新子listview 的内容Dataset
-     */
-    fun refreshDoingChildListData(adapter: DoingChildListAdapter) {
-
-        //init database
-        daoSession = ((mContext as Activity).application as CollectionApplication).getDaoSession(mContext)
-        taskinfoDao = daoSession!!.taskinfoDao
-        templettableDao = daoSession!!.templettableDao
-        samplingtableDao = daoSession!!.samplingtableDao
-
-        //repare data ----> fileDataSet:all file need to show. templatePositionListSet:all templet postition in fileDataSet
-        if (!adapter.dataSet.isEmpty())
-            adapter.dataSet.removeAll(adapter.dataSet)
-
-        val templettables = templettableDao!!.queryBuilder().where(TEMPLETTABLEDao.Properties.TaskID.eq(adapter.taskID)).orderAsc(TEMPLETTABLEDao.Properties.TempletID).list()
-
-        for (i in templettables.indices) {
-            val templettable = templettables.get(i)
-            adapter.dataSet.add(templettable)
-            val samplingtables = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.TempletID.eq(templettable.templetID),
-                    SAMPLINGTABLEDao.Properties.Check_status.notEq(Constant.S_STATUS_DELETE)).orderAsc(SAMPLINGTABLEDao.Properties.Id).list()
-            for (j in samplingtables.indices) {
-                adapter.dataSet.add(samplingtables.get(j))
-            }
-        }
-
-        //notify data changed
-        adapter.notifyDataSetChanged()
-    }
-
-    /**
-     * 查找多级列表的任务数据
-     */
-    fun queryTaskData(): ArrayList<TaskData> {
+    fun queryDoingTaskData(): ArrayList<TaskData> {
         //init database
         daoSession = (application as CollectionApplication).getDaoSession(mContext)
         taskinfoDao = daoSession!!.taskinfoDao
         templettableDao = daoSession!!.templettableDao
         samplingtableDao = daoSession!!.samplingtableDao
         //queryTaskName
-        val taskinfos = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.Is_finished.notEq(true)).orderAsc(TASKINFODao.Properties.TaskID).list()
+        val taskinfos = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.Is_finished.eq(false)).orderAsc(TASKINFODao.Properties.TaskID).list()
+        return taskInfo2TaskData(taskinfos)
+    }
+
+    /**
+     * 查找已完成的多级列表的任务数据
+     */
+    fun queryDoneTaskData(): ArrayList<TaskData> {
+        //init database
+        daoSession = (application as CollectionApplication).getDaoSession(mContext)
+        taskinfoDao = daoSession!!.taskinfoDao
+        templettableDao = daoSession!!.templettableDao
+        samplingtableDao = daoSession!!.samplingtableDao
+        //queryTaskName
+        val taskinfos = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.Is_finished.eq(true)).orderAsc(TASKINFODao.Properties.TaskID).list()
         return taskInfo2TaskData(taskinfos)
     }
 
@@ -919,137 +832,6 @@ class WeixinActivityMain : Activity() {
             taskSet.add(taskData)
         }
         return taskSet
-    }
-
-    /**
-     * 更新ParentList head Data 会更新右边的指示器内容
-
-     * @return
-     */
-    //    public List<ParentListItem> refreshDoingParentListDataSet() {
-    //        List<ParentListItem> listItems = new ArrayList<ParentListItem>();
-    //        TaskInfo taskInfo = new TaskInfo(WeixinActivityMain.this, Constant.DOING_PAGE);
-    //        //init database
-    //        daoSession = ((CollectionApplication) getApplication()).getDaoSession(mContext);
-    //        taskinfoDao = daoSession.getTASKINFODao();
-    //        templettableDao = daoSession.getTEMPLETTABLEDao();
-    //        samplingtableDao = daoSession.getSAMPLINGTABLEDao();
-    //        //queryTaskName
-    //        List<TASKINFO> taskinfos = taskinfoDao.queryBuilder().
-    //                where(TASKINFODao.Properties.Is_finished.notEq(true)).
-    //                orderAsc(TASKINFODao.Properties.TaskID).list();
-    //
-    //        int leftImg = R.drawable.taskclosed;
-    //        String title = "";
-    //        String rightText = "";
-    //
-    //        for (int i = 0; i < taskinfos.size(); i++) {//遍历Templet文件夹下的每个任务
-    //            title = taskinfos.get(i).getTask_name();//设置任务名
-    //            //查询模板数量
-    //            int[] rightCommitButtonNum = taskInfo.getRightCommitButtonNum(taskinfos.get(i).getTaskID());
-    //            if (rightCommitButtonNum[0] == rightCommitButtonNum[1] && rightCommitButtonNum[0] != 0) {
-    //                rightText = getResources().getString(R.string.commit_task);
-    //            } else {
-    //                rightText = "上传" + rightCommitButtonNum[0] + "/模板" + rightCommitButtonNum[1];
-    //            }
-    //            //添加到集合中
-    //            ParentListItem item = new ParentListItem(title, rightText, leftImg);
-    //            listItems.add(item);
-    //        }
-    //
-    //        return listItems;
-    //    }
-
-
-    /**
-     * 通知子listview的内容变化
-     */
-    fun notifyDoneChildListDataChanged() {
-        if (doneParentListView!!.currentExpandableLayout != null) {
-            refreshDoneChildListData(doneParentArrayAdapter!!.doingChildrenAdapter, Constant.HISTORY_PAGE)
-            doneParentArrayAdapter!!.refreshExpandableItemHeight()
-        }
-
-
-    }
-
-    /**
-     * 通知任务列表的内容变化
-     */
-    fun notifyDoneParentListDataChanged() {
-        val newDataSet = refreshDoneParentListDataSet()
-        doneParentAdapterDataSet!!.removeAll(doneParentAdapterDataSet!!)
-        for (i in newDataSet.indices) {
-            doneParentAdapterDataSet!!.add(newDataSet.get(i))
-        }
-
-        doneParentArrayAdapter!!.notifyDataSetChanged()
-
-    }
-
-    /**
-     * 刷新子listview 的内容Dataset
-     */
-    fun refreshDoneChildListData(adapter: DoneChildListAdapter, pageFlag: Int) {
-
-        //init database
-        daoSession = ((mContext as Activity).application as CollectionApplication).getDaoSession(mContext)
-        taskinfoDao = daoSession!!.taskinfoDao
-        templettableDao = daoSession!!.templettableDao
-        samplingtableDao = daoSession!!.samplingtableDao
-
-        //repare data ----> fileDataSet:all file need to show. templatePositionListSet:all templet postition in fileDataSet
-        if (!adapter.dataSet.isEmpty())
-            adapter.dataSet.removeAll(adapter.dataSet)
-
-        val templettables = templettableDao!!.queryBuilder().where(TEMPLETTABLEDao.Properties.TaskID.eq(adapter.taskID)).orderAsc(TEMPLETTABLEDao.Properties.TempletID).list()
-
-        for (i in templettables.indices) {
-            val templettable = templettables.get(i)
-            adapter.dataSet.add(templettable)
-            val samplingtables = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.TempletID.eq(templettable.templetID)).orderAsc(SAMPLINGTABLEDao.Properties.Id).list()
-            for (j in samplingtables.indices) {
-                adapter.dataSet.add(samplingtables.get(j))
-            }
-        }
-
-        //notify data changed
-        adapter.notifyDataSetChanged()
-    }
-
-    /**
-     * 更新ParentList head Data 会更新右边的指示器内容
-
-     * @return
-     */
-    fun refreshDoneParentListDataSet(): MutableList<ParentListItem> {
-
-        val listItems = ArrayList<ParentListItem>()
-        val taskInfo = TaskInfo(this@WeixinActivityMain, Constant.DOING_PAGE)
-
-        //queryTaskName
-        val taskinfos = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.Is_finished.eq(true)).orderAsc(TASKINFODao.Properties.TaskID).list()
-
-        val leftImg = R.drawable.taskclosed
-        var title = ""
-        var rightText = ""
-
-        for (i in taskinfos.indices) {//遍历Templet文件夹下的每个任务
-            title = taskinfos.get(i).task_name//设置任务名
-            //查询模板数量
-            val rightCommitButtonNum = taskInfo.getRightCommitButtonNum(taskinfos.get(i).taskID!!)
-            if (rightCommitButtonNum[0] == rightCommitButtonNum[1] && rightCommitButtonNum[0] != 0) {
-                rightText = resources.getString(R.string.commit_task)
-            } else {
-                rightText = "上传" + rightCommitButtonNum[0] + "/模板" + rightCommitButtonNum[1]
-            }
-            //添加到集合中
-            val item = ParentListItem(title, rightText, leftImg)
-            listItems.add(item)
-        }
-
-        return listItems
-
     }
 
     /**
@@ -1092,11 +874,12 @@ class WeixinActivityMain : Activity() {
     /**
      * 广播接收器
      */
-    private val mReceiver = object : BroadcastReceiver() {
+    private val timeTickReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_TIME_TICK) {//每分钟的广播 1.if have new task
                 updateTaskStatus(false)
                 updateSamplingStatus(false)
+//                haveNewTask()
             }
         }
     }
@@ -1124,8 +907,7 @@ class WeixinActivityMain : Activity() {
     private val mCallback = object : MsgService.ICallback {
 
         override fun haveNewTask() {
-            notifyDoingChildListDataChanged()
-            notifyDoingParentListDataChanged()
+           refreshDoingTaskData(showProgDialog = false)
         }
 
         override fun getWeixinActitityContext(): Context {
@@ -1141,7 +923,7 @@ class WeixinActivityMain : Activity() {
         }
 
         override fun refreshDoingChildListView() {
-            notifyDoingChildListDataChanged()
+            refreshDoingTaskData(showProgDialog = false)
         }
     }
 
@@ -1406,9 +1188,7 @@ class WeixinActivityMain : Activity() {
 
                             //show a notification
                             showNotification()
-                            refreshBadgeView1()
-                            notifyDoingChildListDataChanged()
-                            notifyDoingParentListDataChanged()
+                            refreshDoingTaskData(showProgDialog = false)
                         } else {
                             if (progressDialog.isShowing)
                                 progressDialog.dismiss()
@@ -1493,11 +1273,7 @@ class WeixinActivityMain : Activity() {
 
                         }
                         samplingtableDao!!.insertOrReplaceInTx(samplingtables)
-
-                        //                        if (doingParentListView.currentExpandableLayout != null) {
-                        //                            doingParentArrayAdapter.doingChildrenAdapter.notifyDataSetChanged();
-                        //                        }
-                        refreshTaskData()
+                        refreshDoingTaskData(showProgDialog = false)
 
                         if (showDialog) {
                             Toast.makeText(applicationContext, "任务状态更新成功", Toast.LENGTH_LONG).show()
@@ -1587,21 +1363,8 @@ class WeixinActivityMain : Activity() {
                         }
                         taskinfoDao!!.insertOrReplaceInTx(alltaskinfos)//update database
 
-
-                        //                        if (doingParentListView.currentExpandableLayout != null) {
-                        //                            doingParentArrayAdapter.doingChildrenAdapter.notifyDataSetChanged();
-                        //                        }
-                        //
-                        //                        List<TASKINFO> taskinfos = taskinfoDao.queryBuilder().
-                        //                                where(TASKINFODao.Properties.Is_finished.notEq(true)).
-                        //                                orderAsc(TASKINFODao.Properties.TaskID).list();
-                        //                        if (doingParentListView.currentPosition >= taskinfos.size()) {
-                        //                            doingParentListView.currentPosition = taskinfos.size() - 1;
-                        //                        }
-                        //                        if (doingParentListView.currentPosition < 0)
-                        //                            doingParentListView.currentPosition = 0;
-
-                        notifyDoingParentListDataChanged()
+                        refreshDoingTaskData(showProgDialog = false)
+                        refreshDoneTaskData(showProgDialog = false)
 
                     } else {
                         ReturnCode(applicationContext, errorCode, true)

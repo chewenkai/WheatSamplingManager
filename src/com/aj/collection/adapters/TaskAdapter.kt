@@ -230,7 +230,7 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
 
                     //refresh data
                     notifyItemRemoved(childIndex)
-                    (mContext as WeixinActivityMain).refreshTaskData()
+                    (mContext as WeixinActivityMain).refreshDoingTaskData(showProgDialog = true)
                 }
 
                 // 上传
@@ -380,12 +380,11 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
         for (i in samplingtables!!.indices) {
             //search media files under this sampling,add them to files list
             val mediaFileName = samplingtables[i].media_folder
-            val mediaFiles = File(Util.getMediaFolder(mContext) + File.separator + mediaFileName).listFiles()
-            if (mediaFiles != null) {
-                for (j in mediaFiles.indices) {
-                    files.add(mediaFiles[j])
-                }
+            val mediaFilePaths = File(Util.getMediaFolder(mContext) + File.separator + mediaFileName).listFiles()
+            for (filePath in mediaFilePaths){
+                files += filePath.listFiles()
             }
+
         }
 
         if (files.size == 0) {
@@ -461,10 +460,8 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
                             //samplingtableDao.insertOrReplaceInTx(samplingtables);
                             //Toast
                             Toast.makeText(mContext, "抽样单上传成功", Toast.LENGTH_SHORT).show()
-                            //update data set of child adapter
-                            (mContext as WeixinActivityMain).notifyDoingChildListDataChanged()
-                            //update data set of parent adapter
-                            mContext.notifyDoingParentListDataChanged()
+                            //update data set of adapter
+                            (mContext as WeixinActivityMain).refreshDoingTaskData(showProgDialog = true)
                         }
                     } else {
                         progressDialog.dismiss()
@@ -521,6 +518,7 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
                     .build()
         } else {
             Toast.makeText(mContext, mContext.getString(R.string.unknownFileType), Toast.LENGTH_LONG).show()
+            progressDialog.dismiss()
             return
         }
 
@@ -548,53 +546,55 @@ class TaskAdapter(val mContext: Context, var taskList: ArrayList<TaskData>?) : M
                     val errorCode = resultJson.getString(URLs.KEY_ERROR)
                     val message = resultJson.getString(URLs.KEY_MESSAGE)
 
-                    if (errorCode != ReturnCode.Code0) {
-                        WeixinActivityMain.instance!!.runOnUiThread {
-                            progressDialog.dismiss()
-                            Toast.makeText(mContext, mContext.getString(R.string.badNetWork), Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    if (errorCode == ReturnCode.Code0 && progressDialog.progress == files.size - 1) {  // The final file
+                    if (progressDialog.progress == files.size - 1) {  // The final file
                         WeixinActivityMain.instance!!.runOnUiThread {
                             progressDialog.dismiss()
                             uploadSamplings(samplingtables, taskName)
                         }
 
-                    } else {
-                        counter.increase_one_step()
-                        WeixinActivityMain.instance!!.runOnUiThread {
-                            progressDialog.progress = progressDialog.progress + 1
-                            progressDialog.setMessage(files[progressDialog.progress].name + "上传中...")
-                        }
+                    } else{
+                        if (errorCode != ReturnCode.Code0) {
+                            WeixinActivityMain.instance!!.runOnUiThread {
+                                progressDialog.dismiss()
+                                Toast.makeText(mContext, mContext.getString(R.string.serverError), Toast.LENGTH_SHORT).show()
+                            }
+                        }else {
+                            counter.increase_one_step()
+                            WeixinActivityMain.instance!!.runOnUiThread {
+                                progressDialog.progress = progressDialog.progress + 1
+                                progressDialog.setMessage(files[progressDialog.progress].name + "上传中...")
+                            }
 
-                        var body: RequestBody? = null
-                        if (files[counter.counter].name.endsWith(".jpg")) {
-                            body = MultipartBody.Builder()
-                                    .setType(MultipartBody.FORM)
-                                    .addPart(Headers.of("Content-Disposition", "form-data; name=\"username\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String))
-                                    .addPart(Headers.of("Content-Disposition", "form-data; name=\"password\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String))
-                                    .addFormDataPart("upfile", files[counter.counter].name, RequestBody.create(MediaType.parse("image/jpg"), files[counter.counter]))
+                            var body: RequestBody? = null
+                            if (files[counter.counter].name.endsWith(".jpg")) {
+                                body = MultipartBody.Builder()
+                                        .setType(MultipartBody.FORM)
+                                        .addPart(Headers.of("Content-Disposition", "form-data; name=\"username\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String))
+                                        .addPart(Headers.of("Content-Disposition", "form-data; name=\"password\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String))
+                                        .addFormDataPart("upfile", files[counter.counter].name, RequestBody.create(MediaType.parse("image/jpg"), files[counter.counter]))
+                                        .build()
+                            } else if (files[counter.counter].name.endsWith(".mp4")) {
+                                body = MultipartBody.Builder()
+                                        .setType(MultipartBody.FORM)
+                                        .addPart(Headers.of("Content-Disposition", "form-data; name=\"username\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String))
+                                        .addPart(Headers.of("Content-Disposition", "form-data; name=\"password\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String))
+                                        .addFormDataPart("upfile", files[counter.counter].name, RequestBody.create(MediaType.parse("video/mp4"), files[counter.counter]))
+                                        .build()
+                            } else {
+                                Toast.makeText(mContext, mContext.getString(R.string.unknownFileType), Toast.LENGTH_LONG).show()
+                                return
+                            }
+
+                            val request = Request.Builder()
+                                    .url(URLs.UPLAODIMG)
+                                    .post(body)
                                     .build()
-                        } else if (files[counter.counter].name.endsWith(".mp4")) {
-                            body = MultipartBody.Builder()
-                                    .setType(MultipartBody.FORM)
-                                    .addPart(Headers.of("Content-Disposition", "form-data; name=\"username\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String))
-                                    .addPart(Headers.of("Content-Disposition", "form-data; name=\"password\""), RequestBody.create(null, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String))
-                                    .addFormDataPart("upfile", files[counter.counter].name, RequestBody.create(MediaType.parse("video/mp4"), files[counter.counter]))
-                                    .build()
-                        } else {
-                            Toast.makeText(mContext, mContext.getString(R.string.unknownFileType), Toast.LENGTH_LONG).show()
-                            return
+
+                            val client = OkHttpClient()
+                            client.newCall(request).enqueue(this)
                         }
-
-                        val request = Request.Builder()
-                                .url(URLs.UPLAODIMG)
-                                .post(body)
-                                .build()
-
-                        val client = OkHttpClient()
-                        client.newCall(request).enqueue(this)
                     }
+
                 } catch (e: JSONException) {
                     e.printStackTrace()
                     WeixinActivityMain.instance!!.runOnUiThread {

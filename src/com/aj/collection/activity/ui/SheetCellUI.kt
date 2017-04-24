@@ -26,7 +26,7 @@ class SheetCellUI(var context: Context, var sheetCell: SheetCell, var autoGenera
             SheetProtocol().TYPE_EDIT_TEXT -> cell = TypeEditText(context, sheetCell)
             SheetProtocol().TYPE_TEXT -> cell =  TypeText(context, sheetCell)
             SheetProtocol().TYPE_RADIO -> cell =  TypeRadio(context, sheetCell)
-            SheetProtocol().TYPE_RADIO_WITH_SECONDARY_CHOICE -> {}
+            SheetProtocol().TYPE_RADIO_WITH_SECONDARY_CHOICE -> cell = TypeRadioWithSecondaryChoice(context, sheetCell)
             SheetProtocol().TYPE_MULTI_SELECT -> cell = TypeMultiSelect(context, sheetCell)
             SheetProtocol().TYPE_GEOGRAPHIC_COORDINATES -> cell =  TypeGeographicCoordinates(context, sheetCell)
             SheetProtocol().TYPE_ADDRESS -> cell = TypeAddress(context, sheetCell)

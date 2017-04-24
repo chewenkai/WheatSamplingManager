@@ -22,6 +22,48 @@ import org.json.JSONObject
  * Mail: chewenkaich@gmail.com
  */
 class TypeMultiSelect(var mContext: Context, var sheetCell: SheetCell): CellBaseAttributes() {
+
+    /**
+     * 获取打印的内容
+     */
+    override fun getPrintContent(): String {
+        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked?:false)
+            return cell_name?.text.toString() + ":" + get_cell_value()
+        else
+            return ""
+    }
+
+    /**
+     * 设置单元格为不可打印
+     */
+    override fun setCellNotPrinte() {
+        cell_printable?.isChecked = false
+        cell_printable?.isClickable = false
+    }
+
+    /**
+     * 将内容填到单元格
+     */
+    override fun setFilledContent(content: String) {
+        val contentStrings = content.splitKeeping(",")
+        for (contentString in contentStrings){
+            for (checkbox in checkBoxes){
+                if (checkbox.text.equals(contentString))
+                    checkbox.isChecked = true
+            }
+        }
+
+    }
+
+    /**
+     * 设置单元格为不可更改
+     */
+    override fun setCellDisable() {
+        for (checkbox in checkBoxes){
+            checkbox.isEnabled = false
+        }
+    }
+
     /**
      *获取单元格名称(cell_name)
      */

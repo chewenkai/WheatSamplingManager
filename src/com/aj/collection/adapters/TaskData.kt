@@ -2,7 +2,6 @@ package com.aj.collection.adapters
 
 import android.annotation.SuppressLint
 import com.aj.collection.bean.Sheet
-import com.aj.collection.bean.Task
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 
 
@@ -18,7 +17,7 @@ class TaskData(items: List<Sheet>, var taskID: Long, var task_name: String, var 
 
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
-        if (o !is Task) return false
+        if (o !is TaskData) return false
 
         return task_name == (o as TaskData).task_name
     }
