@@ -3,26 +3,19 @@ package com.aj.collection.activity
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatButton
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.*
-
-import com.aj.SystemBarTintManager
-import com.aj.WeixinActivityMain
 import com.aj.collection.R
-import com.aj.collection.activity.http.API
-import com.aj.collection.activity.http.ReturnCode
-import com.aj.collection.activity.http.URLs
-import com.aj.collection.activity.tools.SPUtils
-import com.aj.collection.activity.tools.Util
-import com.aj.collection.activity.ui.HeadControlPanel
-import com.aj.collection.activity.ui.HeadControlPanel.LeftImageOnClick
+import com.aj.collection.http.API
+import com.aj.collection.http.ReturnCode
+import com.aj.collection.http.URLs
+import com.aj.collection.tools.SPUtils
+import com.aj.collection.ui.HeadControlPanel
+import com.aj.collection.ui.HeadControlPanel.LeftImageOnClick
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import org.jetbrains.anko.toast
@@ -58,8 +51,6 @@ class DetecedUnit : Activity() {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.set_base_info)
-        //沉浸状态栏
-        SystemBarTintManager.setStatusBarTint(this@DetecedUnit, Color.argb(0, 59, 59, 59))//透明状态栏
         init()
         queue = (application as CollectionApplication).requestQueue //init Volley
         ll = findViewById(R.id.ll_jiankong) as LinearLayout

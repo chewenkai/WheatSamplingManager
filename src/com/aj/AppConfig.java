@@ -13,7 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-import com.aj.collection.activity.tools.StringUtils;
+import com.aj.collection.tools.StringUtils;
 
 /**
  * 应用程序配置类：用于保存用户相关信息及设置

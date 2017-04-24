@@ -13,12 +13,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aj.collection.R;
-import com.aj.collection.activity.http.URLs;
-import com.aj.collection.activity.tools.SPUtils;
-import com.aj.collection.activity.tools.T;
-import com.aj.collection.activity.ui.HeadControlPanel;
-import com.aj.collection.activity.ui.HeadControlPanel.LeftImageOnClick;
-import com.aj.SystemBarTintManager;
+import com.aj.collection.http.URLs;
+import com.aj.collection.tools.SPUtils;
+import com.aj.collection.tools.T;
+import com.aj.collection.ui.HeadControlPanel;
+import com.aj.collection.ui.HeadControlPanel.LeftImageOnClick;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -59,9 +58,6 @@ public class RegistActivity extends Activity
 	}
 	private void init()
 	{
-		//沉浸状态栏
-		SystemBarTintManager.setStatusBarTint(RegistActivity.this, Color.argb(0, 59, 59, 59));//透明状态栏
-
 		headPanel = (HeadControlPanel)findViewById(R.id.head_layout);  
 		headPanel.setRightFirstVisible(View.VISIBLE);
         if(headPanel != null){  

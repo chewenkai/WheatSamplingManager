@@ -14,7 +14,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.aj.collection.R;
-import com.aj.collection.activity.ui.HeadControlPanel;
+import com.aj.collection.ui.HeadControlPanel;
 
 
 public class AboutActivity extends Activity{

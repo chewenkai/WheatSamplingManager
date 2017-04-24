@@ -18,19 +18,18 @@ import android.view.View.OnClickListener
 import android.view.Window
 import android.widget.*
 
-import com.aj.SystemBarTintManager
 import com.aj.WeixinActivityMain
 import com.aj.collection.bean.Superior
 import com.aj.collection.R
-import com.aj.collection.activity.http.API
-import com.aj.collection.activity.http.ReturnCode
-import com.aj.collection.activity.http.URLs
-import com.aj.collection.activity.service.LongTermService
-import com.aj.collection.activity.service.MsgService
-import com.aj.collection.activity.tools.ExitApplication
-import com.aj.collection.activity.tools.SPUtils
-import com.aj.collection.activity.tools.Util
-import com.aj.collection.activity.ui.HeadControlPanel
+import com.aj.collection.http.API
+import com.aj.collection.http.ReturnCode
+import com.aj.collection.http.URLs
+import com.aj.collection.service.LongTermService
+import com.aj.collection.service.MsgService
+import com.aj.collection.tools.ExitApplication
+import com.aj.collection.tools.SPUtils
+import com.aj.collection.tools.Util
+import com.aj.collection.ui.HeadControlPanel
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -72,8 +71,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.login_layout)
         ExitApplication.getInstance().addActivity(this)
-        //沉浸状态栏
-        SystemBarTintManager.setStatusBarTint(this@LoginActivity, Color.argb(255, 0, 0, 0))//透明状态栏
+
         login = findViewById(R.id.l_signin_button) as Button
         signUp = findViewById(R.id.l_signup_button) as Button
         userET = findViewById(R.id.l_username_edit) as EditText

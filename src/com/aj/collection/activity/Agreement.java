@@ -9,7 +9,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.aj.collection.R;
-import com.aj.collection.activity.ui.HeadControlPanel;
+import com.aj.collection.ui.HeadControlPanel;
 
 public class Agreement extends Activity{
 

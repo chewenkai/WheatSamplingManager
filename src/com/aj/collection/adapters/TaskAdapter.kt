@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -15,23 +14,21 @@ import com.aj.WeixinActivityMain
 import com.aj.collection.R
 import com.aj.collection.activity.CollectionApplication
 import com.aj.collection.activity.GatherActivity
-import com.aj.collection.activity.http.API
-import com.aj.collection.activity.http.ReturnCode
-import com.aj.collection.activity.http.URLs
-import com.aj.collection.activity.tools.SPUtils
-import com.aj.collection.activity.tools.Util
-import com.aj.collection.activity.ui.widget.FileUtil
 import com.aj.collection.bean.Counter
 import com.aj.collection.bean.TaskInfo
+import com.aj.collection.http.API
+import com.aj.collection.http.ReturnCode
+import com.aj.collection.http.URLs
+import com.aj.collection.tools.SPUtils
+import com.aj.collection.tools.Util
+import com.aj.collection.ui.widget.FileUtil
 import com.aj.database.*
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.VolleyError
-import com.baidu.panosdk.plugin.indoor.util.ScreenUtils
-import com.thoughtbot.expandablerecyclerview.models.ExpandableListPosition
-import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
-import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import com.thoughtbot.expandablerecyclerview.MultiTypeExpandableRecyclerViewAdapter
+import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
+import com.thoughtbot.expandablerecyclerview.models.ExpandableListPosition
+import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import okhttp3.*
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.onClick
@@ -41,7 +38,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 
 /**

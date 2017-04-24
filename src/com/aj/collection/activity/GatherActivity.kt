@@ -16,17 +16,16 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import com.aj.Constant
-import com.aj.SystemBarTintManager
 import com.aj.collection.*
-import com.aj.collection.activity.http.API
-import com.aj.collection.activity.http.ReturnCode
-import com.aj.collection.activity.http.URLs
-import com.aj.collection.activity.tools.*
-import com.aj.collection.activity.ui.HeadControlPanel
-import com.aj.collection.activity.ui.HeadControlPanel.LeftImageOnClick
-import com.aj.collection.activity.ui.HeadControlPanel.RightSecondOnClick
-import com.aj.collection.activity.ui.HeadControlPanel.rightFirstImageOnClick
-import com.aj.collection.activity.ui.SheetCellUI
+import com.aj.collection.http.API
+import com.aj.collection.http.ReturnCode
+import com.aj.collection.http.URLs
+import com.aj.collection.tools.*
+import com.aj.collection.ui.HeadControlPanel
+import com.aj.collection.ui.HeadControlPanel.LeftImageOnClick
+import com.aj.collection.ui.HeadControlPanel.RightSecondOnClick
+import com.aj.collection.ui.HeadControlPanel.rightFirstImageOnClick
+import com.aj.collection.ui.SheetCellUI
 import com.aj.collection.bean.SheetCell
 import com.aj.database.*
 import com.android.volley.RequestQueue
@@ -100,9 +99,6 @@ class GatherActivity : AppCompatActivity() {
         taskinfoDao = daoSession!!.taskinfoDao
         templettableDao = daoSession!!.templettableDao
         samplingtableDao = daoSession!!.samplingtableDao
-
-        //沉浸状态栏
-        SystemBarTintManager.setStatusBarTint(this@GatherActivity, Color.argb(0, 59, 59, 59))//透明状态栏
 
         val EMPTY_STRING = ""
         phone_number = SPUtils.get(this, SPUtils.JIANKONG, EMPTY_STRING, SPUtils.get(this, SPUtils.LOGIN_USER, EMPTY_STRING, SPUtils.USER_DATA) as String) as String

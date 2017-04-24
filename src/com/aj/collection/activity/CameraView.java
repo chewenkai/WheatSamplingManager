@@ -41,10 +41,10 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.aj.collection.R;
-import com.aj.collection.activity.service.CameraPreview;
-import com.aj.collection.activity.tools.MyOrientationDetector;
-import com.aj.collection.activity.tools.ScreenUtil;
-import com.aj.collection.activity.tools.Util;
+import com.aj.collection.service.CameraPreview;
+import com.aj.collection.tools.MyOrientationDetector;
+import com.aj.collection.tools.ScreenUtil;
+import com.aj.collection.tools.Util;
 
 //import com.baidu.location.BDLocation;
 //import com.baidu.location.BDLocationListener;

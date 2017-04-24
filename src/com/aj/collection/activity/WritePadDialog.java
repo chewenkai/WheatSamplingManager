@@ -2,7 +2,7 @@ package com.aj.collection.activity;
 
 
 import com.aj.collection.R;
-import com.aj.collection.activity.tools.DialogListener;
+import com.aj.collection.tools.DialogListener;
 
 import android.app.Dialog;
 import android.content.Context;

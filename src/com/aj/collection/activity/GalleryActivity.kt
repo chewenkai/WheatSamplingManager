@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.aj.Constant
 import com.aj.collection.R
-import com.aj.collection.activity.tools.MediaManager
+import com.aj.collection.tools.MediaManager
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import kotlinx.android.synthetic.main.activity_gallery.*

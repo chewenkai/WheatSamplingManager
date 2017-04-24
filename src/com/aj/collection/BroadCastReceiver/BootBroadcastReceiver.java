@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.aj.collection.activity.service.MsgService;
-import com.aj.collection.activity.tools.SPUtils;
+import com.aj.collection.service.MsgService;
+import com.aj.collection.tools.SPUtils;
 
 /**
  * 开机自启动的广播 接受到广播开启后台服务

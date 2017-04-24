@@ -19,11 +19,9 @@ import com.aj.database.SAMPLINGTABLEDao;
 import com.aj.database.TASKINFO;
 import com.aj.database.TASKINFODao;
 import com.aj.database.TEMPLETTABLEDao;
-import com.aj.collection.activity.http.API;
-import com.aj.collection.activity.http.MultiPartStack;
-import com.aj.collection.activity.http.MultipartRequest;
-import com.aj.collection.activity.http.URLs;
-import com.aj.collection.activity.tools.SPUtils;
+import com.aj.collection.http.API;
+import com.aj.collection.http.URLs;
+import com.aj.collection.tools.SPUtils;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -263,54 +261,54 @@ public class DebugActivity extends Activity {
     }
 
     public void testUploadIMG() {
-        progressDialog.setMessage("上传文件...");
-        progressDialog.show();
-        RequestQueue mSingleQueue = Volley.newRequestQueue(mContext, new MultiPartStack());
-        Response.Listener<String> listener = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                progressDialog.dismiss();
-                output.setText(s);
-                try {
-                    JSONObject resultJson = new JSONObject(s);
-                    String errorCode = resultJson.getString(URLs.KEY_ERROR);
-                    String message = resultJson.getString(URLs.KEY_MESSAGE);
-                    output.setText(s+"\n错误码："+errorCode+"\n消息："+message);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                progressDialog.dismiss();
-                output.setText(volleyError.toString());
-            }
-        };
-
-        File file = null;
-        File sdcard = Environment.getExternalStorageDirectory();
-        for (int i = 0; i < sdcard.listFiles().length; i++) {
-            if (sdcard.listFiles()[i].isFile()) {
-                file = sdcard.listFiles()[i];
-                break;
-            }
-        }
-
-
-        if (file == null || !file.exists()) {
-            output.setText("sdcard下没有文件！");
-            return;
-        }
-        ArrayList<File> files = new ArrayList<>();
-        files.add(file);
-
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("act", URLs.UPLOADSAMPLINGACT);
-
-        MultipartRequest multiPartRequest = API.uploadFiles(listener, errorListener, files, map);
-        mSingleQueue.add(multiPartRequest);
+//        progressDialog.setMessage("上传文件...");
+//        progressDialog.show();
+//        RequestQueue mSingleQueue = Volley.newRequestQueue(mContext, new MultiPartStack());
+//        Response.Listener<String> listener = new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String s) {
+//                progressDialog.dismiss();
+//                output.setText(s);
+//                try {
+//                    JSONObject resultJson = new JSONObject(s);
+//                    String errorCode = resultJson.getString(URLs.KEY_ERROR);
+//                    String message = resultJson.getString(URLs.KEY_MESSAGE);
+//                    output.setText(s+"\n错误码："+errorCode+"\n消息："+message);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//        Response.ErrorListener errorListener = new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError volleyError) {
+//                progressDialog.dismiss();
+//                output.setText(volleyError.toString());
+//            }
+//        };
+//
+//        File file = null;
+//        File sdcard = Environment.getExternalStorageDirectory();
+//        for (int i = 0; i < sdcard.listFiles().length; i++) {
+//            if (sdcard.listFiles()[i].isFile()) {
+//                file = sdcard.listFiles()[i];
+//                break;
+//            }
+//        }
+//
+//
+//        if (file == null || !file.exists()) {
+//            output.setText("sdcard下没有文件！");
+//            return;
+//        }
+//        ArrayList<File> files = new ArrayList<>();
+//        files.add(file);
+//
+//        Map<String, String> map = new HashMap<String, String>();
+//        map.put("act", URLs.UPLOADSAMPLINGACT);
+//
+//        MultipartRequest multiPartRequest = API.uploadFiles(listener, errorListener, files, map);
+//        mSingleQueue.add(multiPartRequest);
 
     }
 

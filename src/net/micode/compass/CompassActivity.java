@@ -18,7 +18,6 @@ package net.micode.compass;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -39,7 +38,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.aj.SystemBarTintManager;
 import com.aj.collection.R;
 
 import java.util.Locale;
@@ -105,7 +103,6 @@ public class CompassActivity extends Activity {
         setContentView(R.layout.compassmain);
         initResources();
         initServices();
-        SystemBarTintManager.setStatusBarTint(CompassActivity.this, Color.argb(0, 0, 188, 212));
     }
 
     @Override

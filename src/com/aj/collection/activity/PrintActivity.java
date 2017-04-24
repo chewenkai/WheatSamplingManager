@@ -24,13 +24,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aj.Constant;
-import com.aj.SystemBarTintManager;
 import com.aj.collection.R;
-import com.aj.collection.activity.tools.T;
-import com.aj.collection.activity.tools.Util;
-import com.aj.collection.activity.ui.HeadControlPanel;
-import com.aj.collection.activity.ui.HeadControlPanel.LeftImageOnClick;
-import com.aj.collection.activity.ui.HeadControlPanel.rightFirstImageOnClick;
+import com.aj.collection.tools.T;
+import com.aj.collection.tools.Util;
+import com.aj.collection.ui.HeadControlPanel;
+import com.aj.collection.ui.HeadControlPanel.LeftImageOnClick;
+import com.aj.collection.ui.HeadControlPanel.rightFirstImageOnClick;
 import com.baidu.panosdk.plugin.indoor.util.ScreenUtils;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -81,8 +80,6 @@ public class PrintActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.print_layout);
-        //沉浸状态栏
-        SystemBarTintManager.setStatusBarTint(PrintActivity.this, Color.argb(0, 59, 59, 59));//透明状态栏
         try {
             init();
         } catch (WriterException e) {
