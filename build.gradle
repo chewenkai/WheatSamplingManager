@@ -83,4 +83,9 @@ android {
         }
     }
 
+//    greendao {
+//        schemaVersion 2
+//        targetGenDir 'src/main/java'  // set the green dao generate dir in source folder
+//    }
+
 }
