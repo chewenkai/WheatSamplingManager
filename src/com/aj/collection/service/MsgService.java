@@ -39,14 +39,14 @@ import com.aj.Constant;
 import com.aj.WeixinActivityMain;
 import com.aj.collection.activity.CollectionApplication;
 import com.aj.collection.R;
-import com.aj.database.DaoMaster;
-import com.aj.database.DaoSession;
-import com.aj.database.SAMPLINGTABLE;
-import com.aj.database.SAMPLINGTABLEDao;
-import com.aj.database.TASKINFO;
-import com.aj.database.TASKINFODao;
-import com.aj.database.TEMPLETTABLE;
-import com.aj.database.TEMPLETTABLEDao;
+import com.aj.collection.database.DaoMaster;
+import com.aj.collection.database.DaoSession;
+import com.aj.collection.database.SAMPLINGTABLE;
+import com.aj.collection.database.SAMPLINGTABLEDao;
+import com.aj.collection.database.TASKINFO;
+import com.aj.collection.database.TASKINFODao;
+import com.aj.collection.database.TEMPLETTABLE;
+import com.aj.collection.database.TEMPLETTABLEDao;
 import com.aj.collection.http.API;
 import com.aj.collection.http.ReturnCode;
 import com.aj.collection.http.URLs;
@@ -109,7 +109,7 @@ public class MsgService extends Service {
     public void onCreate() {
         Log.i(TAG, "[SERVICE] onCreate");
         super.onCreate();
-
+        ((CollectionApplication)this.getApplication()).initDaoSession();
         daoSession = ((CollectionApplication) (MsgService.this.getApplication())).getDaoSession(mContext);
         taskinfoDao = daoSession.getTASKINFODao();
         templettableDao = daoSession.getTEMPLETTABLEDao();
@@ -366,7 +366,7 @@ public class MsgService extends Service {
                                 return;
                             }
 
-                            JSONArray taskJsonArray = new JSONArray(tasks);// contain sorts of tasks
+                            JSONArray taskJsonArray = new JSONArray(tasks);// contain sorts of childList
                             for (int i = 0; i < taskJsonArray.length(); i++) {
                                 JSONObject taskJsonObject = taskJsonArray.getJSONObject(i);
                                 String taskID = taskJsonObject.getString(URLs.KEY_TASKID);
@@ -402,7 +402,7 @@ public class MsgService extends Service {
 
                                     SAMPLINGTABLE samplingtable = new SAMPLINGTABLE(null, Long.valueOf(taskID), templettable.getTempletID(), samplingName + "-" + samplingNum, companyAddress,
                                             samplingCont, mediaFolderChild, false, false, true, false, Constant.S_STATUS_HAVE_NOT_UPLOAD, System.currentTimeMillis(),
-                                            null, Long.valueOf(samplingID), null, null, null, mediaFolderChild);
+                                            null, Long.valueOf(samplingID), null, null, null, mediaFolderChild, false);
 
 
                                     samplingtableDao.insertOrReplace(samplingtable);

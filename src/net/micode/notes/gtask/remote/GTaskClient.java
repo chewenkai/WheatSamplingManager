@@ -64,11 +64,11 @@ import java.util.zip.InflaterInputStream;
 public class GTaskClient {
     private static final String TAG = GTaskClient.class.getSimpleName();
 
-    private static final String GTASK_URL = "https://mail.google.com/tasks/";
+    private static final String GTASK_URL = "https://mail.google.com/childList/";
 
-    private static final String GTASK_GET_URL = "https://mail.google.com/tasks/ig";
+    private static final String GTASK_GET_URL = "https://mail.google.com/childList/ig";
 
-    private static final String GTASK_POST_URL = "https://mail.google.com/tasks/r/ig";
+    private static final String GTASK_POST_URL = "https://mail.google.com/childList/r/ig";
 
     private static GTaskClient mInstance = null;
 

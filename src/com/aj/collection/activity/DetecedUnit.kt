@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatButton
 import android.util.Log
 import android.view.View
@@ -22,7 +23,7 @@ import org.jetbrains.anko.toast
 import org.json.JSONException
 import org.json.JSONObject
 
-class DetecedUnit : Activity() {
+class DetecedUnit : AppCompatActivity()  {
     private var kaiguan: Switch? = null
     private var userTV: TextView? = null
     private var userName: EditText? = null
@@ -49,9 +50,9 @@ class DetecedUnit : Activity() {
     val dv = "没有填写"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.set_base_info)
-        init()
+        supportActionBar?.title = "个人信息"
+
         queue = (application as CollectionApplication).requestQueue //init Volley
         ll = findViewById(R.id.ll_jiankong) as LinearLayout
         userName = findViewById(R.id.user_real_name) as EditText
@@ -114,49 +115,6 @@ class DetecedUnit : Activity() {
         //		});
     }
 
-    private fun init() {
-        headPanel = findViewById(R.id.head_layout) as HeadControlPanel
-        headPanel!!.setRightFirstVisible(View.VISIBLE)
-        if (headPanel != null) {
-            headPanel!!.initHeadPanel()
-            headPanel!!.setMiddleTitle("个人信息")
-            headPanel!!.setLeftImage(R.drawable.ic_menu_back)
-            val l = LeftImageOnClick { finish() }
-            headPanel!!.setLeftImageOnClick(l)
-            //			headPanel.setRightFirstImage(R.drawable.save_file);
-            //			headPanel.setRightFirstText("1");
-            //			rightFirstImageOnClick r = new rightFirstImageOnClick()
-            //			{
-            //
-            //				@Override
-            //				public void onImageClickListener()
-            //				{
-            //					unitName = unitNameET.getText().toString().replace(" ", "");
-            //					unitAddr = unitAddrET.getText().toString().replace(" ", "");
-            //					unitPost = unitPostET.getText().toString().replace(" ", "");
-            //					unitCZ = unitCZET.getText().toString().replace(" ", "");
-            //					unitPhone = unitPhoneET.getText().toString().replace(" ", "");
-            //					jiankong = jiankongET.getText().toString().replace(" ", "");
-            //					if(unitName.equals("") || unitAddr.equals("") || unitPost.equals("")
-            //							|| unitCZ.equals("")||unitPhone.equals("")
-            //							||jiankong.equals(""))
-            //					{
-            //						T.showShort(DetecedUnit.this, "所有栏目不能为空");
-            //						return ;
-            //					}
-            //					SPUtils.put(DetecedUnit.this, SPUtils.SAMPLING_COMPANY, unitName, SPUtils.USER_INFO);
-            //					SPUtils.put(DetecedUnit.this, SPUtils.SAMPLING_ADDR, unitAddr, SPUtils.USER_INFO);
-            //					SPUtils.put(DetecedUnit.this, SPUtils.UNIT_POST, unitPost, login_user);
-            //					SPUtils.put(DetecedUnit.this, SPUtils.UNIT_CZ, unitCZ, login_user);
-            //					SPUtils.put(DetecedUnit.this, SPUtils.SAMPLING_PHONE, unitPhone, SPUtils.USER_INFO);
-            //					SPUtils.put(DetecedUnit.this, SPUtils.JIANKONG, jiankong, login_user);
-            //					SPUtils.put(DetecedUnit.this, SPUtils.KAIGUAN, kaiguan.isChecked(), login_user);
-            //					T.showShort(DetecedUnit.this, "保存成功");
-            //				}
-            //			};
-            //			headPanel.setRightFirstImageOnClick(r);
-        }
-    }
 
     /**
      * 获取用户信息

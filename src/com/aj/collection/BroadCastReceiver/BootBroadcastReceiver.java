@@ -22,7 +22,8 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 
             if (!user.isEmpty() && !pwd.isEmpty()) {
                 Intent ootStartIntent = new Intent(context, MsgService.class);
-                context.startService(ootStartIntent);
+                if (((String)SPUtils.get(context, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) != null))
+                    context.startService(ootStartIntent);
 //
 //                Intent longtermService = new Intent(context, LongTermService.class);
 //                context.startService(longtermService);

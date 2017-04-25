@@ -199,14 +199,14 @@ class TypeAddress(var mContext: Context, var sheetCell: SheetCell): CellBaseAttr
                 if (locationPause)
                     return
                 val location = intent.getParcelableExtra<BDLocation>(Constant.LOCATION_BROADCAST_VALUE)
-                country = location.country
-                province = location.province
-                city = location.city
-                district = location.district
-                street = location.street
+                country = location?.country?:""
+                province = location?.province?:""
+                city = location?.city?:""
+                district = location?.district?:""
+                street = location?.street?:""
 
-                location_info_type = location.locType  // 定位类型
-                country_province_city!!.setText("$province$city$district$street")
+                location_info_type = location?.locType?:BDLocation.TypeNone  // 定位类型
+                country_province_city!!.text = "$province$city$district$street"
             }
         }
     }

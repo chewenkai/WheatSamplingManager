@@ -5,20 +5,19 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.app.Activity;
-import android.os.Environment;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aj.Constant;
 import com.aj.collection.R;
-import com.aj.database.DaoMaster;
-import com.aj.database.DaoSession;
-import com.aj.database.SAMPLINGTABLE;
-import com.aj.database.SAMPLINGTABLEDao;
-import com.aj.database.TASKINFO;
-import com.aj.database.TASKINFODao;
-import com.aj.database.TEMPLETTABLEDao;
+import com.aj.collection.database.DaoMaster;
+import com.aj.collection.database.DaoSession;
+import com.aj.collection.database.SAMPLINGTABLE;
+import com.aj.collection.database.SAMPLINGTABLEDao;
+import com.aj.collection.database.TASKINFO;
+import com.aj.collection.database.TASKINFODao;
+import com.aj.collection.database.TEMPLETTABLEDao;
 import com.aj.collection.http.API;
 import com.aj.collection.http.URLs;
 import com.aj.collection.tools.SPUtils;
@@ -32,11 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DebugActivity extends Activity {
     TextView login, haveNewTask, getNewTask, setReceived, uploadFile, uploadSampling, uploadLocation, getSampleTask, getTaskStatus, output;

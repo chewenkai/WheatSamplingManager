@@ -132,7 +132,7 @@ class TypeEditText(var mContext: Context, var sheetCell: SheetCell): CellBaseAtt
         if (sheetCell.cell_fill_required==(SheetProtocol().False))
             return true
         else{
-            return !cell_value!!.text.toString().isEmpty()
+            return !cell_value?.text.toString().isEmpty() && !cell_value?.text.toString().isBlank()
         }
     }
 

@@ -6,13 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.aj.Constant;
 import com.aj.collection.activity.CollectionApplication;
-import com.aj.database.TASKINFO;
+import com.aj.collection.database.TASKINFO;
 import com.aj.collection.service.LongTermService;
 import com.aj.collection.service.MsgService;
 
@@ -289,12 +285,12 @@ public class Util {
      */
     public static String getSamplingNum(Context context, TASKINFO taskinfo) {
 
-        if(((CollectionApplication)context.getApplicationContext()).global_device_sn!= Constant.CAN_NOT_GET_SERIES_NUMBER){
-            return taskinfo.getTask_letter() + ((CollectionApplication)context.getApplicationContext()).global_device_sn + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
-        }else if(((CollectionApplication)context.getApplicationContext()).global_device_sn== Constant.CAN_NOT_GET_SERIES_NUMBER&&
+        if(((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() != Constant.CAN_NOT_GET_SERIES_NUMBER){
+            return taskinfo.getTask_letter() + ((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
+        }else if(((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() == Constant.CAN_NOT_GET_SERIES_NUMBER&&
                 !((String)SPUtils.get(context,SPUtils.DEV_SN,"",SPUtils.SYSVARIABLE)).isEmpty()){
-            ((CollectionApplication)context.getApplicationContext()).global_device_sn=(String)SPUtils.get(context,SPUtils.DEV_SN,"",SPUtils.SYSVARIABLE);
-            return taskinfo.getTask_letter() + ((CollectionApplication)context.getApplicationContext()).global_device_sn + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
+            ((CollectionApplication) context.getApplicationContext()).setGlobal_device_sn((String) SPUtils.get(context, SPUtils.DEV_SN, "", SPUtils.SYSVARIABLE));
+            return taskinfo.getTask_letter() + ((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
         }else
             return taskinfo.getTask_letter() + ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId() + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
     }
@@ -308,12 +304,12 @@ public class Util {
      */
     public static String getSamplingNum(Context context, String taskLetter) {
 
-        if(((CollectionApplication)context.getApplicationContext()).global_device_sn!= Constant.CAN_NOT_GET_SERIES_NUMBER){
-            return taskLetter + ((CollectionApplication)context.getApplicationContext()).global_device_sn + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
-        }else if(((CollectionApplication)context.getApplicationContext()).global_device_sn== Constant.CAN_NOT_GET_SERIES_NUMBER&&
+        if(((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() != Constant.CAN_NOT_GET_SERIES_NUMBER){
+            return taskLetter + ((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
+        }else if(((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() == Constant.CAN_NOT_GET_SERIES_NUMBER&&
                 !((String)SPUtils.get(context,SPUtils.DEV_SN,"",SPUtils.SYSVARIABLE)).isEmpty()){
-            ((CollectionApplication)context.getApplicationContext()).global_device_sn=(String)SPUtils.get(context,SPUtils.DEV_SN,"",SPUtils.SYSVARIABLE);
-            return taskLetter + ((CollectionApplication)context.getApplicationContext()).global_device_sn + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
+            ((CollectionApplication) context.getApplicationContext()).setGlobal_device_sn((String) SPUtils.get(context, SPUtils.DEV_SN, "", SPUtils.SYSVARIABLE));
+            return taskLetter + ((CollectionApplication) context.getApplicationContext()).getGlobal_device_sn() + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
         }else
             return taskLetter + ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId() + Util.getCurrentTime("yyMMdd") + Util.getLocalSeq(context, true);
     }

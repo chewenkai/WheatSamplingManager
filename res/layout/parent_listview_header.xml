@@ -16,11 +16,10 @@
         android:src="@drawable/taskclosed" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/LL_refreshBTN"
         android:layout_toRightOf="@+id/taskIfOpendImg"
         android:gravity="center_vertical">
         <LinearLayout
@@ -145,7 +144,7 @@
             android:text="NEW"
             android:textColor="#ff0000"
             android:textSize="14sp"
-            android:visibility="gone"
+            android:visibility="visible"
             />
 
     </LinearLayout>

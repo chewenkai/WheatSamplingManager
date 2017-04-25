@@ -255,21 +255,21 @@ class TypePhotos(var mContext: Context, var sheetCell: SheetCell, val autoGenera
                 if (locationPause)
                     return
                 val location = intent.getParcelableExtra<BDLocation>(Constant.LOCATION_BROADCAST_VALUE)
-                country = location.country
-                province = location.province
-                city = location.city
-                district = location.district
-                street = location.street
+                country = location?.country?:""
+                province = location?.province?:""
+                city = location?.city?:""
+                district = location?.district?:""
+                street = location?.street?:""
 
-                longitude = location.longitude.toString()  // 经度信息
-                latitude = location.latitude.toString()  // 纬度信息
-                location_info_type = location.locType  // 定位类型
+                longitude = location?.longitude?.toString()?:""  // 经度信息
+                latitude = location?.latitude?.toString()?:""  // 纬度信息
+                location_info_type = location?.locType?: BDLocation.TypeNone // 定位类型
                 var location_type_str = ""  // 定位类型字符
                 when (location_info_type) {
                     BDLocation.TypeGpsLocation -> location_type_str = "GPS定位"
                     BDLocation.TypeCacheLocation -> location_type_str = "缓存的位置(此状态无法保存)"
                     BDLocation.TypeNetWorkLocation -> location_type_str = "网络定位"
-                    BDLocation.TypeNone -> location_type_str = "无(此状态无法保存)"
+                    BDLocation.TypeNone -> location_type_str = "无定位信息(此状态无法保存)"
                     BDLocation.TypeOffLineLocation -> location_type_str = "离线定位(此状态无法保存)"
                 }
 

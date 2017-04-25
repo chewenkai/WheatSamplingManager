@@ -185,14 +185,14 @@ class TypeGeographicCoordinates(var mContext: Context, var sheetCell: SheetCell)
                 if (locationPause)
                     return
                 val location = intent.getParcelableExtra<BDLocation>(Constant.LOCATION_BROADCAST_VALUE)
-                longitude = location.longitude.toString()  // 经度信息
-                latitude = location.latitude.toString()  // 纬度信息
-                location_info_type = location.locType  // 定位类型
+                longitude = location?.longitude?.toString()?:""  // 经度信息
+                latitude = location?.latitude?.toString()?:""  // 纬度信息
+                location_info_type = location?.locType?: BDLocation.TypeNone // 定位类型
                 when (location_info_type){
                     BDLocation.TypeGpsLocation -> location_type_str="GPS定位"
                     BDLocation.TypeCacheLocation -> location_type_str="缓存的位置(此状态无法保存)"
                     BDLocation.TypeNetWorkLocation-> location_type_str="网络定位"
-                    BDLocation.TypeNone-> location_type_str="无(此状态无法保存)"
+                    BDLocation.TypeNone-> location_type_str="无定位信息(此状态无法保存)"
                     BDLocation.TypeOffLineLocation-> location_type_str="离线定位(此状态无法保存)"
                 }
                 cell_value!!.setText("经度:$longitude\n纬度:$latitude\n定位类型：$location_type_str")

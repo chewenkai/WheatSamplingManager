@@ -1,12 +1,13 @@
 package com.aj;
 
 import android.content.Context;
+import android.provider.CalendarContract;
 import android.telephony.TelephonyManager;
 
 import com.aj.collection.activity.CollectionApplication;
 
 public class Constant {
-    final static public String DeviceID = ((TelephonyManager) CollectionApplication.applicationContext.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+    final static public String DeviceID = ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 
     //Btn的标识
     public static final int BTN_FLAG_DO = 0x01;

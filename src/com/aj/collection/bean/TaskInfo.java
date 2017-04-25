@@ -7,13 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.aj.Constant;
 import com.aj.collection.activity.CollectionApplication;
-import com.aj.database.DaoMaster;
-import com.aj.database.DaoSession;
-import com.aj.database.SAMPLINGTABLE;
-import com.aj.database.SAMPLINGTABLEDao;
-import com.aj.database.TASKINFODao;
-import com.aj.database.TEMPLETTABLE;
-import com.aj.database.TEMPLETTABLEDao;
+import com.aj.collection.database.DaoMaster;
+import com.aj.collection.database.DaoSession;
+import com.aj.collection.database.SAMPLINGTABLE;
+import com.aj.collection.database.SAMPLINGTABLEDao;
+import com.aj.collection.database.TASKINFODao;
+import com.aj.collection.database.TEMPLETTABLE;
+import com.aj.collection.database.TEMPLETTABLEDao;
 
 import java.io.File;
 import java.util.List;

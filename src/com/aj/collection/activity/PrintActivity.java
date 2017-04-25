@@ -99,10 +99,10 @@ public class PrintActivity extends Activity {
             //Toast.makeText(this, "这个设备打不开蓝牙呀", Toast.LENGTH_SHORT).show();
         }
 
-        if (((CollectionApplication) getApplication()).sprtPrinter != null) {
-            sprtPrinter = ((CollectionApplication) getApplication()).sprtPrinter;
+        if (((CollectionApplication) getApplication()).getSprtPrinter() != null) {
+            sprtPrinter = ((CollectionApplication) getApplication()).getSprtPrinter();
         } else {
-            ((CollectionApplication) getApplication()).sprtPrinter = sprtPrinter;
+            ((CollectionApplication) getApplication()).setSprtPrinter(sprtPrinter);
         }
     }
 

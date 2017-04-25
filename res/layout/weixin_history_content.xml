@@ -15,14 +15,14 @@
 
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/expandablelistview_doingtask"
+            android:id="@+id/expandablelistview_done_task"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbarSize="0dp" />
         <View
             android:layout_width="fill_parent"
             android:layout_height="1px"
-            android:layout_below="@+id/expandablelistview_doingtask"
+            android:layout_below="@+id/expandablelistview_done_task"
             android:background="#9b9b9b" />
 
         <RelativeLayout

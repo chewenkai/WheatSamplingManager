@@ -1,11 +1,9 @@
 package com.aj.collection.activity
 
-import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -17,10 +15,9 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.Window
 import android.widget.*
-
 import com.aj.WeixinActivityMain
-import com.aj.collection.bean.Superior
 import com.aj.collection.R
+import com.aj.collection.bean.Superior
 import com.aj.collection.http.API
 import com.aj.collection.http.ReturnCode
 import com.aj.collection.http.URLs
@@ -29,23 +26,13 @@ import com.aj.collection.service.MsgService
 import com.aj.collection.tools.ExitApplication
 import com.aj.collection.tools.SPUtils
 import com.aj.collection.tools.Util
-import com.aj.collection.ui.HeadControlPanel
-import com.android.volley.AuthFailureError
-import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.sign_up_layout.*
-
+import org.jetbrains.anko.toast
 import org.json.JSONException
 import org.json.JSONObject
-
-import java.util.HashMap
-import org.jetbrains.anko.*
 
 class LoginActivity : AppCompatActivity(), OnClickListener {
     private var login: Button? = null
@@ -55,7 +42,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
     private var newUser: TextView? = null
     private var user: String? = null
     private var pwd: String? = null
-    private var headPanel: HeadControlPanel? = null
     private val mContext = this
     private var queue: RequestQueue? = null
 
@@ -68,8 +54,8 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         super.onCreate(savedInstanceState)
         otherLoginDialog = Dialog(this@LoginActivity)
         otherLoginDialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.login_layout)
+        supportActionBar?.title = resources.getString(R.string.app_name)
         ExitApplication.getInstance().addActivity(this)
 
         login = findViewById(R.id.l_signin_button) as Button
@@ -130,16 +116,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
 
             cancleButton.setOnClickListener { b.dismiss() }
         }
-
-        headPanel = findViewById(R.id.head_layout) as HeadControlPanel
-        if (headPanel != null) {
-            headPanel!!.initHeadPanel()
-            headPanel!!.setMiddleTitle("抽样监督管理系统")
-            headPanel!!.setLeftImage(R.drawable.ic_menu_back)
-            val l = HeadControlPanel.LeftImageOnClick { ExitApplication.getInstance().exit() }
-            headPanel!!.setLeftImageOnClick(l)
-        }
-
         queue = (application as CollectionApplication).requestQueue //init Volley
 
         //get sharedpreference and valide it

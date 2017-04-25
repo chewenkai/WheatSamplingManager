@@ -5,10 +5,6 @@
     android:background="@drawable/login_img">
     <!--  android:background="#CCCCCC"> -->
 
-    <include
-        android:id="@+id/head_layout"
-        layout="@layout/head_panel_layout" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
