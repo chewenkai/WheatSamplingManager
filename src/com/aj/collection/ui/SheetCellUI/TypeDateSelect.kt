@@ -10,6 +10,8 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import cn.qqtheme.framework.picker.DatePicker
+import com.aj.collection.CellBaseAttributes
+import com.aj.collection.R
 import com.aj.collection.activity.SheetActivity
 import com.aj.collection.tools.SheetProtocol
 import com.aj.collection.bean.SheetCell
@@ -136,7 +138,7 @@ class TypeDateSelect(var mContext: Context, var sheetCell: SheetCell) : CellBase
         if (sheetCell.cell_fill_required == (SheetProtocol().False))
             return true
         else {
-            return !selected_month.isEmpty() && !selected_year.isEmpty() && !selected_day.isEmpty()
+            return cell_value?.text?.isNotEmpty()?:false
         }
 
     }

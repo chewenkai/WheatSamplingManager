@@ -190,7 +190,6 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
                     try {
                         in.close();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -293,12 +292,10 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
         }
 
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            // TODO Auto-generated method stub
             return false;
         }
 
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // TODO Auto-generated method stub
             return false;
         }
 
@@ -651,7 +648,6 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
          */
         etName.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
 
             }
 
@@ -664,7 +660,6 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
             }
 
             public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
 
             }
         });

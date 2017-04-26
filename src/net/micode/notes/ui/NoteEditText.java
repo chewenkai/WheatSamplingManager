@@ -96,7 +96,6 @@ public class NoteEditText extends EditText {
 
     public NoteEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

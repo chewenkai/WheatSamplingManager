@@ -136,7 +136,7 @@
         android:icon="@drawable/ic_launcher1"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/Theme.AppCompat.Light">
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
         <!--调试key-->
          <meta-data
@@ -211,7 +211,8 @@
         <activity android:name=".activity.CameraView" />
         <activity
             android:name=".activity.PrintActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
         <activity
             android:name=".activity.DetecedUnit"
             android:screenOrientation="portrait"

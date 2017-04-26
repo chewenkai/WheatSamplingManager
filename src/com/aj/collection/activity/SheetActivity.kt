@@ -258,13 +258,11 @@ class SheetActivity : AppCompatActivity() {
             R.id.action_bar_save -> {
                 //抽样单模板的保存按钮
                 // 判断必填项是否全部填写
-                var isAllRequiredCellFill = true
+                var isAllRequiredCellFill:Boolean = true
                 for (sheetCellUI in sheetCellUIList) {
                     if (!sheetCellUI.cell.isFilled()) {
+                        isAllRequiredCellFill = false
                         when (sheetCellUI.getCellType()) {
-                            SheetProtocol().TYPE_EDIT_TEXT -> {
-                                isAllRequiredCellFill = false
-                            }
                             SheetProtocol().TYPE_ADDRESS -> {
                                 toast("正在定位中，请稍后")
                                 return true
@@ -273,28 +271,8 @@ class SheetActivity : AppCompatActivity() {
                                 toast("正在定位中，请稍后")
                                 return true
                             }
-                            SheetProtocol().TYPE_RADIO -> {
-                                isAllRequiredCellFill = false
-                            }
-                            SheetProtocol().TYPE_RADIO_WITH_SECONDARY_CHOICE -> {
-                                isAllRequiredCellFill = false
-                            }
-                            SheetProtocol().TYPE_MULTI_SELECT -> {
-                                isAllRequiredCellFill = false
-                            }
-                            SheetProtocol().TYPE_DATE_SELECT -> {
-                                isAllRequiredCellFill = false
-                            }
-                            SheetProtocol().TYPE_SIGN -> {
-                                isAllRequiredCellFill = false
-                            }
-                            SheetProtocol().TYPE_PHOTOS -> {
-                                isAllRequiredCellFill = false
-                            }
-                            SheetProtocol().TYPE_VEDIOS -> {
-                                isAllRequiredCellFill = false
-                            }
                         }
+                        break
                     }
                 }
 

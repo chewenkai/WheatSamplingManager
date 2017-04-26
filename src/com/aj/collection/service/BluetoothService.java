@@ -137,8 +137,7 @@ public class BluetoothService
         try {    
             bluetoothSocket.close();    
             outputStream.close();    
-        } catch (IOException e) {    
-            // TODO Auto-generated catch block    
+        } catch (IOException e) {
             e.printStackTrace();    
         }    
     }    

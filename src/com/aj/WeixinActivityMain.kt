@@ -825,7 +825,7 @@ class WeixinActivityMain : AppCompatActivity() {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             //TODO 手机中没有邮箱软件，打开反馈界面
-            Toast.makeText(applicationContext, "没有检测到邮箱程序，请先安装邮箱（如QQ邮箱）", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, "没有检测到邮箱程序", Toast.LENGTH_LONG).show()
         }
 
     }
@@ -1181,7 +1181,6 @@ class WeixinActivityMain : AppCompatActivity() {
                                 //                                    if (j + 1 == samplingsArray.length())
                                 //                                        progressDialog.dismiss();
 
-                                // TODO 从抽样单Json中读取样品信息，如果为空，则应该显示默认“未填写”字样
                                 val samplingID = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLINGID)
                                 val samplingCont = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLINGCONT)
                                 val samplingName = samplingsArray.getJSONObject(j).getString(URLs.KEY_ITEMS)
@@ -1274,7 +1273,6 @@ class WeixinActivityMain : AppCompatActivity() {
                     val samplingtables = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.Sid_of_server.isNotNull).orderAsc().list()
 
                     if (samplingtables.size != jsonArraySamsStatus.length()) {
-                        //TODO 将返回的多余的抽样单删掉 并提示用户“服务器删除了**张抽样单，本地也将删除”
                         Log.e("XXXXXXX", "WeixinActivity.java 查询任务和返回任务对应数量不同")
                         return@Listener
                     }

@@ -15,7 +15,11 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -42,7 +46,7 @@ import com.jrs.utils.SprtPrinter;
 import java.io.File;
 import java.util.Hashtable;
 
-public class PrintActivity extends Activity {
+public class PrintActivity extends AppCompatActivity {
     private int tryNum = 3;
 
     private boolean isCancle = false;
@@ -60,7 +64,6 @@ public class PrintActivity extends Activity {
     private ProgressDialog proDialog;
 
     private BluetoothAdapter mBluetoothAdapter = null;
-    private HeadControlPanel headPanel = null;
 
     /**
      * 设置打印机字体
@@ -72,18 +75,20 @@ public class PrintActivity extends Activity {
     private int printCopies = 1;
     SharedPreferences sp_printCopies;
 
-    private SprtPrinter sprtPrinter = new SprtPrinter();
+    private SprtPrinter sprtPrinter;
+
+    AlertDialog alertDialog;
+    AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.print_layout);
+        builder = new AlertDialog.Builder(PrintActivity.this);
+        sprtPrinter = new SprtPrinter();
         try {
             init();
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         //1、打开蓝牙需要先拿到蓝牙
@@ -106,39 +111,33 @@ public class PrintActivity extends Activity {
         }
     }
 
-    private void init() throws WriterException {
-        headPanel = (HeadControlPanel) findViewById(R.id.head_layout);
-        headPanel.setRightFirstVisible(View.VISIBLE);
-        if (headPanel != null) {
-            headPanel.initHeadPanel();
-            headPanel.setMiddleTitle("打印预览");
-            headPanel.setLeftImage(R.drawable.ic_menu_back);
-            LeftImageOnClick l = new LeftImageOnClick() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.sheet_menu_print, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-                @Override
-                public void onImageClickListener() {
-                    finish();
-                }
-            };
-            headPanel.setLeftImageOnClick(l);
-            headPanel.setRightFirstImage(R.drawable.print);
-            headPanel.setRightFirstText("打印");
-            rightFirstImageOnClick r = new rightFirstImageOnClick() {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_bar_print:
 
-                @Override
-                public void onImageClickListener() {
-                    // TODO Auto-generated method stub
-                    AlertDialog alertDialog;
-                    AlertDialog.Builder builder = new AlertDialog.Builder(PrintActivity.this);
-                    builder.setMessage("是否打印？");
-                    builder.setPositiveButton("是", onClickListener);
-                    builder.setNegativeButton("否", null);
-                    alertDialog = builder.create();
-                    alertDialog.show();
-                }
-            };
-            headPanel.setRightFirstImageOnClick(r);
+                builder.setMessage("是否打印？");
+                builder.setPositiveButton("是", onClickListener);
+                builder.setNegativeButton("否", null);
+                alertDialog = builder.create();
+                alertDialog.show();
+                break;
+            case android.R.id.home:
+                finish();
+                break;
+
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void init() throws WriterException {
         strPrintTV = (TextView) findViewById(R.id.print_content);
         Intent i = getIntent();
         //strPrint = i.getStringExtra("sheetJsonStr");
@@ -439,6 +438,8 @@ public class PrintActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(alertDialog!=null && alertDialog.isShowing())
+            alertDialog.dismiss();
     }
 
     private Handler handler = new Handler() {

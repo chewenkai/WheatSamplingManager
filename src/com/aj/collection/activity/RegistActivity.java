@@ -42,14 +42,12 @@ public class RegistActivity extends Activity
 		@Override
 		public void onClick(DialogInterface dialog, int which)
 		{
-			// TODO Auto-generated method stub
 			save();
 		}
 	};
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.regist_layout);
@@ -70,7 +68,6 @@ public class RegistActivity extends Activity
 				@Override
 				public void onImageClickListener()
 				{
-					// TODO Auto-generated method stub
 					finish();
 				}
 			};
@@ -84,7 +81,6 @@ public class RegistActivity extends Activity
 				@Override
 				public void onImageClickListener()
 				{
-					// TODO Auto-generated method stub
 					AlertDialog alertDialog;
 					AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
 					builder.setTitle("温馨提示");
@@ -111,7 +107,6 @@ public class RegistActivity extends Activity
 	}
 	private void save()
 	{
-		// TODO Auto-generated method stub
 		user = userET.getText().toString().replace(" ", "");
 		pwd = pwdET.getText().toString().replace(" ", "");
 		repwd = repwdET.getText().toString().replace(" ", "");

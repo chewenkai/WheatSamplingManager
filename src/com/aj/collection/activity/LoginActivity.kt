@@ -50,7 +50,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
     private var allSuperiorRadioButtons = ArrayList<AppCompatRadioButton>()
     private var allSignUpEditText = ArrayList<EditText>()
     override fun onCreate(savedInstanceState: Bundle?) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState)
         otherLoginDialog = Dialog(this@LoginActivity)
         otherLoginDialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -142,7 +141,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
     }
 
     override fun onClick(v: View) {
-        // TODO Auto-generated method stub
         when (v.id) {
             R.id.l_signin_button -> {
                 user = userET!!.text.toString()

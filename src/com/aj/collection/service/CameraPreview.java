@@ -19,7 +19,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public CameraPreview(Context context, Camera camera)
 	{
 		super(context);
-		// TODO Auto-generated constructor stub
 		mCamera=camera;
 		// Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -34,7 +33,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	{
 		// The Surface has been created, now tell the camera where to draw the preview.
 		try
-		{//TODO 此处偶尔会有问题 但是还不确定问题所在
+		{
 			//设置预览角度
 			mCamera.setDisplayOrientation(90);
 			//Sets the Surface to be used for live preview
@@ -46,7 +45,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		//	          is unavailable or unsuitable).
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 //			mCamera.release();
 //			mCamera=null;
 			e.printStackTrace();

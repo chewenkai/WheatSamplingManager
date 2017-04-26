@@ -46,11 +46,6 @@ import com.aj.collection.tools.MyOrientationDetector;
 import com.aj.collection.tools.ScreenUtil;
 import com.aj.collection.tools.Util;
 
-//import com.baidu.location.BDLocation;
-//import com.baidu.location.BDLocationListener;
-//import com.baidu.location.LocationClient;
-//import com.baidu.location.LocationClientOption;
-//import com.baidu.location.LocationClientOption.LocationMode;
 /**
  * 拍照类
  * @author Administrator
@@ -171,6 +166,7 @@ public class CameraView extends Activity implements OnClickListener
 	        Parameters parameters = c.getParameters();
 	        parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);//设置闪光点
 	        parameters.setWhiteBalance(Parameters.WHITE_BALANCE_AUTO);//设置白平衡
+			parameters.setPreviewFpsRange(10, 60);
 
 	        Size pictureSize= getPictureSize(parameters.getSupportedPictureSizes(), 1280);
 	        //预览大小  
@@ -208,17 +204,8 @@ public class CameraView extends Activity implements OnClickListener
 	public void onClick(View v)
 	{
 
-		if((Button)v==takePicture)
+		if(v==takePicture)
 		{
-//			String gpsInfo=gpsDisplay.getText().toString();
-//			if(!(gpsInfo.equals("正在获取地理位置信息...")))
-//			{
-//				takePicture();
-//			}
-//			else
-//			{
-//				Toast.makeText(this, "获取地理位置信息中，请稍等。。。", Toast.LENGTH_LONG).show();
-//			}
 			takePicture();
 		}
 	}

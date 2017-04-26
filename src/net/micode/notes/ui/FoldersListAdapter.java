@@ -40,7 +40,6 @@ public class FoldersListAdapter extends CursorAdapter {
 
     public FoldersListAdapter(Context context, Cursor c) {
         super(context, c);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

@@ -386,10 +386,10 @@ class CollectionApplication : AppContext() {
                     //                        Toast.makeText(mContext, "上传位置成功:" + longitude + "," + latitude + "," + locationMod, Toast.LENGTH_LONG).show();
                     //                        testGetSamplingStatus();
                 } else if (errorCode == ReturnCode.USERNAME_OR_PASSWORD_INVALIDE) {
-                    //TODO may have other return code
                     Log.e("XXXXXX", "位置上传时发现用户名和密码错误")
                     //                        returnToLoginActivity();
-                }
+                } else
+                    Log.e("后台上传位置失败", errorCode)
 
             } catch (e: JSONException) {
                 e.printStackTrace()

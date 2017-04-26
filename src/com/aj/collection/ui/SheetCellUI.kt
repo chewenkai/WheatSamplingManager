@@ -1,17 +1,8 @@
 package com.aj.collection.ui
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.support.design.widget.TextInputEditText
-import android.support.design.widget.TextInputLayout
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.CheckBox
-import android.widget.LinearLayout
-import android.widget.TextView
-import com.aj.collection.bean.SheetCell
 import com.aj.collection.*
+import com.aj.collection.bean.SheetCell
 import com.aj.collection.tools.SheetProtocol
 
 /**
