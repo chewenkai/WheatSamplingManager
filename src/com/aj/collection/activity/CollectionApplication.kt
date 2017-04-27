@@ -4,18 +4,18 @@ package com.aj.collection.activity
  * Created by kevin on 15-9-26.
  */
 
+import android.Manifest
 import android.app.Service
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
-import android.net.wifi.WifiInfo
-import android.net.wifi.WifiManager
 import android.os.Vibrator
-import android.telephony.TelephonyManager
+import android.support.multidex.MultiDex
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.TextView
-
 import com.aj.Constant
 import com.aj.collection.R
 import com.aj.collection.database.*
@@ -26,8 +26,6 @@ import com.aj.collection.tools.SPUtils
 import com.aj.collection.tools.Util
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.baidu.location.BDLocation
 import com.baidu.location.BDLocationListener
@@ -36,18 +34,10 @@ import com.baidu.location.LocationClientOption
 import com.baidu.mapapi.SDKInitializer
 import com.github.yuweiguocn.library.greendao.MigrationHelper
 import com.jrs.utils.SprtPrinter
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator
-import com.nostra13.universalimageloader.core.DisplayImageOptions
-import com.nostra13.universalimageloader.core.ImageLoader
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType
-
 import org.json.JSONException
 import org.json.JSONObject
-
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 /**
  * Collection Application
@@ -88,12 +78,7 @@ class CollectionApplication : AppContext() {
 
         CollectionApplication.applicationContext = this
         instance = this
-
-
-
         queue = Volley.newRequestQueue(this) //init Volley
-
-        initLocation()
     }
 
     fun initDaoSession(){
@@ -131,6 +116,10 @@ class CollectionApplication : AppContext() {
         return daoSession!!
     }
 
+    override fun attachBaseContext(base: Context?) {
+        MultiDex.install(this)
+        super.attachBaseContext(base)
+    }
 
     /**************************************
      * 后台定位
@@ -333,7 +322,7 @@ class CollectionApplication : AppContext() {
     var mVibrator: Vibrator? = null
     var mLocationClient: LocationClient? = null
 
-    private fun initLocation() {
+    fun initLocation() {
         mLocationClient = LocationClient(this.applicationContext)
         myListener = MyLocationListenner()
         mVibrator = applicationContext.getSystemService(Service.VIBRATOR_SERVICE) as Vibrator

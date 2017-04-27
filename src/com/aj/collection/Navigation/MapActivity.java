@@ -44,11 +44,13 @@ import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.navisdk.adapter.BNRoutePlanNode;
 import com.baidu.navisdk.adapter.BaiduNaviManager;
-import com.pkmmte.view.CircularImageView;
+
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import at.markushi.ui.CircleButton;
 
 /**
  * 地图跑步主界面
@@ -82,7 +84,7 @@ public class MapActivity extends Activity {
     RelativeLayout map_view;
 
     ImageView img_map_overlay;
-    CircularImageView img_toMyLocation,img_map_offline;
+    CircleButton img_toMyLocation,img_map_offline;
 
     //数据类型
     LatLng startPoint, endPoint;
@@ -163,8 +165,8 @@ public class MapActivity extends Activity {
         startN = (EditText) findViewById(R.id.map_nav_start);
         endN = (EditText) findViewById(R.id.map_nav_end);
 
-        img_toMyLocation=(CircularImageView)findViewById(R.id.img_tomylocation);
-        img_map_offline=(CircularImageView)findViewById(R.id.img_map_offline);
+        img_toMyLocation=(CircleButton)findViewById(R.id.img_tomylocation);
+        img_map_offline=(CircleButton)findViewById(R.id.img_map_offline);
 
         naviButton = (TextView) findViewById(R.id.map_nav_button);
         naviButton.setOnClickListener(new View.OnClickListener() {

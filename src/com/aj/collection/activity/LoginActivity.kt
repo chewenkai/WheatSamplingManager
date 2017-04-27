@@ -1,10 +1,14 @@
 package com.aj.collection.activity
 
+import android.Manifest
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatRadioButton
@@ -103,15 +107,16 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
             b.show()
 
             saveButton.setOnClickListener {
-                for (et:EditText in allSignUpEditText){
-                    if (et.text.isEmpty()){
+                for (et: EditText in allSignUpEditText) {
+                    if (et.text.isEmpty()) {
                         toast("请将信息填写完整")
                         return@setOnClickListener
                     }
                 }
-                registUser(b, userName.text.toString(), passwd.text.toString(), selectedSuperior.company,selectedSuperior.user_id,
+                registUser(b, userName.text.toString(), passwd.text.toString(), selectedSuperior.company, selectedSuperior.user_id,
                         name.text.toString(), phone.text.toString(), identity.text.toString(), address.text.toString(), post.text.toString(), possessor.text.toString(),
-                        band_card_number.text.toString(), band_name.text.toString())}
+                        band_card_number.text.toString(), band_name.text.toString())
+            }
 
             cancleButton.setOnClickListener { b.dismiss() }
         }
@@ -128,16 +133,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
             return
         }
 
-        //if need intent have boolean needTurnToMain,and user,pwd not null,then Turn To
-        if (intent != null && intent.getBooleanExtra("needTurnToMain", true)
-                && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
-            val intent = Intent(mContext, WeixinActivityMain::class.java)
-            startActivity(intent)
-        }
-
-        //        Intent intent = new Intent(mContext, WeixinActivityMain.class);
-        //        startActivity(intent);
-        //        finish();
+        checkPermission()
     }
 
     override fun onClick(v: View) {
@@ -157,8 +153,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
             else -> {
             }
         }
-        //				Intent i = new Intent(this,RegistActivity.class);
-        //				startActivity(i);
+
     }
 
 
@@ -169,10 +164,10 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         return false
     }
 
-    private fun registUser(b:AlertDialog, user:String, pwd:String, company:String, company_id:String, farmer_name:String,
-                           farmer_phone:String, farmer_identity:String, farmer_address:String,
-                           farmer_post:String, farmer_possessor:String, farmer_bank_number:String,
-                           farmer_bank_name:String){
+    private fun registUser(b: AlertDialog, user: String, pwd: String, company: String, company_id: String, farmer_name: String,
+                           farmer_phone: String, farmer_identity: String, farmer_address: String,
+                           farmer_post: String, farmer_possessor: String, farmer_bank_number: String,
+                           farmer_bank_name: String) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
         progressDialog.setMessage("注册中...")
         progressDialog.show()
@@ -186,8 +181,8 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
 
                 if (errorCode == ReturnCode.Code0) {
                     toast("注册成功")
-                    SPUtils.put(this@LoginActivity,SPUtils.SAMPLING_COMPANY, company, SPUtils.USER_INFO)
-                    SPUtils.put(this@LoginActivity,SPUtils.SAMPLING_COMPANY_ID, company_id, SPUtils.USER_INFO)
+                    SPUtils.put(this@LoginActivity, SPUtils.SAMPLING_COMPANY, company, SPUtils.USER_INFO)
+                    SPUtils.put(this@LoginActivity, SPUtils.SAMPLING_COMPANY_ID, company_id, SPUtils.USER_INFO)
                     b.dismiss()
 
                 } else {
@@ -212,7 +207,8 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
 
         queue!!.add(stringRequest)
     }
-    private fun getSuperiorInfo(ll_superiors:LinearLayout){
+
+    private fun getSuperiorInfo(ll_superiors: LinearLayout) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
         progressDialog.setMessage("查询上级单位...")
         progressDialog.show()
@@ -228,13 +224,13 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                     val gson = Gson()
                     gson.fromJson(s, Superior::class.java)
                     val turnsType = object : TypeToken<List<Superior>>() {}.type
-                    var superiorList:List<Superior> = gson.fromJson(content, turnsType)
-                    for(superior in superiorList){
+                    var superiorList: List<Superior> = gson.fromJson(content, turnsType)
+                    for (superior in superiorList) {
                         val rb = AppCompatRadioButton(this@LoginActivity)
                         rb.setText(superior.company)
                         rb.setOnClickListener {
                             clearAllRadioButtons()
-                            rb.isChecked=true
+                            rb.isChecked = true
                             selectedSuperior = superior
                         }
                         ll_superiors.addView(rb)
@@ -260,11 +256,12 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         queue!!.add(stringRequest)
     }
 
-    private fun clearAllRadioButtons(){
-        for (rb:AppCompatRadioButton in allSuperiorRadioButtons){
-            rb.isChecked=false
+    private fun clearAllRadioButtons() {
+        for (rb: AppCompatRadioButton in allSuperiorRadioButtons) {
+            rb.isChecked = false
         }
     }
+
     /**
      * 登录验证
      */
@@ -354,7 +351,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
     }
 
 
-
     /**
      * 账号在别处登陆
      */
@@ -400,5 +396,113 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         otherLoginDialog!!.setContentView(layout)
         otherLoginDialog!!.setCancelable(false)
         otherLoginDialog!!.show()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    (application as CollectionApplication).initLocation()
+                    //if need intent have boolean needTurnToMain,and user,pwd not null,then Turn To
+                    if (intent != null && intent.getBooleanExtra("needTurnToMain", true)
+                            && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
+                        val intent = Intent(mContext, WeixinActivityMain::class.java)
+                        startActivity(intent)
+                    }
+                } else {
+                    toast("未得到位置信息权限，软件无法运行")
+                    finish()
+                }
+                return
+            }
+        }// other 'case' lines to check for other
+        // permissions this app might request
+    }
+
+    private fun checkPermission() {
+        val ACCESS_COARSE_LOCATION = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val ACCESS_FINE_LOCATION = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        val ACCESS_WIFI_STATE = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE)
+        val ACCESS_NETWORK_STATE = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE)
+        val CHANGE_WIFI_STATE = ContextCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE)
+        val READ_PHONE_STATE = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+        val WRITE_EXTERNAL_STORAGE = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val INTERNET = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+        val BLUETOOTH = ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH)
+        val BLUETOOTH_ADMIN = ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN)
+        val SEND_SMS = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+        val WAKE_LOCK = ContextCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK)
+        val CAMERA = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        val RECORD_AUDIO = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+        val READ_EXTERNAL_STORAGE = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val VIBRATE = ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE)
+        val BROADCAST_STICKY = ContextCompat.checkSelfPermission(this, Manifest.permission.BROADCAST_STICKY)
+        val PROCESS_OUTGOING_CALLS = ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS)
+        val MODIFY_AUDIO_SETTINGS = ContextCompat.checkSelfPermission(this, Manifest.permission.MODIFY_AUDIO_SETTINGS)
+        val READ_CONTACTS = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+        val GET_ACCOUNTS = ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS)
+        val RECEIVE_BOOT_COMPLETED = ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_BOOT_COMPLETED)
+
+        if (ACCESS_COARSE_LOCATION != PackageManager.PERMISSION_GRANTED ||
+                ACCESS_FINE_LOCATION != PackageManager.PERMISSION_GRANTED ||
+                ACCESS_WIFI_STATE != PackageManager.PERMISSION_GRANTED ||
+                ACCESS_NETWORK_STATE != PackageManager.PERMISSION_GRANTED ||
+                CHANGE_WIFI_STATE != PackageManager.PERMISSION_GRANTED ||
+                READ_PHONE_STATE != PackageManager.PERMISSION_GRANTED ||
+                WRITE_EXTERNAL_STORAGE != PackageManager.PERMISSION_GRANTED ||
+                INTERNET != PackageManager.PERMISSION_GRANTED ||
+                BLUETOOTH != PackageManager.PERMISSION_GRANTED ||
+                BLUETOOTH_ADMIN != PackageManager.PERMISSION_GRANTED ||
+                SEND_SMS != PackageManager.PERMISSION_GRANTED ||
+                WAKE_LOCK != PackageManager.PERMISSION_GRANTED ||
+                CAMERA != PackageManager.PERMISSION_GRANTED ||
+                RECORD_AUDIO != PackageManager.PERMISSION_GRANTED ||
+                READ_EXTERNAL_STORAGE != PackageManager.PERMISSION_GRANTED ||
+                VIBRATE != PackageManager.PERMISSION_GRANTED ||
+                BROADCAST_STICKY != PackageManager.PERMISSION_GRANTED ||
+                PROCESS_OUTGOING_CALLS != PackageManager.PERMISSION_GRANTED ||
+                MODIFY_AUDIO_SETTINGS != PackageManager.PERMISSION_GRANTED ||
+                READ_CONTACTS != PackageManager.PERMISSION_GRANTED ||
+                GET_ACCOUNTS != PackageManager.PERMISSION_GRANTED ||
+                RECEIVE_BOOT_COMPLETED != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_WIFI_STATE,
+                    Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.CHANGE_WIFI_STATE,
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.SEND_SMS,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.VIBRATE,
+                    Manifest.permission.BROADCAST_STICKY,
+                    Manifest.permission.PROCESS_OUTGOING_CALLS,
+                    Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                    Manifest.permission.GET_ACCOUNTS,
+                    Manifest.permission.RECEIVE_BOOT_COMPLETED), PERMISSION_REQUEST_CODE)
+        } else {
+            (application as CollectionApplication).initLocation()
+            //if need intent have boolean needTurnToMain,and user,pwd not null,then Turn To
+            if (intent != null && intent.getBooleanExtra("needTurnToMain", true)
+                    && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
+                val intent = Intent(mContext, WeixinActivityMain::class.java)
+                startActivity(intent)
+            }
+        }
+    }
+
+    companion object {
+        val PERMISSION_REQUEST_CODE = 0
     }
 }

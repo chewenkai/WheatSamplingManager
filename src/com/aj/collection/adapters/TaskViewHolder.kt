@@ -6,7 +6,6 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.aj.Constant
@@ -16,8 +15,6 @@ import com.aj.collection.bean.TaskData
 import com.aj.collection.database.*
 import com.android.volley.RequestQueue
 import com.bignerdranch.expandablerecyclerview.ParentViewHolder
-import com.bignerdranch.expandablerecyclerview.model.Parent
-import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder
 
 /**
  * Created by kevin on 17-4-22.

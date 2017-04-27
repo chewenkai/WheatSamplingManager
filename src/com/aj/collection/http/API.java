@@ -1,7 +1,11 @@
 package com.aj.collection.http;
 
 
+import android.content.Context;
+import android.telephony.TelephonyManager;
+
 import com.aj.Constant;
+import com.aj.collection.activity.CollectionApplication;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -79,7 +83,7 @@ public class API {
                 map.put("cardholder", farmer_possessor);
                 map.put("accountnumber", farmer_bank_number);
                 map.put("depositbank", farmer_bank_name);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -127,7 +131,7 @@ public class API {
                 map.put("cardholder", farmer_possessor);
                 map.put("accountnumber", farmer_bank_number);
                 map.put("depositbank", farmer_bank_name);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -148,7 +152,7 @@ public class API {
                 map.put("act", URLs.LOGINACT);
                 map.put("username", user);
                 map.put("password", pwd);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
 
@@ -188,7 +192,7 @@ public class API {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("act", URLs.HAVENEWTASKACT);
                 map.put("username", user);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -215,7 +219,7 @@ public class API {
                 map.put("act", URLs.GETNEWTASKACT);
                 map.put("username", user);
                 map.put("password", pwd);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -238,7 +242,7 @@ public class API {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("act", URLs.RECEIVEDACT);
                 map.put("username", user);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -291,7 +295,7 @@ public class API {
                 map.put("longitude",String.valueOf(longitude));
                 map.put("mode",String.valueOf(mode));
                 map.put("samplingnumber",samplingnumber);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 map.put("sid", serverid);
                 map.put("resample", String.valueOf(samplingType));
                 return map;
@@ -320,7 +324,7 @@ public class API {
                 map.put("username", username);
                 map.put("password", password);
                 map.put("tid", tID);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -352,7 +356,7 @@ public class API {
                 map.put("longitude", longitude);
                 map.put("latitude", latitude);
                 map.put("mode", mode);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -381,7 +385,7 @@ public class API {
                 map.put("username", username);
                 map.put("password", password);
                 map.put("sampleid", sids);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -408,7 +412,7 @@ public class API {
                 map.put("username", username);
                 map.put("password", password);
                 map.put("taskid", taskids);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };
@@ -436,7 +440,7 @@ public class API {
                 map.put("username", username);
                 map.put("password", password);
                 map.put("sid", sid);
-                map.put("UDID", Constant.DeviceID);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
         };

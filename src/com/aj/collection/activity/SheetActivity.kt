@@ -258,7 +258,7 @@ class SheetActivity : AppCompatActivity() {
             R.id.action_bar_save -> {
                 //抽样单模板的保存按钮
                 // 判断必填项是否全部填写
-                var isAllRequiredCellFill:Boolean = true
+                var isAllRequiredCellFill = true
                 for (sheetCellUI in sheetCellUIList) {
                     if (!sheetCellUI.cell.isFilled()) {
                         isAllRequiredCellFill = false
@@ -272,7 +272,6 @@ class SheetActivity : AppCompatActivity() {
                                 return true
                             }
                         }
-                        break
                     }
                 }
 
