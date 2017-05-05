@@ -75,7 +75,7 @@ public class API {
                 map.put("password", pwd);
                 map.put("companyid", company_id);
                 map.put("company", company);
-                map.put("companyaddress", farmer_address);
+                map.put("companyaddress", farmer_address); // address
                 map.put("name", farmer_name);
                 map.put("contact", farmer_phone);
                 map.put("postcode", farmer_post);

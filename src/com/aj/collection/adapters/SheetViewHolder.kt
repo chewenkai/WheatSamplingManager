@@ -343,6 +343,18 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
      * 一键上传抽样单及其产生的文件
      */
     fun uploadSamplingAndMedia(samplingtables: List<SAMPLINGTABLE>?, taskName: String) {
+        Toast.makeText(mContext, "上传抽样单成功，等待审核!", Toast.LENGTH_LONG).show()
+
+        for (sample in samplingtables!!){
+            sample.sid_of_server = java.lang.Long.valueOf(0)
+            sample.is_uploaded = true
+            sample.check_status = Constant.S_STATUS_CHECKING
+            samplingtableDao?.insertOrReplace(sample)
+        }
+        if (WeixinActivityMain::class.java.isInstance(mContext)){
+            (mContext as WeixinActivityMain).refreshDoingTaskData(false)
+        }
+        return
 
         if (samplingtables?.size == 0) {
             Toast.makeText(mContext, "没有可以上传的抽样单!", Toast.LENGTH_LONG).show()

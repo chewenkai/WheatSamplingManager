@@ -36,9 +36,7 @@ class MediaManager {
 
         //其他的照片遍历child文件夹得道
         if (mediaFolder.listFiles() != null) {
-            (0..mediaFolder.listFiles().size - 1)
-                    .filter { mediaFolder.listFiles()[it].name.startsWith("VIDEO_") }
-                    .mapTo(files) { mediaFolder.listFiles()[it] }
+            mediaFolder.listFiles().filterTo(files) { it.name.startsWith("VIDEO_") && it.exists() }
         }
         return files
     }

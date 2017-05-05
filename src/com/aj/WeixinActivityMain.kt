@@ -107,9 +107,9 @@ class WeixinActivityMain : AppCompatActivity() {
         samplingtableDao = daoSession!!.samplingtableDao
 
         val sheetStr = "{ \"specimen_sheet\": [ { \"cell_name\": \"品种名称\", \"cell_type \": \"type_edit_text\", \"cell_value\": \" \", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"F\"}, { \"cell_name\": \"抽样地点经纬度\", \"cell_type\": \"type_geographic_coordinates\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"抽样地点\", \"cell_type\": \"type_address\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"样品照片\", \"cell_type\": \"type_photos\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"采样视频\", \"cell_type\": \"type_vedios\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"该品种种植面积(亩)\", \"cell_type\": \"type_edit_text\", \"cell_value\": \" \", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"地力级别\", \"cell_type\": \"type_radio\", \"cell_value\": \"1级地,2级地,3级地\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"预估亩产水平(每亩)\", \"cell_type\": \"type_radio\", \"cell_value\": \"200-250,250-300,300-350,350-400,400-450,450-500,500以上\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"播种日期\", \"cell_type\": \"type_date_select\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"取样时间\", \"cell_type\": \"type_auto_record_date\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"施用农药情况\", \"cell_type\": \"type_edit_text\", \"cell_value\": \" \", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"主要气象灾害\", \"cell_type\": \"type_multi_then_single_choice\", \"cell_value\": \"干旱,洪涝,高温,低温;严重,一般,轻微\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"主要病虫害发生情况\", \"cell_type\": \"type_multi_then_single_choice\", \"cell_value\": \"条锈病,赤霉病,白粉病,纹枯病,蚜虫,麦蜘蛛,吸浆虫;严重,一般,轻微\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"病虫害情况照片\", \"cell_type\": \"type_photos\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"采样人签名\", \"cell_type\": \"type_sign\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"F\"} ] }"
-        for (i in 0..2){
-            taskinfoDao?.insertOrReplace(TASKINFO((261+i).toLong(),"品种${i+1}","XMXY", false, false, System.currentTimeMillis(), ""))
-            templettableDao?.insertOrReplace(TEMPLETTABLE((i+1).toLong(), (261+i).toLong(), "品种${i+1}", sheetStr, System.currentTimeMillis()))
+        for (i in 0..2) {
+            taskinfoDao?.insertOrReplace(TASKINFO((261 + i).toLong(), "品种${i + 1}", "XMXY", false, false, System.currentTimeMillis(), ""))
+            templettableDao?.insertOrReplace(TEMPLETTABLE((i + 1).toLong(), (261 + i).toLong(), "品种${i + 1}", sheetStr, System.currentTimeMillis()))
         }
 //        for (i in 3..5){
 //            taskinfoDao?.insertOrReplace(TASKINFO((261+i).toLong(),"品种${i+1}","XMXY", true, false, System.currentTimeMillis(), ""))
@@ -206,6 +206,9 @@ class WeixinActivityMain : AppCompatActivity() {
         queue = (application as CollectionApplication).requestQueue //init Volley
 
         mobstat() //百度移动统计
+
+        val filter1 = IntentFilter(Intent.ACTION_TIME_TICK)
+        registerReceiver(timeTickReceiver, filter1)// just remember unregister it
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -230,8 +233,6 @@ class WeixinActivityMain : AppCompatActivity() {
     }
 
     override fun onStop() {
-        // Unregister our receiver.
-        unregisterReceiver(timeTickReceiver)
         unbindMsgService()
         cancleRequestFromQueue()
         super.onStop()
@@ -239,9 +240,6 @@ class WeixinActivityMain : AppCompatActivity() {
 
     public override fun onResume() {
         bindMsgService()
-
-        val filter1 = IntentFilter(Intent.ACTION_TIME_TICK)
-        registerReceiver(timeTickReceiver, filter1)// just remember unregister it
 
         // refresh data
         refreshDoingTaskData(showProgDialog = false)
@@ -255,7 +253,8 @@ class WeixinActivityMain : AppCompatActivity() {
 
     override fun onDestroy() {
         mNM!!.cancel(R.string.app_name)
-
+        // Unregister our receiver.
+        unregisterReceiver(timeTickReceiver)
         super.onDestroy()
     }
 
@@ -414,7 +413,7 @@ class WeixinActivityMain : AppCompatActivity() {
 
     private var mFileStream: FileStream? = null
     private var doingTaskListView: RecyclerView? = null
-    var doingTaskAdapter:TaskAdapter? = null
+    var doingTaskAdapter: TaskAdapter? = null
     var taskEmptyview: RelativeLayout? = null
 
     /**
@@ -429,12 +428,12 @@ class WeixinActivityMain : AppCompatActivity() {
         doingTaskListView?.adapter = doingTaskAdapter
         // 加载任务列表
         doingTaskListView?.layoutManager = LinearLayoutManager(mContext)
-        doingTaskAdapter?.setExpandCollapseListener(object : ExpandableRecyclerAdapter.ExpandCollapseListener{
+        doingTaskAdapter?.setExpandCollapseListener(object : ExpandableRecyclerAdapter.ExpandCollapseListener {
             override fun onParentExpanded(parentPosition: Int) {
                 doAsync {
                     val result = queryDoingTaskData()
                     val task = result[parentPosition]
-                    val taskID =  task.taskID
+                    val taskID = task.taskID
                     val taskinfo = taskinfoDao?.queryBuilder()?.where(TASKINFODao.Properties.TaskID.eq(taskID))
                             ?.orderAsc(TASKINFODao.Properties.TaskID)?.list()?.get(0)
                     taskinfo?.is_new_task = false
@@ -455,7 +454,7 @@ class WeixinActivityMain : AppCompatActivity() {
     /**
      * 更新正在进行的任务数据列表
      */
-    fun refreshDoingTaskData(showProgDialog : Boolean) {
+    fun refreshDoingTaskData(showProgDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext)
         progressDialog.setMessage("数据加载中...")
         if (showProgDialog)
@@ -465,7 +464,7 @@ class WeixinActivityMain : AppCompatActivity() {
             uiThread {
                 if (taskData.size == 0) {
                     // 显示空图片
-                    taskEmptyview?.visibility=View.VISIBLE
+                    taskEmptyview?.visibility = View.VISIBLE
                 } else {
                     // 隐藏空图片
                     taskEmptyview?.visibility = View.GONE
@@ -481,7 +480,7 @@ class WeixinActivityMain : AppCompatActivity() {
     }
 
     private var doneTaskListView: RecyclerView? = null
-    var doneTaskAdapter:TaskAdapter? = null
+    var doneTaskAdapter: TaskAdapter? = null
     var historyEmptyview: RelativeLayout? = null
 
     /**
@@ -500,7 +499,7 @@ class WeixinActivityMain : AppCompatActivity() {
     /**
      * 更新已完成的任务数据列表
      */
-    fun refreshDoneTaskData(showProgDialog : Boolean) {
+    fun refreshDoneTaskData(showProgDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext)
         progressDialog.setMessage("数据加载中...")
         if (showProgDialog)
@@ -511,19 +510,19 @@ class WeixinActivityMain : AppCompatActivity() {
 
                 if (taskData.size == 0) {
                     // 空列表时不要notify数据，隐藏列表并显示空图片就行
-                    historyEmptyview?.visibility=View.VISIBLE
+                    historyEmptyview?.visibility = View.VISIBLE
                     doneTaskListView?.visibility = View.INVISIBLE
                 } else {
                     // 非空列表时正常更新列表，隐藏空图片
                     historyEmptyview?.visibility = View.GONE
                     doneTaskListView?.visibility = View.VISIBLE
-                    if (doneTaskListView?.adapter == null){
+                    if (doneTaskListView?.adapter == null) {
                         doneTaskAdapter = TaskAdapter(mContext, taskData)
                         doneTaskListView?.adapter = doneTaskAdapter
                         // 加载任务列表
                         val layoutManager = LinearLayoutManager(mContext)
                         doneTaskListView!!.layoutManager = layoutManager
-                    }else {
+                    } else {
                         doneTaskAdapter?.taskList?.removeAll(doneTaskAdapter?.taskList!!)
                         doneTaskAdapter?.taskList?.addAll(taskData)
                     }
@@ -557,7 +556,7 @@ class WeixinActivityMain : AppCompatActivity() {
     /**
      * taskInfo类转TaskData
      */
-    fun taskInfo2TaskData(taskInfos: List<TASKINFO>): ArrayList<TaskData>{
+    fun taskInfo2TaskData(taskInfos: List<TASKINFO>): ArrayList<TaskData> {
         val taskSet = ArrayList<TaskData>()  // 任务列表
         for (taskInfo in taskInfos) {
             // 当前任务下查找抽样单
@@ -571,18 +570,18 @@ class WeixinActivityMain : AppCompatActivity() {
             val templet = templets?.get(0)
             sheetSet.add(SAMPLINGTABLE(-1L, templet?.taskID, templet?.templetID, templet?.templet_name, null,
                     templet?.templet_content, null, null, null, null, null,
-                    null, null, null, null,null, null, null, null, false))
+                    null, null, null, null, null, null, null, null, false))
             sheetSet.addAll(sheets)
 
             var taskData = TaskData(sheetSet, taskInfo.taskID, taskInfo.task_name, taskInfo.task_letter,
                     taskInfo.is_finished, taskInfo.is_new_task, taskInfo.download_time, taskInfo.description)
 
-            for (iTask in doingTaskAdapter?.taskList!!){
+            for (iTask in doingTaskAdapter?.taskList!!) {
                 if (iTask.taskID == taskInfo.taskID) {
                     iTask.childList = sheetSet
                     iTask.description = taskInfo.description
                     iTask.download_time = taskInfo.download_time
-                    iTask.is_finished =taskInfo.is_finished
+                    iTask.is_finished = taskInfo.is_finished
                     iTask.is_new_task = taskInfo.is_new_task
                     iTask.task_letter = taskInfo.task_letter
                     iTask.task_name = taskInfo.task_name
@@ -797,6 +796,7 @@ class WeixinActivityMain : AppCompatActivity() {
         exitBtn = v.findViewById(R.id.exitapp) as LinearLayout
         exitBtn!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
+                // TODO 注销后还提示用户名或密码错误
                 returnToLoginActivity()
                 finish()
             }

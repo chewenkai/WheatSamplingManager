@@ -167,7 +167,6 @@ class TypeMultiThenSingleChoice(var mContext: Context, var sheetCell: SheetCell)
     var cell_value: LinearLayout? = null  // 盛放Radio Button的容器
     var cell_secondary_value: LinearLayout? = null  // 盛放二级Radio Button的容器
     var checkBoxes = ArrayList<AppCompatCheckBox>() // 用于储存多个单选选项
-    var secondaryRadios = ArrayList<AppCompatRadioButton>() // 用于储存多个二级单选选项
     var cell_fill_required: TextView? = null
     var cell_printable: CheckBox? = null
 
@@ -191,7 +190,10 @@ class TypeMultiThenSingleChoice(var mContext: Context, var sheetCell: SheetCell)
             cell_value!!.addView(checkBox)
             checkBoxes.add(checkBox)
             // 添加二级单选
-            val radiosView = RadiosView(cell_value!!, radioInfo[1].splitKeeping(","), mContext)
+            val secondaryLinearLL = LinearLayout(mContext)
+            secondaryLinearLL.orientation = LinearLayout.VERTICAL
+            cell_value!!.addView(secondaryLinearLL)
+            val radiosView = RadiosView(secondaryLinearLL, radioInfo[1].splitKeeping(","), mContext)
             checkBox.tag = radiosView
             radiosView.hiddenRadios()
             checkBox.setOnClickListener {

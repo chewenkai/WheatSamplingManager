@@ -385,7 +385,7 @@ public class MapActivity extends Activity {
         // MapView的生命周期与Activity同步，当activity销毁时需调用MapView.destroy()
         mMapView.onDestroy();
         mMapView = null;
-        BaiduNaviManager.getInstance().uninit();
+//        BaiduNaviManager.getInstance().uninit();  //更新sdk后要取消注释
         super.onDestroy();
     }
 

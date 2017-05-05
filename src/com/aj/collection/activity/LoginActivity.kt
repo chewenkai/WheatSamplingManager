@@ -6,7 +6,11 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.SettingInjectorService
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
@@ -155,7 +159,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         }
 
     }
-
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -398,22 +401,44 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         otherLoginDialog!!.show()
     }
 
+    fun turnToMainPage(){
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
+            if (Settings.System.canWrite(this@LoginActivity)){
+                // permission was granted, yay! Do the
+                // contacts-related task you need to do.
+                (application as CollectionApplication).initLocation()
+                //if need intent have boolean needTurnToMain,and user,pwd not null,then Turn To
+                if (intent != null && intent.getBooleanExtra("needTurnToMain", true)
+                        && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
+                    val intent = Intent(mContext, WeixinActivityMain::class.java)
+                    startActivity(intent)
+                }
+            }else{
+                val intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                intent.data = Uri.parse("package:" + this@LoginActivity.packageName)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
+        }else{
+            // permission was granted, yay! Do the
+            // contacts-related task you need to do.
+            (application as CollectionApplication).initLocation()
+            //if need intent have boolean needTurnToMain,and user,pwd not null,then Turn To
+            if (intent != null && intent.getBooleanExtra("needTurnToMain", true)
+                    && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
+                val intent = Intent(mContext, WeixinActivityMain::class.java)
+                startActivity(intent)
+            }
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    (application as CollectionApplication).initLocation()
-                    //if need intent have boolean needTurnToMain,and user,pwd not null,then Turn To
-                    if (intent != null && intent.getBooleanExtra("needTurnToMain", true)
-                            && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
-                        val intent = Intent(mContext, WeixinActivityMain::class.java)
-                        startActivity(intent)
-                    }
+                    turnToMainPage()
                 } else {
                     toast("未得到位置信息权限，软件无法运行")
                     finish()
@@ -492,13 +517,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                     Manifest.permission.GET_ACCOUNTS,
                     Manifest.permission.RECEIVE_BOOT_COMPLETED), PERMISSION_REQUEST_CODE)
         } else {
-            (application as CollectionApplication).initLocation()
-            //if need intent have boolean needTurnToMain,and user,pwd not null,then Turn To
-            if (intent != null && intent.getBooleanExtra("needTurnToMain", true)
-                    && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
-                val intent = Intent(mContext, WeixinActivityMain::class.java)
-                startActivity(intent)
-            }
+            turnToMainPage()
         }
     }
 
