@@ -240,9 +240,6 @@ class TypeRadio(var mContext: Context, var sheetCell: SheetCell) : CellBaseAttri
     fun setAllRadioDisable() {
         for (radio in radios) {
             radio.isEnabled = false
-            radio.setTextColor(R.color.black)
-            radio.setHintTextColor(R.color.black)
-            radio.setLinkTextColor(R.color.black)
         }
     }
 
