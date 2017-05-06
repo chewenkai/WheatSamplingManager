@@ -7,9 +7,10 @@ public class URLs {
 
 
     //正式版
-    public final static String HOST = "120.25.69.38/heiljcydc";
+//    public final static String HOST = "120.25.69.38/heiljcydc";
 
     //测试版
+    public final static String HOST = "120.25.69.38/heiljcydctest";
 //    public final static String HOST = "222.171.78.156:32002/heiljcydctest";
 
 
