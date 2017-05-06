@@ -253,7 +253,14 @@ class SheetActivity : AppCompatActivity() {
                 var toPrint = ""
                 // 获取打印内容
                 for (sheetCellUI in sheetCellUIList) {
-                    toPrint += sheetCellUI.cell.getPrintContent() + "\n"
+                    when(sheetCellUI.getCellType()){
+                        // 图片类的单元格不需要打印
+                        SheetProtocol().TYPE_PHOTOS,SheetProtocol().TYPE_VEDIOS, SheetProtocol().TYPE_SIGN -> {}
+                        else -> {
+                            // 只获取可打印的单元格内容
+                            if (sheetCellUI.cell.get_cell_printable()==SheetProtocol().True)
+                                toPrint += sheetCellUI.cell.getPrintContent() + "\n"}
+                    }
                 }
                 val i = Intent(this@SheetActivity, PrintActivity::class.java)
                 i.putExtra("toPrint", toPrint)
