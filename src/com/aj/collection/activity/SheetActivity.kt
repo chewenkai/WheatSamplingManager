@@ -88,13 +88,6 @@ class SheetActivity : AppCompatActivity() {
         dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.form_layout)
 
-        when (currentMode) {
-            MODE_TEMPLATE -> supportActionBar?.title = "填写抽样单"
-            MODE_EDIT -> supportActionBar?.title = "编辑抽样单"
-            MODE_LOOK_THROUGH -> supportActionBar?.title = "查看抽样单"
-            MODE_MAKE_UP -> supportActionBar?.title = "补采抽样单"
-        }
-
         // 初始化网络框架和数据库框架
         queue = (application as CollectionApplication).requestQueue
         daoSession = ((mContext as Activity).application as CollectionApplication).getDaoSession(mContext)
@@ -129,6 +122,15 @@ class SheetActivity : AppCompatActivity() {
         //Intent中包含了关于抽样单的信息
         intent = getIntent()
         currentMode = intent!!.getIntExtra("Mode", MODE_TEMPLATE)  // 获取加载模式
+
+        // 设置actionbar文字
+        when (currentMode) {
+            MODE_TEMPLATE -> supportActionBar?.title = "填写抽样单"
+            MODE_EDIT -> supportActionBar?.title = "编辑抽样单"
+            MODE_LOOK_THROUGH -> supportActionBar?.title = "查看抽样单"
+            MODE_MAKE_UP -> supportActionBar?.title = "补采抽样单"
+        }
+
         //获取各种传递来信息
         if (currentMode == MODE_MAKE_UP || currentMode == MODE_LOOK_THROUGH || currentMode == MODE_EDIT) {
             //补采模式，需要获取服务器的ID
