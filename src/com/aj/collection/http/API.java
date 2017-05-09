@@ -44,7 +44,7 @@ public class API {
     }
 
     /**
-     * 用户注册
+     * 用户注册（旧）
      * @param listener
      * @param errorListener
      * @param user
@@ -78,6 +78,37 @@ public class API {
                 map.put("companyaddress", farmer_address); // address
                 map.put("name", farmer_name);
                 map.put("contact", farmer_phone);
+                map.put("postcode", farmer_post);
+                map.put("idcode", farmer_identity);
+                map.put("cardholder", farmer_possessor);
+                map.put("accountnumber", farmer_bank_number);
+                map.put("depositbank", farmer_bank_name);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+                return map;
+            }
+        };
+
+        return request;
+    }
+
+    public static StringRequest registUser(Response.Listener<String> listener, Response.ErrorListener errorListener,
+                                           final String user, final String pwd, final String province, final String city,final String country, final String farmer_name,
+                                           final String farmer_phone, final String farmer_identity, final String farmer_address,
+                                           final String farmer_post, final String farmer_possessor, final String farmer_bank_number,
+                                           final String farmer_bank_name) {
+        StringRequest request = new StringRequest(Request.Method.POST, URLs.JIEKOU, listener, errorListener) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("act", URLs.REGIST_NEW_USER);
+                map.put("username", user);
+                map.put("password", pwd);
+                map.put("province", province);
+                map.put("city", city);
+                map.put("country", country);
+                map.put("address", farmer_address);
+                map.put("name", farmer_name);
+                map.put("phonenumber", farmer_phone);
                 map.put("postcode", farmer_post);
                 map.put("idcode", farmer_identity);
                 map.put("cardholder", farmer_possessor);

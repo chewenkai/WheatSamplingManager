@@ -10,6 +10,7 @@ import android.location.SettingInjectorService
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Debug
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -138,6 +139,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         }
 
         checkPermission()
+        startActivity(Intent(this, DebugActivity::class.java))
     }
 
     override fun onClick(v: View) {
