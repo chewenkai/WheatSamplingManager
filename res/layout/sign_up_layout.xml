@@ -52,6 +52,7 @@
                 android:id="@+id/farmer_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textPassword"
                 android:hint="" />
         </LinearLayout>
 
@@ -219,12 +220,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="所属地区" />
+                android:text="所属地区"
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:id="@+id/superior_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="horizontal"></LinearLayout>
         </LinearLayout>
 

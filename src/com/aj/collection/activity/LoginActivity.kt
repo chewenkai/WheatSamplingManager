@@ -118,7 +118,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                         return@setOnClickListener
                     }
                 }
-                registUser(b, userName.text.toString(), passwd.text.toString(), selectedSuperior.company, selectedSuperior.user_id,
+                registUser(b, userName.text.toString(), passwd.text.toString(), "中国农科院", "4",
                         name.text.toString(), phone.text.toString(), identity.text.toString(), address.text.toString(), post.text.toString(), possessor.text.toString(),
                         band_card_number.text.toString(), band_name.text.toString())
             }

@@ -185,8 +185,8 @@ class TypeGeographicCoordinates(var mContext: Context, var sheetCell: SheetCell)
                 if (locationPause)
                     return
                 val location = intent.getParcelableExtra<BDLocation>(Constant.LOCATION_BROADCAST_VALUE)
-                longitude = location?.longitude?.toString()?:""  // 经度信息
-                latitude = location?.latitude?.toString()?:""  // 纬度信息
+                longitude = String.format("%f", location?.longitude)  // 经度信息
+                latitude = String.format("%f", location?.latitude)  // 纬度信息
                 location_info_type = location?.locType?: BDLocation.TypeNone // 定位类型
                 when (location_info_type){
                     BDLocation.TypeGpsLocation -> location_type_str="GPS定位"

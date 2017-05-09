@@ -159,7 +159,7 @@ public class PrintActivity extends AppCompatActivity {
         sp_fondSize = getSharedPreferences(getString(R.string.sp_fontsize), Activity.MODE_PRIVATE);
         fontsize = ((byte) sp_fondSize.getInt(getString(R.string.sp_fontsize), 0x11));
         showSize.setText("字体大小：" + String.valueOf(parseSize(fontsize)));
-        strPrintTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10 + (int) fontsize);
+        strPrintTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16 + (int) (fontsize/2));
 
         increaseFont = (LinearLayout) findViewById(R.id.mafont);
         increaseFont.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +171,7 @@ public class PrintActivity extends AppCompatActivity {
                 fontsize = (byte) (((int) fontsize) + 0x11);
                 showSize.setText("字体大小：" + String.valueOf(parseSize(fontsize)));
                 sp_fondSize.edit().putInt(getString(R.string.sp_fontsize), fontsize).commit();
-                strPrintTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10 + (int) fontsize);
+                strPrintTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16 + (int) (fontsize/2));
             }
         });
 
@@ -185,7 +185,7 @@ public class PrintActivity extends AppCompatActivity {
                 fontsize = (byte) (((int) fontsize) - 0x11);
                 showSize.setText("字体大小：" + String.valueOf(parseSize(fontsize)));
                 sp_fondSize.edit().putInt(getString(R.string.sp_fontsize), fontsize).commit();
-                strPrintTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10 + (int) fontsize);
+                strPrintTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16 + (int) (fontsize/2));
             }
         });
 
