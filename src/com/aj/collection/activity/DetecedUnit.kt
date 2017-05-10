@@ -10,6 +10,9 @@ import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.*
+import cn.qqtheme.framework.entity.Province
+import cn.qqtheme.framework.picker.AddressPicker
+import cn.qqtheme.framework.util.ConvertUtils
 import com.aj.collection.R
 import com.aj.collection.http.API
 import com.aj.collection.http.ReturnCode
@@ -17,6 +20,7 @@ import com.aj.collection.http.URLs
 import com.aj.collection.tools.SPUtils
 import com.aj.collection.ui.HeadControlPanel
 import com.aj.collection.ui.HeadControlPanel.LeftImageOnClick
+import com.alibaba.fastjson.JSON
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import org.jetbrains.anko.toast
@@ -34,15 +38,9 @@ class DetecedUnit : AppCompatActivity()  {
     private var userBankCardPossessor: EditText? = null
     private var userBankCardNumber: EditText? = null
     private var userBankName: EditText? = null
+    private var regionSelection: LinearLayout? = null
     private var saveInfo: AppCompatButton?=null
-    private val unitName: String? = null
-    private val unitAddr: String? = null
-    private val unitPost: String? = null
-    private val unitCZ: String? = null
-    private val unitPhone: String? = null
-    private val jiankongET: EditText? = null
-    private val jiankong: String? = null
-    internal var headPanel: HeadControlPanel? = null
+    var addressPicker: AddressPicker? = null
     internal var login_user: String=""
     internal var ll: LinearLayout?=null
     private var queue: RequestQueue? = null
@@ -63,22 +61,32 @@ class DetecedUnit : AppCompatActivity()  {
         userBankCardPossessor = findViewById(R.id.bank_card_possessor) as EditText
         userBankCardNumber = findViewById(R.id.bank_card_number) as EditText
         userBankName = findViewById(R.id.bank_name) as EditText
+        regionSelection = findViewById(R.id.region) as LinearLayout
         saveInfo = findViewById(R.id.save_info) as AppCompatButton
 
         userTV = findViewById(R.id.user_set) as TextView
         kaiguan = findViewById(R.id.switch_phone) as Switch
 
+        var data = ArrayList<Province>()
+        val json: String = ConvertUtils.toString(getAssets().open("city2.json"))
+        data.addAll(JSON.parseArray(json, Province::class.java))
+        addressPicker = AddressPicker(this@DetecedUnit, data)
+        addressPicker?.setShadowVisible(false)
+        addressPicker?.setHideProvince(false)
+        addressPicker?.setHideCounty(false)
+        regionSelection?.addView(addressPicker?.contentView)
+
         login_user = SPUtils.get(this, SPUtils.LOGIN_NAME, dv, SPUtils.LOGIN_VALIDATE) as String//登录的用户名
         val passwd = SPUtils.get(this, SPUtils.LOGIN_PASSWORD, dv, SPUtils.LOGIN_VALIDATE) as String//登录密码
-        val company = SPUtils.get(this, SPUtils.SAMPLING_COMPANY, dv, SPUtils.USER_INFO) as String
-        val company_id = SPUtils.get(this, SPUtils.SAMPLING_COMPANY_ID, dv, SPUtils.USER_INFO) as String
         userTV!!.text = login_user
         kaiguan!!.isChecked = SPUtils.get(this, SPUtils.KAIGUAN, false, login_user) as Boolean
         getUserInfo(userName, userPhoneNum, userIdentity, userAddress, userPostNum,
                 userBankCardPossessor, userBankCardNumber, userBankName)
 
         saveInfo!!.setOnClickListener {
-            editUser(login_user, passwd, company, company_id,userName!!.text.toString(),
+            editUser(login_user, passwd, addressPicker?.selectedProvince?.areaName?:"",
+                    addressPicker?.selectedCity?.areaName?:"",addressPicker?.selectedCounty?.areaName?:"",
+                    userName!!.text.toString(),
                     userPhoneNum!!.text.toString(), userIdentity!!.text.toString(),
                     userAddress!!.text.toString(), userPostNum!!.text.toString(),
                     userBankCardPossessor!!.text.toString(), userBankCardNumber!!.text.toString(),
@@ -136,8 +144,10 @@ class DetecedUnit : AppCompatActivity()  {
 
                 if (errorCode == ReturnCode.Code0) {
                     val jsonObject = JSONObject(content)
-                    var samplingCompany = jsonObject.getString(URLs.COMPANY)
-                    var samplingCompanyAddress = jsonObject.getString(URLs.COMPANYADDR)
+                    var province = jsonObject.getString(URLs.PROVINCE)
+                    var city = jsonObject.getString(URLs.CITY)
+                    var country = jsonObject.getString(URLs.COUNTRY)
+                    var samplingCompanyAddress = jsonObject.getString(URLs.ADDRESS)
                     var samplingContact = jsonObject.getString(URLs.CONTACT)
                     var samplingPhone = jsonObject.getString(URLs.CONTACTPHONE)
                     var deviceSN = jsonObject.getString(URLs.SERIAL_NUMBER)
@@ -148,8 +158,12 @@ class DetecedUnit : AppCompatActivity()  {
                     var bankName = jsonObject.getString(URLs.BANK_NAME)
 
                     val noEdit = "没有填写"
-                    if (samplingCompany.isEmpty())
-                        samplingCompany = noEdit
+                    if (province.isEmpty())
+                        province = noEdit
+                    if (city.isEmpty())
+                        city = noEdit
+                    if (country.isEmpty())
+                        country = noEdit
                     if (samplingCompanyAddress.isEmpty())
                         samplingCompanyAddress = noEdit
                     if (samplingContact.isEmpty())
@@ -175,8 +189,7 @@ class DetecedUnit : AppCompatActivity()  {
                     userBankCardPossessor!!.setText(bankPossessor)
                     userBankCardNumber!!.setText(bankNumber)
                     userBankName!!.setText(bankName)
-
-
+                    addressPicker?.setSelectedItem("黑龙江", "哈尔滨", "南岗")
 
                 } else {
                     ReturnCode(applicationContext, errorCode, true)
@@ -208,7 +221,7 @@ class DetecedUnit : AppCompatActivity()  {
         queue!!.add(stringRequest)
     }
 
-    private fun editUser(user:String, pwd:String, company:String, company_id:String, farmer_name:String,
+    private fun editUser(user:String, pwd:String, province:String, city:String, country:String, farmer_name:String,
                            farmer_phone:String, farmer_identity:String, farmer_address:String,
                            farmer_post:String, farmer_possessor:String, farmer_bank_number:String,
                            farmer_bank_name:String){
@@ -231,7 +244,7 @@ class DetecedUnit : AppCompatActivity()  {
                 }
 
             } catch (e: JSONException) {
-                toast("注册出错，错误信息：" + e.message)
+                toast("用户信息修改出错，错误信息：" + e.message)
                 e.printStackTrace()
             }
         }
@@ -241,7 +254,7 @@ class DetecedUnit : AppCompatActivity()  {
             Log.e("LoginTestFail", volleyError.toString())
         }
 
-        val stringRequest = API.editUser(listener, errorListener, user, pwd, company, company_id, farmer_name,
+        val stringRequest = API.editUser(listener, errorListener, user, pwd, province, city, country, farmer_name,
                 farmer_phone, farmer_identity, farmer_address,
                 farmer_post, farmer_possessor, farmer_bank_number,
                 farmer_bank_name)

@@ -141,7 +141,8 @@ public class API {
      * @return
      */
     public static StringRequest editUser(Response.Listener<String> listener, Response.ErrorListener errorListener,
-                                           final String user, final String pwd, final String company, final String company_id, final String farmer_name,
+                                           final String user, final String pwd, final String province, final String city,
+                                            final String country, final String farmer_name,
                                            final String farmer_phone, final String farmer_identity, final String farmer_address,
                                            final String farmer_post, final String farmer_possessor, final String farmer_bank_number,
                                            final String farmer_bank_name) {
@@ -152,11 +153,12 @@ public class API {
                 map.put("act", URLs.EDIT_USER_INFO);
                 map.put("username", user);
                 map.put("password", pwd);
-                map.put("companyid", company_id);
-                map.put("company", company);
-                map.put("companyaddress", farmer_address);
+                map.put("province", province);
+                map.put("city", city);
+                map.put("country", country);
+                map.put("address", farmer_address);
                 map.put("name", farmer_name);
-                map.put("contact", farmer_phone);
+                map.put("phonenumber", farmer_phone);
                 map.put("postcode", farmer_post);
                 map.put("idcode", farmer_identity);
                 map.put("cardholder", farmer_possessor);
@@ -290,11 +292,11 @@ public class API {
      * @param errorListener
      * @param username
      * @param password
-     * @param samplingSets
+     * @param taskID
      * @return
      */
     public static StringRequest uploadSampling(Response.Listener<String> listener, Response.ErrorListener errorListener,
-                                               final String username, final String password, final String samplingSets,
+                                               final String username, final String password, final String taskID,
                                                final String tname, final String samplecontent, final String samplingname,
                                                final String sid,final double latitude,final double longitude,final int mode,
                                                final String samplingnumber,final boolean isMadeUp) {
@@ -311,14 +313,14 @@ public class API {
 
                 //判断是否有sid
                 String serverid=Constant.DO_NOT_HAVE_SID;
-                if (!sid.equals("null"))
+                if (sid !=null&&!sid.equals("null"))
                     serverid=sid;
 
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("act", URLs.UPLOADSAMPLINGACT);
                 map.put("username", username);
                 map.put("password", password);
-                map.put("tid", samplingSets);
+                map.put("tid", taskID);
                 map.put("tname", tname);
                 map.put("scon", samplecontent);
                 map.put("sname", samplingname);

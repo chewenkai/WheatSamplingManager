@@ -21,6 +21,9 @@ public class SPUtils {
      * 保存在手机里面的文件名
      */
     // Farmer information
+    public static final String FARMER_PROVINCE = "farmer_province";
+    public static final String FARMER_CITY = "farmer_city";
+    public static final String FARMER_COUNTRY = "farmer_country";
     public static final String FARMER_NAME = "farmer_name";
     public static final String FARMER_PHONE_NUMBER = "farmer_phone_number";
     public static final String FARMER_IDENTITY_NUMBER = "farmer_identity_number";

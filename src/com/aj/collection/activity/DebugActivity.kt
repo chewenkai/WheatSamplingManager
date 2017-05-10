@@ -34,6 +34,7 @@ import org.jetbrains.anko.onClick
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
 class DebugActivity : Activity() {
     internal var login: TextView? = null
@@ -296,22 +297,6 @@ class DebugActivity : Activity() {
 
 
     fun testUploadSampling() {
-        val listener = Response.Listener<String> { s ->
-            progressDialog!!.dismiss()
-            output?.text = s
-            try {
-                val resultJson = JSONObject(s)
-                val errorCode = resultJson.getString(URLs.KEY_ERROR)
-                val message = resultJson.getString(URLs.KEY_MESSAGE)
-                output?.text = "$s\n错误码：$errorCode\n消息：$message"
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-        }
-        val errorListener = Response.ErrorListener { volleyError ->
-            progressDialog!!.dismiss()
-            output?.text = volleyError.toString()
-        }
         val samplingtables = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.Is_uploaded.eq(false),
                 SAMPLINGTABLEDao.Properties.Check_status.notEq(Constant.S_STATUS_DELETE))
                 .orderAsc(SAMPLINGTABLEDao.Properties.Id).list()
@@ -326,11 +311,34 @@ class DebugActivity : Activity() {
         else
             taskName = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.TaskID.eq(samplingtable.taskID)).list()[0].task_name
 
+
+        val listener = Response.Listener<String> { s ->
+            progressDialog!!.dismiss()
+            output?.text = s
+            try {
+                val resultJson = JSONObject(s)
+                val errorCode = resultJson.getString(URLs.KEY_ERROR)
+                val message = resultJson.getString(URLs.KEY_MESSAGE)
+                output?.text = samplingtable.toString()+ "\n$s\n错误码：$errorCode\n消息：$message"
+            } catch (e: JSONException) {
+                output?.text = s
+                e.printStackTrace()
+            }
+        }
+        val errorListener = Response.ErrorListener { volleyError ->
+            progressDialog!!.dismiss()
+            output?.text = volleyError.toString()
+        }
+
         //send to api
-        val stringRequest = API.uploadSampling(listener, errorListener, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String, samplingtable.taskID.toString(), taskName, samplingtable.sampling_content, samplingtable.show_name,
-                samplingtable.sid_of_server.toString(), 88.8888, 88.8888, 1, "测试num", false)
+        // TODO 抽样单名字为空的判断
+        val stringRequest = API.uploadSampling(listener, errorListener, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String,
+                samplingtable.taskID.toString(), taskName, samplingtable.sampling_content, "抽样单名称",
+                samplingtable.sid_of_server?.toString(), samplingtable.latitude, samplingtable.longitude,
+                samplingtable.location_mode, samplingtable.sampling_unique_num, samplingtable.is_make_up)
+
         queue?.add(stringRequest)
-        progressDialog!!.setMessage("登陆中...")
+        progressDialog!!.setMessage("上传中...")
         progressDialog!!.show()
     }
 

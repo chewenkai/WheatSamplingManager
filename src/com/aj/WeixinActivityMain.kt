@@ -209,6 +209,7 @@ class WeixinActivityMain : AppCompatActivity() {
 
         val filter1 = IntentFilter(Intent.ACTION_TIME_TICK)
         registerReceiver(timeTickReceiver, filter1)// just remember unregister it
+        bindMsgService()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -233,13 +234,12 @@ class WeixinActivityMain : AppCompatActivity() {
     }
 
     override fun onStop() {
-        unbindMsgService()
+
         cancleRequestFromQueue()
         super.onStop()
     }
 
     public override fun onResume() {
-        bindMsgService()
 
         // refresh data
         refreshDoingTaskData(showProgDialog = false)
@@ -254,6 +254,7 @@ class WeixinActivityMain : AppCompatActivity() {
     override fun onDestroy() {
         mNM!!.cancel(R.string.app_name)
         // Unregister our receiver.
+        unbindMsgService()
         unregisterReceiver(timeTickReceiver)
         super.onDestroy()
     }
@@ -1249,7 +1250,7 @@ class WeixinActivityMain : AppCompatActivity() {
         try {
             for (i in allSamplingtables.indices) {
                 val jsonObject = JSONObject()
-                jsonObject.put("sid", allSamplingtables.get(i).sid_of_server)
+                jsonObject.put("sid", allSamplingtables[i].sid_of_server?:Constant.DO_NOT_HAVE_SID)
                 jsonArray.put(jsonObject)
             }
         } catch (e: JSONException) {
@@ -1315,10 +1316,12 @@ class WeixinActivityMain : AppCompatActivity() {
         queue!!.add<String>(getSamplingStatusRequest!!)
     }
 
+    //TODO 所有带有显示对话框的更新都应该判断当前activity是否在后台再show，在dismiss钱判断isshowing
     /**
      * 更新任务状态
      * server return like this:
      * {error:0,msg:[{tid:01,type:'0'},{tid:02,type:'1'}]}
+     *
      */
     fun updateTaskStatus(showDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
@@ -1358,7 +1361,9 @@ class WeixinActivityMain : AppCompatActivity() {
                     for (i in alltaskinfos.indices) {
 
                         jsonObjectTaskStatus = jsonArrayTasksStatus.getJSONObject(i)
-                        status = Integer.valueOf(jsonObjectTaskStatus.getString("type"))!!
+                        status = jsonObjectTaskStatus.getString("type").toInt()
+                        if (status == null)
+                            continue
                         var isFinish = true
                         if (status == Constant.TASK_DOING)
                             isFinish = false

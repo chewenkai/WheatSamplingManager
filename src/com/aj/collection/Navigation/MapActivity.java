@@ -347,6 +347,11 @@ public class MapActivity extends Activity {
 
         }
 
+        @Override
+        public void onConnectHotSpotMessage(String s, int i) {
+
+        }
+
         public void onReceivePoi(BDLocation poiLocation) {
         }
 
@@ -631,7 +636,7 @@ public class MapActivity extends Activity {
     String authinfo = null;
 
     private void initNavi() {
-        BaiduNaviManager.getInstance().setNativeLibraryPath(mSDCardPath + "/BaiduNaviSDK_SO");
+//        BaiduNaviManager.getInstance().setNativeLibraryPath(mSDCardPath + "/BaiduNaviSDK_SO");
         BaiduNaviManager.getInstance().init(this, mSDCardPath, APP_FOLDER_NAME,
                 new BaiduNaviManager.NaviInitListener() {
                     @Override
@@ -641,8 +646,6 @@ public class MapActivity extends Activity {
                         } else {
                             authinfo = "key校验失败, " + msg;
                         }
-
-
                     }
 
                     public void initSuccess() {
@@ -711,10 +714,10 @@ public class MapActivity extends Activity {
         }
     }
 
-    public class DemoRoutePlanListener implements BaiduNaviManager.RoutePlanListener {
+    class DemoRoutePlanListener implements BaiduNaviManager.RoutePlanListener {
 
         private BNRoutePlanNode mBNRoutePlanNode = null;
-        public DemoRoutePlanListener(BNRoutePlanNode node){
+        DemoRoutePlanListener(BNRoutePlanNode node){
             mBNRoutePlanNode = node;
         }
 
@@ -726,6 +729,7 @@ public class MapActivity extends Activity {
             intent.putExtras(bundle);
             startActivity(intent);
         }
+
         @Override
         public void onRoutePlanFailed() {
             Toast.makeText(MapActivity.this,"导航失败",Toast.LENGTH_SHORT).show();

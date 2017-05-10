@@ -221,13 +221,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="所属地区"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
             <LinearLayout
                 android:id="@+id/superior_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:orientation="horizontal"></LinearLayout>
         </LinearLayout>
 

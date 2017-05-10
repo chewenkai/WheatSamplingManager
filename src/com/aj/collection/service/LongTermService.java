@@ -283,6 +283,11 @@ public class LongTermService extends Service {
 
         }
 
+        @Override
+        public void onConnectHotSpotMessage(String s, int i) {
+
+        }
+
     }
 
     LocationClientOption.LocationMode tempMode = LocationClientOption.LocationMode.Hight_Accuracy;//定位模式

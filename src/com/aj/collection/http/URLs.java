@@ -35,8 +35,10 @@ public class URLs {
      */
     public final static String LOGIN = URL_API_HOST + "jiekou.php";
     public final static String LOGINACT = "login";
-    public final static String COMPANY = "samplingcompany";
-    public final static String COMPANYADDR = "samplingaddr";
+    public final static String PROVINCE = "province";
+    public final static String CITY = "city";
+    public final static String COUNTRY = "country";
+    public final static String ADDRESS = "address";
     public final static String CONTACT = "samplingcontact";
     public final static String CONTACTPHONE = "samplingphone";
     public final static String SERIAL_NUMBER = "devSN";

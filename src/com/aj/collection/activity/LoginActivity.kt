@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.SettingInjectorService
+import com.alibaba.fastjson.JSON
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +25,11 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.Window
 import android.widget.*
+import cn.qqtheme.framework.entity.City
+import cn.qqtheme.framework.entity.County
+import cn.qqtheme.framework.entity.Province
+import cn.qqtheme.framework.picker.AddressPicker
+import cn.qqtheme.framework.util.ConvertUtils
 import com.aj.WeixinActivityMain
 import com.aj.collection.R
 import com.aj.collection.bean.Superior
@@ -40,6 +46,7 @@ import com.android.volley.Response
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.jetbrains.anko.toast
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -75,55 +82,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         newUser!!.setOnClickListener(this)
 
         signUp!!.setOnClickListener {
-            allSignUpEditText.removeAll(allSignUpEditText)
-            val dialogBuilder = AlertDialog.Builder(this)
-            val inflater = this.layoutInflater
-            val dialogView = inflater.inflate(R.layout.sign_up_layout, null)
-            dialogBuilder.setView(dialogView)
-
-            val userName = dialogView.findViewById(R.id.farmer_user_name) as EditText
-            allSignUpEditText.add(userName)
-            val passwd = dialogView.findViewById(R.id.farmer_password) as EditText
-            allSignUpEditText.add(passwd)
-            val name = dialogView.findViewById(R.id.farmer_name) as EditText
-            allSignUpEditText.add(name)
-            val phone = dialogView.findViewById(R.id.farmer_phone) as EditText
-            allSignUpEditText.add(phone)
-            val identity = dialogView.findViewById(R.id.farmer_identity_number) as EditText
-            allSignUpEditText.add(identity)
-            val address = dialogView.findViewById(R.id.farmer_address) as EditText
-            allSignUpEditText.add(address)
-            val post = dialogView.findViewById(R.id.farmer_post_number) as EditText
-            allSignUpEditText.add(post)
-            val possessor = dialogView.findViewById(R.id.farmer_bank_card_possessor) as EditText
-            allSignUpEditText.add(possessor)
-            val band_card_number = dialogView.findViewById(R.id.farmer_band_card_number) as EditText
-            allSignUpEditText.add(band_card_number)
-            val band_name = dialogView.findViewById(R.id.farmer_bank_name) as EditText
-            allSignUpEditText.add(band_name)
-            val saveButton = dialogView.findViewById(R.id.dialog_ok) as Button
-            val cancleButton = dialogView.findViewById(R.id.dialog_cancle) as Button
-
-            val superiorListLL = dialogView.findViewById(R.id.superior_list) as LinearLayout
-            getSuperiorInfo(superiorListLL)
-
-            dialogBuilder.setTitle("请详细填写用户信息")
-            val b = dialogBuilder.create()
-            b.show()
-
-            saveButton.setOnClickListener {
-                for (et: EditText in allSignUpEditText) {
-                    if (et.text.isEmpty()) {
-                        toast("请将信息填写完整")
-                        return@setOnClickListener
-                    }
-                }
-                registUser(b, userName.text.toString(), passwd.text.toString(), "中国农科院", "4",
-                        name.text.toString(), phone.text.toString(), identity.text.toString(), address.text.toString(), post.text.toString(), possessor.text.toString(),
-                        band_card_number.text.toString(), band_name.text.toString())
-            }
-
-            cancleButton.setOnClickListener { b.dismiss() }
+            startActivity(Intent(this@LoginActivity, RegistActivity::class.java))
         }
         queue = (application as CollectionApplication).requestQueue //init Volley
 
@@ -139,7 +98,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         }
 
         checkPermission()
-        startActivity(Intent(this, DebugActivity::class.java))
+//        startActivity(Intent(this, DebugActivity::class.java))
     }
 
     override fun onClick(v: View) {
@@ -284,8 +243,10 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
 
                 if (errorCode == ReturnCode.Code0) {
                     val jsonObject = JSONObject(content)
-                    var samplingCompany = jsonObject.getString(URLs.COMPANY)
-                    var samplingCompanyAddress = jsonObject.getString(URLs.COMPANYADDR)
+                    var province = jsonObject.getString(URLs.PROVINCE)
+                    var city = jsonObject.getString(URLs.CITY)
+                    var country = jsonObject.getString(URLs.COUNTRY)
+                    var samplingCompanyAddress = jsonObject.getString(URLs.ADDRESS)
                     var samplingContact = jsonObject.getString(URLs.CONTACT)
                     var samplingPhone = jsonObject.getString(URLs.CONTACTPHONE)
                     var deviceSN = jsonObject.getString(URLs.SERIAL_NUMBER)
@@ -296,8 +257,12 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                     var bankName = jsonObject.getString(URLs.BANK_NAME)
 
                     val noEdit = "没有填写"
-                    if (samplingCompany.isEmpty())
-                        samplingCompany = noEdit
+                    if (province.isEmpty())
+                        province = noEdit
+                    if (city.isEmpty())
+                        city = noEdit
+                    if (country.isEmpty())
+                        country = noEdit
                     if (samplingCompanyAddress.isEmpty())
                         samplingCompanyAddress = noEdit
                     if (samplingContact.isEmpty())
@@ -315,7 +280,9 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                     if (bankName.isEmpty())
                         bankName = noEdit
 
-                    SPUtils.put(mContext, SPUtils.SAMPLING_COMPANY, samplingCompany, SPUtils.USER_INFO)
+                    SPUtils.put(mContext, SPUtils.FARMER_PROVINCE, province, SPUtils.USER_INFO)
+                    SPUtils.put(mContext, SPUtils.FARMER_CITY, city, SPUtils.USER_INFO)
+                    SPUtils.put(mContext, SPUtils.FARMER_COUNTRY, country, SPUtils.USER_INFO)
                     SPUtils.put(mContext, SPUtils.FARMER_ADDRESS, samplingCompanyAddress, SPUtils.USER_INFO)
                     SPUtils.put(mContext, SPUtils.FARMER_NAME, samplingContact, SPUtils.USER_INFO)
                     SPUtils.put(mContext, SPUtils.FARMER_PHONE_NUMBER, samplingPhone, SPUtils.USER_INFO)
@@ -340,6 +307,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                 }
 
             } catch (e: JSONException) {
+                toast("服务器错误，请稍后重试")
                 e.printStackTrace()
             }
         }
@@ -403,9 +371,9 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         otherLoginDialog!!.show()
     }
 
-    fun turnToMainPage(){
-        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
-            if (Settings.System.canWrite(this@LoginActivity)){
+    fun turnToMainPage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Settings.System.canWrite(this@LoginActivity)) {
                 // permission was granted, yay! Do the
                 // contacts-related task you need to do.
                 (application as CollectionApplication).initLocation()
@@ -415,13 +383,13 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                     val intent = Intent(mContext, WeixinActivityMain::class.java)
                     startActivity(intent)
                 }
-            }else{
+            } else {
                 val intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS)
                 intent.data = Uri.parse("package:" + this@LoginActivity.packageName)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
-        }else{
+        } else {
             // permission was granted, yay! Do the
             // contacts-related task you need to do.
             (application as CollectionApplication).initLocation()

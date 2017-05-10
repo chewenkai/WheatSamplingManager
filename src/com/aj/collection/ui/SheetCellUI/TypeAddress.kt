@@ -18,7 +18,6 @@ import com.aj.Constant
 import com.aj.collection.bean.SheetCell
 import com.aj.collection.tools.SheetProtocol
 import com.baidu.location.BDLocation
-import com.baidu.navisdk.comapi.mapcontrol.MapParams
 import org.jetbrains.anko.toast
 import org.json.JSONObject
 

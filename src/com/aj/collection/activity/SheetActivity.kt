@@ -33,6 +33,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jrs.utils.FileUtils
 import kotlinx.android.synthetic.main.form_layout.*
+import org.apache.commons.io.FileUtils.copyDirectoryToDirectory
 import org.jetbrains.anko.toast
 import org.json.JSONArray
 import org.json.JSONException
@@ -615,7 +616,7 @@ class SheetActivity : AppCompatActivity() {
                             sheetCellUI.cell.get_cell_name())
                     if (originMediaPath.exists()){
                         if (newMediaPath.mkdirs()) {
-                            com.baidu.navisdk.util.common.FileUtils.copyDirectiory(originMediaPath.path, newMediaPath.path)
+                            copyDirectoryToDirectory(originMediaPath, newMediaPath.parentFile)
                         }
                     }
                     newSheetCellUIList.add(sheetCellUI)

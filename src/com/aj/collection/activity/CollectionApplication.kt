@@ -139,6 +139,9 @@ class CollectionApplication : AppContext() {
      * 定位SDK监听函数
      */
     inner class MyLocationListenner : BDLocationListener {
+        override fun onConnectHotSpotMessage(p0: String?, p1: Int) {
+
+        }
 
         override fun onReceiveLocation(location: BDLocation) {
 

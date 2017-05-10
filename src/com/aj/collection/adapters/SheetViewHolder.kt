@@ -343,18 +343,18 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
      * 一键上传抽样单及其产生的文件
      */
     fun uploadSamplingAndMedia(samplingtables: List<SAMPLINGTABLE>?, taskName: String) {
-        Toast.makeText(mContext, "上传抽样单成功，等待审核!", Toast.LENGTH_LONG).show()
-
-        for (sample in samplingtables!!){
-            sample.sid_of_server = java.lang.Long.valueOf(0)
-            sample.is_uploaded = true
-            sample.check_status = Constant.S_STATUS_CHECKING
-            samplingtableDao?.insertOrReplace(sample)
-        }
-        if (WeixinActivityMain::class.java.isInstance(mContext)){
-            (mContext as WeixinActivityMain).refreshDoingTaskData(false)
-        }
-        return
+//        Toast.makeText(mContext, "上传抽样单成功，等待审核!", Toast.LENGTH_LONG).show()
+//
+//        for (sample in samplingtables!!){
+//            sample.sid_of_server = java.lang.Long.valueOf(0)
+//            sample.is_uploaded = true
+//            sample.check_status = Constant.S_STATUS_CHECKING
+//            samplingtableDao?.insertOrReplace(sample)
+//        }
+//        if (WeixinActivityMain::class.java.isInstance(mContext)){
+//            (mContext as WeixinActivityMain).refreshDoingTaskData(false)
+//        }
+//        return
 
         if (samplingtables?.size == 0) {
             Toast.makeText(mContext, "没有可以上传的抽样单!", Toast.LENGTH_LONG).show()
@@ -469,7 +469,7 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
 
         //send to api
         val stringRequest = API.uploadSampling(listener, errorListener, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String, samplingtables[0].taskID.toString(), taskName, samplingtables[0].sampling_content, samplingtables[0].show_name,
-                samplingtables[0].sid_of_server.toString(), samplingtables[0].latitude!!, samplingtables[0].longitude!!,
+                samplingtables[0].sid_of_server?.toString(), samplingtables[0].latitude!!, samplingtables[0].longitude!!,
                 samplingtables[0].location_mode!!, samplingtables[0].sampling_unique_num, samplingtables[0].is_make_up!!)
         queue?.add(stringRequest)
 
