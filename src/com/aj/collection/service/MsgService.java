@@ -72,6 +72,7 @@ import org.json.JSONObject;
  * interact with the user, rather than doing something more disruptive such as
  * calling startActivity().
  */
+// TODO 查看后台服务存在的必要
 public class MsgService extends Service {
     private static final String TAG = "pedometer.StepService";
     private Context mContext = this;

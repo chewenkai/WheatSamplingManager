@@ -13,11 +13,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="账号信息"
+            android:text="账号信息:"
             android:textStyle="bold"
-            android:textSize="15sp"
-            android:gravity="center"
-            android:layout_margin="15dp"/>
+            android:textSize="18sp"
+            android:gravity="left"
+            android:layout_margin="15dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,13 +29,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="用户名" />
+                android:text="用户名"
+                android:textColor="@color/black"/>
 
             <EditText
                 android:id="@+id/farmer_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="" />
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+                android:hint="请在此填写用户名(仅限字母和数字)" />
         </LinearLayout>
 
         <LinearLayout
@@ -46,24 +49,26 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="密码" />
+                android:text="密码"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:hint="" />
+                android:hint="请在此填写密码" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="个人资料"
+            android:text="个人资料:"
             android:textStyle="bold"
-            android:textSize="15sp"
-            android:gravity="center"
-            android:layout_margin="15dp"/>
+            android:textSize="18sp"
+            android:gravity="left"
+            android:layout_margin="15dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,13 +79,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="大户姓名" />
+                android:text="大户姓名"
+                android:textColor="@color/black"/>
 
             <EditText
                 android:id="@+id/farmer_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint=""/>
+                android:inputType="text"
+                android:hint="请在此填写真实姓名"/>
         </LinearLayout>
 
         <LinearLayout
@@ -92,12 +99,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="电话" />
+                android:text="电话"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_phone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:hint="请在此填写手机号码"/>
         </LinearLayout>
 
         <LinearLayout
@@ -109,22 +119,26 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="大户身份证号" />
+                android:text="大户身份证号"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_identity_number"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="请在此填写身份证号码"/>
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="补助信息"
+            android:text="补助信息:"
             android:textStyle="bold"
-            android:textSize="15sp"
-            android:gravity="center"
-            android:layout_margin="15dp"/>
+            android:textSize="18sp"
+            android:gravity="left"
+            android:layout_margin="15dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -135,12 +149,16 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="通讯地址" />
+                android:text="通讯地址"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_address"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="如“北京市海淀区中关村南大街12号”"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -152,12 +170,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="邮编" />
+                android:text="邮编"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_post_number"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="请输入6位数邮编，如“100083”"/>
         </LinearLayout>
 
         <LinearLayout
@@ -169,12 +190,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="持卡人" />
+                android:text="持卡人"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_bank_card_possessor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="请在此填写银行卡的持卡人姓名"/>
         </LinearLayout>
 
         <LinearLayout
@@ -186,12 +210,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="银行卡号" />
+                android:text="银行卡号"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_band_card_number"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="请在此填写银行卡卡号"/>
         </LinearLayout>
 
         <LinearLayout
@@ -203,12 +230,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="开户行" />
+                android:text="开户行"
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/farmer_bank_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="开户银行，如”交通银行北京农科院支行“"/>
         </LinearLayout>
 
         <LinearLayout
@@ -221,6 +251,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="所属地区"
+                android:textColor="@color/black"
                 android:visibility="visible"/>
 
             <LinearLayout
@@ -236,20 +267,14 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/dialog_cancle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="取消" />
-
-            <Button
                 android:id="@+id/dialog_ok"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_margin="10dp"
                 android:gravity="center"
-                android:text="注册" />
+                android:text="注册"
+                android:textSize="18sp"
+                style="@style/Base.Widget.AppCompat.Button.Colored"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

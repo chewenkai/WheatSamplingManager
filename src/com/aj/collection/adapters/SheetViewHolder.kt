@@ -432,7 +432,7 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                             val stringRequest = API.uploadSampling(this, errorListener, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String, SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String, samplingtables[progressDialog.progress].taskID.toString(),
                                     taskName, samplingtables[progressDialog.progress].sampling_content,
                                     samplingtables[progressDialog.progress].show_name,
-                                    samplingtables[progressDialog.progress].sid_of_server.toString(),
+                                    samplingtables[progressDialog.progress].sid_of_server?.toString(),
                                     samplingtables[progressDialog.progress].latitude!!,
                                     samplingtables[progressDialog.progress].longitude!!,
                                     samplingtables[progressDialog.progress].location_mode!!,
@@ -446,7 +446,8 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                             //Toast
                             Toast.makeText(mContext, "抽样单上传成功", Toast.LENGTH_SHORT).show()
                             //update data set of adapter
-                            (mContext as WeixinActivityMain).refreshDoingTaskData(showProgDialog = true)
+                            // TODO Update status have problem 更新抽样单状态还有问题
+                            (mContext as WeixinActivityMain).updateTaskStatus(false)
                         }
                     } else {
                         progressDialog.dismiss()

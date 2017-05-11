@@ -53,7 +53,7 @@ class CollectionApplication : AppContext() {
     var globalLocationMode = Constant.CAN_NOT_GET_LOCATION
     var globalLocationTime = Constant.CAN_NOT_GET_LOCATION_TIME.toLong()
 
-    var global_location: BDLocation? = null
+    var global_location: BDLocation?=null
 
     var global_device_sn = Constant.CAN_NOT_GET_SERIES_NUMBER
 
@@ -325,7 +325,7 @@ class CollectionApplication : AppContext() {
     var mVibrator: Vibrator? = null
     var mLocationClient: LocationClient? = null
 
-    fun initLocation() {
+    fun initLocation(){
         mLocationClient = LocationClient(this.applicationContext)
         myListener = MyLocationListenner()
         mVibrator = applicationContext.getSystemService(Service.VIBRATOR_SERVICE) as Vibrator
@@ -347,8 +347,6 @@ class CollectionApplication : AppContext() {
         option.setIsNeedLocationPoiList(true)//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
         mLocationClient!!.locOption = option
         mLocationClient!!.start()//定位SDK start之后会默认发起一次定位请求，开发者无须判断isstart并主动调用request
-
-
     }
 
     /**

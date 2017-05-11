@@ -224,7 +224,6 @@ public final class Code128Reader extends OneDReader {
         bestMatch = d;
       }
     }
-    // TODO We're overlooking the fact that the STOP pattern has 7 values, not 6.
     if (bestMatch >= 0) {
       return bestMatch;
     } else {

@@ -106,7 +106,7 @@ class WeixinActivityMain : AppCompatActivity() {
         templettableDao = daoSession!!.templettableDao
         samplingtableDao = daoSession!!.samplingtableDao
 
-        val sheetStr = "{ \"specimen_sheet\": [ { \"cell_name\": \"品种名称\", \"cell_type \": \"type_edit_text\", \"cell_value\": \" \", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"F\"}, { \"cell_name\": \"抽样地点经纬度\", \"cell_type\": \"type_geographic_coordinates\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"抽样地点\", \"cell_type\": \"type_address\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"样品照片\", \"cell_type\": \"type_photos\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"采样视频\", \"cell_type\": \"type_vedios\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"该品种种植面积(亩)\", \"cell_type\": \"type_edit_text\", \"cell_value\": \" \", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"地力级别\", \"cell_type\": \"type_radio\", \"cell_value\": \"1级地,2级地,3级地\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"预估亩产水平(每亩)\", \"cell_type\": \"type_radio\", \"cell_value\": \"200-250,250-300,300-350,350-400,400-450,450-500,500以上\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"播种日期\", \"cell_type\": \"type_date_select\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"取样时间\", \"cell_type\": \"type_auto_record_date\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"施用农药情况\", \"cell_type\": \"type_edit_text\", \"cell_value\": \" \", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"主要气象灾害\", \"cell_type\": \"type_multi_then_single_choice\", \"cell_value\": \"干旱,洪涝,高温,低温;严重,一般,轻微\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"主要病虫害发生情况\", \"cell_type\": \"type_multi_then_single_choice\", \"cell_value\": \"条锈病,赤霉病,白粉病,纹枯病,蚜虫,麦蜘蛛,吸浆虫;严重,一般,轻微\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"T\", \"cell_default_print\": \"T\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"病虫害情况照片\", \"cell_type\": \"type_photos\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"T\"}, { \"cell_name\": \"采样人签名\", \"cell_type\": \"type_sign\", \"cell_value\": \"\", \"cell_editable\": \"T\", \"cell_fill_required\": \"T\", \"cell_printable\": \"F\", \"cell_default_print\": \"F\", \"cell_copyable\": \"F\"} ] }"
+        val sheetStr = Constant.SHEETSTR
         for (i in 0..2) {
             taskinfoDao?.insertOrReplace(TASKINFO((261 + i).toLong(), "品种${i + 1}", "XMXY", false, false, System.currentTimeMillis(), ""))
             templettableDao?.insertOrReplace(TEMPLETTABLE((i + 1).toLong(), (261 + i).toLong(), "品种${i + 1}", sheetStr, System.currentTimeMillis()))
@@ -248,6 +248,9 @@ class WeixinActivityMain : AppCompatActivity() {
         //refresh the task status and sampling status
         updateTaskStatus(false)
         updateSamplingStatus(false)
+
+        // 更新用户区域
+        company_name?.text = getRegionInfo()
         super.onResume()
     }
 
@@ -351,7 +354,8 @@ class WeixinActivityMain : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_refresh_task -> {
-                haveNewTask()
+//                haveNewTask()
+                getNewTask()
                 updateTaskStatus(true)
                 updateSamplingStatus(true)
             }
@@ -631,7 +635,7 @@ class WeixinActivityMain : AppCompatActivity() {
 
         val login_user = SPUtils.get(this, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?
         user_name!!.text = login_user
-        company_name!!.text = "所属单位:" + (SPUtils.get(this, SPUtils.SAMPLING_COMPANY, "没有填写", SPUtils.USER_INFO) as String?)!!
+        company_name!!.text = getRegionInfo()
 
         // 手动检查新任务
         manualCheckTask = v.findViewById(R.id.check_new_task_btn) as LinearLayout
@@ -811,6 +815,15 @@ class WeixinActivityMain : AppCompatActivity() {
             }
         })
 
+    }
+
+    /**
+     * 取出并显示本地保存的用户区域信息。（本地保存的用户区域信息在用户登录和修改资料时更新）
+     */
+    private fun getRegionInfo(): String? {
+        return (SPUtils.get(this, SPUtils.FARMER_PROVINCE, "未知", SPUtils.USER_INFO) as String?)!! + "-" +
+                (SPUtils.get(this, SPUtils.FARMER_CITY, "未知", SPUtils.USER_INFO) as String?)!! + "-" +
+                (SPUtils.get(this, SPUtils.FARMER_COUNTRY, "未知", SPUtils.USER_INFO) as String?)!!
     }
 
     /**
@@ -1186,7 +1199,7 @@ class WeixinActivityMain : AppCompatActivity() {
                                 val samplingCont = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLINGCONT)
                                 val samplingName = samplingsArray.getJSONObject(j).getString(URLs.KEY_ITEMS)
                                 val samplingNum = samplingsArray.getJSONObject(j).getString(URLs.KEY_ITEMSID)
-                                val companyAddress = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLING_COMPANY_NAME)
+                                val companyAddress = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLING_COMPANY_NAME) // 去掉romove
                                 val mediaFolderChild = Util.getSamplingNum(mContext, taskinfo)
 
                                 val samplingtable = SAMPLINGTABLE(null, java.lang.Long.valueOf(taskID), templettable.templetID, samplingName + "-" + samplingNum, companyAddress,
@@ -1246,11 +1259,13 @@ class WeixinActivityMain : AppCompatActivity() {
             progressDialog.show()
         }
         val jsonArray = JSONArray()
-        val allSamplingtables = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.Sid_of_server.isNotNull).orderAsc().list()
+        // TODO 在sheetViewHolder中添加null sid 为非上传状态
+        val allSamplingtables = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.Sid_of_server.gt(-1)).orderAsc().list()
         try {
             for (i in allSamplingtables.indices) {
                 val jsonObject = JSONObject()
-                jsonObject.put("sid", allSamplingtables[i].sid_of_server?:Constant.DO_NOT_HAVE_SID)
+                // 如果没有SID说明上传的时候出现问题，应该重新上传，获取服务器的ID
+                jsonObject.put("sid", allSamplingtables[i].sid_of_server ?: Constant.DO_NOT_HAVE_SID)
                 jsonArray.put(jsonObject)
             }
         } catch (e: JSONException) {
@@ -1265,26 +1280,20 @@ class WeixinActivityMain : AppCompatActivity() {
                 val errorCode = resultJson.getString(URLs.KEY_ERROR)
                 val content = resultJson.getString(URLs.KEY_MESSAGE)
 
-                var jsonObjectSamStatus: JSONObject
-                val sid: Long?
-                var status: Int
                 if (errorCode == ReturnCode.Code0) {
-                    val jsonArraySamsStatus = JSONArray(content)
-
-                    val samplingtables = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.Sid_of_server.isNotNull).orderAsc().list()
-
-                    if (samplingtables.size != jsonArraySamsStatus.length()) {
-                        Log.e("XXXXXXX", "WeixinActivity.java 查询任务和返回任务对应数量不同")
-                        return@Listener
+                    val result = JSONArray(content)
+                    for (index in 0..result.length() - 1) {
+                        val theResult = (result.get(index) as JSONObject)
+                        val searchSample = samplingtableDao?.queryBuilder()?.where(SAMPLINGTABLEDao.Properties.
+                                Sid_of_server.eq(theResult.get("sid").toString().toLong()))?.list()
+                        if (searchSample?.size != 1) {
+                            Log.e("XXXXXXX", "WeixinActivity.java 返回任务sid找不到")
+                            return@Listener
+                        } else {
+                            searchSample[0].check_status = theResult.get("type").toString().toInt()
+                            samplingtableDao?.insertOrReplace(searchSample[0])
+                        }
                     }
-                    for (i in samplingtables.indices) {
-
-                        jsonObjectSamStatus = jsonArraySamsStatus.getJSONObject(i)
-                        status = Integer.valueOf(jsonObjectSamStatus.getString("type"))!!
-                        samplingtables.get(i).check_status = status
-
-                    }
-                    samplingtableDao!!.insertOrReplaceInTx(samplingtables)
                     refreshDoingTaskData(showProgDialog = false)
 
                     if (showDialog) {
@@ -1298,6 +1307,8 @@ class WeixinActivityMain : AppCompatActivity() {
                 }
 
             } catch (e: JSONException) {
+                e.printStackTrace()
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }

@@ -35,13 +35,11 @@ public class HeadControlPanel extends RelativeLayout
       
     public HeadControlPanel(Context context, AttributeSet attrs) {  
         super(context, attrs);  
-        // TODO Auto-generated constructor stub  
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        // TODO Auto-generated method stub
         mLeftImage = (ImageView) findViewById(R.id.left_img);
         mMidleTitle = (TextView)findViewById(R.id.midle_title);
         mRightThirdImage = (ImageText)findViewById(R.id.right_third);
@@ -54,7 +52,6 @@ public class HeadControlPanel extends RelativeLayout
             @Override
             public void onClick(View v)
             {
-                // TODO Auto-generated method stub
                 mRightThirdImageOnClick.onImageClickListener();
             }
         });
@@ -64,7 +61,6 @@ public class HeadControlPanel extends RelativeLayout
             @Override
             public void onClick(View v)
             {
-                // TODO Auto-generated method stub
                 mRightSecondImageOnClick.onImageClickListener();
             }
         });
@@ -74,7 +70,6 @@ public class HeadControlPanel extends RelativeLayout
             @Override
             public void onClick(View v)
             {
-                // TODO Auto-generated method stub
                 mLeftImageOnClick.onImageClickListener();
             }
         });
@@ -84,7 +79,6 @@ public class HeadControlPanel extends RelativeLayout
             @Override
             public void onClick(View v)
             {
-                // TODO Auto-generated method stub
                 mRightFirstImageOnClick.onImageClickListener();
             }
         });

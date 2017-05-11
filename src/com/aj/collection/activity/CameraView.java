@@ -135,7 +135,6 @@ public class CameraView extends Activity implements OnClickListener {
         String t1 = format.format(d1);
         timeDisplay.setText(t1);
         gpsDisplay = (TextView) findViewById(R.id.tv_GPSDisplay);
-//        new GpsService(this, gpsDisplay);	//启动GPS服务
 
         //接收意图里的信息
         rIntent = getIntent();

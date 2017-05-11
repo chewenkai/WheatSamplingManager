@@ -162,13 +162,12 @@ public final class RSSExpandedReader extends AbstractRSSReader {
       }
     }
 
-    // TODO: verify sequence of finder patterns as in checkPairSequence()
     if (checkChecksum()) {
       return this.pairs;
     }
     
     boolean tryStackedDecode = !this.rows.isEmpty();
-    boolean wasReversed = false; // TODO: deal with reversed rows
+    boolean wasReversed = false;
     storeRow(rowNumber, wasReversed);
     if (tryStackedDecode) {
       // When the image is 180-rotated, then rows are sorted in wrong dirrection.

@@ -15,7 +15,6 @@ public class ExifInfomation extends ExifInterface
 	public ExifInfomation(String filename) throws IOException
 	{
 		super(filename);
-		// TODO Auto-generated constructor stub
 	}
 	//获得拍照时间
 	public String mGetDate()

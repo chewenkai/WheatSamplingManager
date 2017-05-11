@@ -1,10 +1,12 @@
 package com.aj.collection.Navigation;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -111,6 +113,11 @@ public class MapActivity extends Activity {
 
         setContentView(R.layout.activity_map_run);
 
+        //初始化导航
+        if (initDirs()) {
+            initNavi();
+        }
+
         //初始化View
         initView();
 
@@ -123,10 +130,7 @@ public class MapActivity extends Activity {
         //监听地图点击
         clickListen();
 
-        //初始化导航
-        if (initDirs()) {
-            initNavi();
-        }
+
 
 
     }
@@ -633,9 +637,51 @@ public class MapActivity extends Activity {
         return true;
     }
 
-    String authinfo = null;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // TODO Auto-generated method stub
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == authBaseRequestCode) {
+            for (int ret : grantResults) {
+                if (ret == 0) {
+                    continue;
+                } else {
+                    Toast.makeText(this, "缺少导航基本的权限!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            initNavi();
+        }
 
+    }
+
+    private static final String[] authBaseArr = { Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION };
+    private boolean hasBasePhoneAuth() {
+        // TODO Auto-generated method stub
+
+        PackageManager pm = this.getPackageManager();
+        for (String auth : authBaseArr) {
+            if (pm.checkPermission(auth, this.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    String authinfo = null;
+    private static final int authBaseRequestCode = 1;
     private void initNavi() {
+        // 申请权限
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+
+            if (!hasBasePhoneAuth()) {
+
+                this.requestPermissions(authBaseArr, authBaseRequestCode);
+                return;
+
+            }
+        }
 //        BaiduNaviManager.getInstance().setNativeLibraryPath(mSDCardPath + "/BaiduNaviSDK_SO");
         BaiduNaviManager.getInstance().init(this, mSDCardPath, APP_FOLDER_NAME,
                 new BaiduNaviManager.NaviInitListener() {
@@ -646,6 +692,13 @@ public class MapActivity extends Activity {
                         } else {
                             authinfo = "key校验失败, " + msg;
                         }
+                        MapActivity.this.runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                Toast.makeText(MapActivity.this, authinfo, Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
 
                     public void initSuccess() {
@@ -653,7 +706,7 @@ public class MapActivity extends Activity {
                     }
 
                     public void initStart() {
-                        //Toast.makeText(BNDemoMainActivity.this, "百度导航引擎初始化开始", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MapActivity.this, "百度导航引擎初始化开始", Toast.LENGTH_SHORT).show();
                     }
 
                     public void initFailed() {

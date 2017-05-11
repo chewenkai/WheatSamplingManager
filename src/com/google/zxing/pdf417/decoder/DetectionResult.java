@@ -58,7 +58,6 @@ final class DetectionResult {
     }
   }
 
-  // TODO ensure that no detected codewords with unknown row number are left
   // we should be able to estimate the row height and use it as a hint for the row number
   // we should also fill the rows top to bottom and bottom to top
   /**
@@ -86,7 +85,6 @@ final class DetectionResult {
 
   private int adjustRowNumbersByRow() {
     adjustRowNumbersFromBothRI();
-    // TODO we should only do full row adjustments if row numbers of left and right row indicator column match.
     // Maybe it's even better to calculated the height (in codeword rows) and divide it by the number of barcode
     // rows. This, together with the LRI and RRI row numbers should allow us to get a good estimate where a row
     // number starts and ends.

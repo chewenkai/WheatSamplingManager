@@ -50,7 +50,6 @@ final class MultiFinderPatternFinder extends FinderPatternFinder {
 
   private static final FinderPatternInfo[] EMPTY_RESULT_ARRAY = new FinderPatternInfo[0];
 
-  // TODO MIN_MODULE_COUNT and MAX_MODULE_COUNT would be great hints to ask the user for
   // since it limits the number of regions to decode
 
   // max. legal count of modules per QR code edge (177)

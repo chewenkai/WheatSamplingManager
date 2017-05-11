@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.Button
@@ -40,18 +42,18 @@ import org.json.JSONObject
 
 import java.util.HashMap
 
-class RegistActivity : Activity() {
+class RegistActivity : AppCompatActivity() {
     private var allSignUpEditText = ArrayList<EditText>()
     private var queue: RequestQueue? = null
     var addressPicker: AddressPicker? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.sign_up_layout)
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.title = "用户注册"
         queue = (application as CollectionApplication).requestQueue //init Volley
         init()
-
     }
 
     private fun init() {
@@ -76,7 +78,6 @@ class RegistActivity : Activity() {
         val band_name = findViewById(R.id.farmer_bank_name) as EditText
         allSignUpEditText.add(band_name)
         val saveButton = findViewById(R.id.dialog_ok) as Button
-        val cancleButton = findViewById(R.id.dialog_cancle) as Button
 
         val superiorListLL = findViewById(R.id.superior_list) as LinearLayout
         var data: ArrayList<Province> = ArrayList<Province>()
@@ -119,8 +120,9 @@ class RegistActivity : Activity() {
                 if (errorCode == ReturnCode.Code0) {
                     toast("注册成功,请登录")
                     finish()
-//                    SPUtils.put(this@RegistActivity, SPUtils.SAMPLING_COMPANY, company, SPUtils.USER_INFO)
-//                    SPUtils.put(this@RegistActivity, SPUtils.SAMPLING_COMPANY_ID, company_id, SPUtils.USER_INFO)
+                    SPUtils.put(this@RegistActivity, SPUtils.FARMER_PROVINCE, province, SPUtils.USER_INFO)
+                    SPUtils.put(this@RegistActivity, SPUtils.FARMER_CITY, city, SPUtils.USER_INFO)
+                    SPUtils.put(this@RegistActivity, SPUtils.FARMER_COUNTRY, country, SPUtils.USER_INFO)
 
                 } else {
                     ReturnCode(applicationContext, errorCode, true)
@@ -143,5 +145,14 @@ class RegistActivity : Activity() {
                 farmer_bank_name)
 
         queue!!.add(stringRequest)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId){
+            android.R.id.home->{
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

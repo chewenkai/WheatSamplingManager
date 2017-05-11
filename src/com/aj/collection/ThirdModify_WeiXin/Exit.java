@@ -52,7 +52,6 @@ public class Exit extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Toast.makeText(getApplicationContext(), "提示：点击确定关闭应用程序！",
 						Toast.LENGTH_SHORT).show();	
 			}

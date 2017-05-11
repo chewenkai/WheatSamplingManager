@@ -412,7 +412,7 @@ public final class HighLevelEncoder {
   }
 
   private static boolean isSpecialB256(char ch) {
-    return false; //TODO NOT IMPLEMENTED YET!!!
+    return false;
   }
 
   /**

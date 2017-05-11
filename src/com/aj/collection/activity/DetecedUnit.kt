@@ -23,11 +23,16 @@ import com.aj.collection.ui.HeadControlPanel.LeftImageOnClick
 import com.alibaba.fastjson.JSON
 import com.android.volley.RequestQueue
 import com.android.volley.Response
+import kotlinx.android.synthetic.main.set_base_info.*
+import org.jetbrains.anko.onClick
 import org.jetbrains.anko.toast
 import org.json.JSONException
 import org.json.JSONObject
 
 class DetecedUnit : AppCompatActivity()  {
+    var province = ""
+    var city = ""
+    var country = ""
     private var kaiguan: Switch? = null
     private var userTV: TextView? = null
     private var userName: EditText? = null
@@ -38,7 +43,6 @@ class DetecedUnit : AppCompatActivity()  {
     private var userBankCardPossessor: EditText? = null
     private var userBankCardNumber: EditText? = null
     private var userBankName: EditText? = null
-    private var regionSelection: LinearLayout? = null
     private var saveInfo: AppCompatButton?=null
     var addressPicker: AddressPicker? = null
     internal var login_user: String=""
@@ -61,20 +65,33 @@ class DetecedUnit : AppCompatActivity()  {
         userBankCardPossessor = findViewById(R.id.bank_card_possessor) as EditText
         userBankCardNumber = findViewById(R.id.bank_card_number) as EditText
         userBankName = findViewById(R.id.bank_name) as EditText
-        regionSelection = findViewById(R.id.region) as LinearLayout
         saveInfo = findViewById(R.id.save_info) as AppCompatButton
 
         userTV = findViewById(R.id.user_set) as TextView
         kaiguan = findViewById(R.id.switch_phone) as Switch
 
         var data = ArrayList<Province>()
-        val json: String = ConvertUtils.toString(getAssets().open("city2.json"))
+        val json: String = ConvertUtils.toString(assets.open("city2.json"))
         data.addAll(JSON.parseArray(json, Province::class.java))
         addressPicker = AddressPicker(this@DetecedUnit, data)
         addressPicker?.setShadowVisible(false)
         addressPicker?.setHideProvince(false)
         addressPicker?.setHideCounty(false)
-        regionSelection?.addView(addressPicker?.contentView)
+        change_region.onClick {
+            if (addressPicker?.isShowing?:true) {
+                addressPicker?.dismiss()
+            }
+            else {
+                addressPicker?.show()
+                addressPicker?.submitButton?.onClick {
+                    province = addressPicker?.selectedProvince?.areaName?:""
+                    city = addressPicker?.selectedCity?.areaName?:""
+                    country = addressPicker?.selectedCounty?.areaName?:""
+                    region_text.text = province + "-" +  city + "-" + country
+                    addressPicker?.dismiss()
+                }
+            }
+        }
 
         login_user = SPUtils.get(this, SPUtils.LOGIN_NAME, dv, SPUtils.LOGIN_VALIDATE) as String//登录的用户名
         val passwd = SPUtils.get(this, SPUtils.LOGIN_PASSWORD, dv, SPUtils.LOGIN_VALIDATE) as String//登录密码
@@ -84,45 +101,15 @@ class DetecedUnit : AppCompatActivity()  {
                 userBankCardPossessor, userBankCardNumber, userBankName)
 
         saveInfo!!.setOnClickListener {
-            editUser(login_user, passwd, addressPicker?.selectedProvince?.areaName?:"",
-                    addressPicker?.selectedCity?.areaName?:"",addressPicker?.selectedCounty?.areaName?:"",
+            editUser(login_user, passwd, province,
+                    city, country,
                     userName!!.text.toString(),
                     userPhoneNum!!.text.toString(), userIdentity!!.text.toString(),
                     userAddress!!.text.toString(), userPostNum!!.text.toString(),
                     userBankCardPossessor!!.text.toString(), userBankCardNumber!!.text.toString(),
                     userBankName!!.text.toString())
         }
-
-
-        //		jiankongET.setText((String)SPUtils.get(this, SPUtils.JIANKONG, dv, login_user));
-
-        //根据开关状态改变栏目状态
-        //		if(!kaiguan.isChecked())
-        //		{
-        //			ll.setVisibility(View.INVISIBLE);
-        //		}
-        //		else
-        //		{
-        //			ll.setVisibility(View.VISIBLE);
-        //		}
-        //		kaiguan.setOnCheckedChangeListener(new OnCheckedChangeListener()
-        //		{
-        //
-        //			@Override
-        //			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-        //			{
-        //				if(isChecked)
-        //				{
-        //					ll.setVisibility(View.VISIBLE);
-        //				}
-        //				else
-        //				{
-        //					ll.setVisibility(View.INVISIBLE);
-        //				}
-        //			}
-        //		});
     }
-
 
     /**
      * 获取用户信息
@@ -147,6 +134,9 @@ class DetecedUnit : AppCompatActivity()  {
                     var province = jsonObject.getString(URLs.PROVINCE)
                     var city = jsonObject.getString(URLs.CITY)
                     var country = jsonObject.getString(URLs.COUNTRY)
+                    this.province = province
+                    this.city = city
+                    this.country = country
                     var samplingCompanyAddress = jsonObject.getString(URLs.ADDRESS)
                     var samplingContact = jsonObject.getString(URLs.CONTACT)
                     var samplingPhone = jsonObject.getString(URLs.CONTACTPHONE)
@@ -189,7 +179,7 @@ class DetecedUnit : AppCompatActivity()  {
                     userBankCardPossessor!!.setText(bankPossessor)
                     userBankCardNumber!!.setText(bankNumber)
                     userBankName!!.setText(bankName)
-                    addressPicker?.setSelectedItem("黑龙江", "哈尔滨", "南岗")
+                    region_text.text = province+city+country
 
                 } else {
                     ReturnCode(applicationContext, errorCode, true)
@@ -238,7 +228,9 @@ class DetecedUnit : AppCompatActivity()  {
 
                 if (errorCode == ReturnCode.Code0) {
                     toast("保存成功")
-
+                    SPUtils.put(this@DetecedUnit, SPUtils.FARMER_PROVINCE, province, SPUtils.USER_INFO)
+                    SPUtils.put(this@DetecedUnit, SPUtils.FARMER_CITY, city, SPUtils.USER_INFO)
+                    SPUtils.put(this@DetecedUnit, SPUtils.FARMER_COUNTRY, country, SPUtils.USER_INFO)
                 } else {
                     ReturnCode(applicationContext, errorCode, true)
                 }

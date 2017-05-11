@@ -98,22 +98,6 @@ public class LongTermService extends Service {
         mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         queue = Volley.newRequestQueue(this); //init Volley
-
-//        IntentFilter filter1 = new IntentFilter(Intent.ACTION_TIME_TICK);
-//        registerReceiver(mReceiver, filter1);
-
-//        initLocation();
-
-//        final Handler handler=new Handler();
-//        Runnable runnable=new Runnable() {
-//            @Override
-//            public void run() {
-//                // TODO Auto-generated method stub
-//
-//                handler.postDelayed(this, 6000);
-//            }
-//        };
-//        handler.postDelayed(runnable, 6000);
     }
 
     @Override

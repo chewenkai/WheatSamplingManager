@@ -64,8 +64,7 @@ public class ImageText extends LinearLayout
 
 	@Override  
     public boolean onInterceptTouchEvent(MotionEvent ev) {  
-        // TODO Auto-generated method stub  
-        return true;  
+        return true;
     }
 	private void setImageSize(int w, int h){  
         if(mImageView != null){  

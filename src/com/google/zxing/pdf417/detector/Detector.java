@@ -74,7 +74,6 @@ public final class Detector {
    */
   public static PDF417DetectorResult detect(BinaryBitmap image, Map<DecodeHintType,?> hints, boolean multiple)
       throws NotFoundException {
-    // TODO detection improvement, tryHarder could try several different luminance thresholds/blackpoints or even 
     // different binarizers
     //boolean tryHarder = hints != null && hints.containsKey(DecodeHintType.TRY_HARDER);
 

@@ -754,7 +754,9 @@ class SheetActivity : AppCompatActivity() {
         val isNetConnected = (application as CollectionApplication).isNetworkConnected
         if (!gps) {
             openGPSDialog(gps, isNetConnected)
-
+        }
+        if ( (application as CollectionApplication).mLocationClient == null){
+            (application as CollectionApplication).initLocation()
         }
     }
 

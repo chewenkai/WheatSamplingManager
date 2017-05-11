@@ -123,7 +123,7 @@ public final class Code128Writer extends OneDimensionalCodeWriter {
               position++;
               break;
             case ESCAPE_FNC_4:
-              patternIndex = CODE_FNC_4_B; // FIXME if this ever outputs Code A
+              patternIndex = CODE_FNC_4_B;
               position++;
               break;
             default:

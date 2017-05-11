@@ -169,7 +169,6 @@ final class DecodedBitStreamParser {
       } else if (oneByte == 240) {  // Latch to EDIFACT encodation
         return Mode.EDIFACT_ENCODE;
       } else if (oneByte == 241) {  // ECI Character
-        // TODO(bbrown): I think we need to support ECI
         //throw ReaderException.getInstance();
         // Ignore this symbol for now
       } else if (oneByte >= 242) {  // Not to be used in ASCII encodation
@@ -188,7 +187,6 @@ final class DecodedBitStreamParser {
   private static void decodeC40Segment(BitSource bits, StringBuilder result) throws FormatException {
     // Three C40 values are encoded in a 16-bit value as
     // (1600 * C1) + (40 * C2) + C3 + 1
-    // TODO(bbrown): The Upper Shift with C40 doesn't work in the 4 value scenario all the time
     boolean upperShift = false;
 
     int[] cValues = new int[3];
@@ -273,7 +271,6 @@ final class DecodedBitStreamParser {
   private static void decodeTextSegment(BitSource bits, StringBuilder result) throws FormatException {
     // Three Text values are encoded in a 16-bit value as
     // (1600 * C1) + (40 * C2) + C3 + 1
-    // TODO(bbrown): The Upper Shift with Text doesn't work in the 4 value scenario all the time
     boolean upperShift = false;
 
     int[] cValues = new int[3];
