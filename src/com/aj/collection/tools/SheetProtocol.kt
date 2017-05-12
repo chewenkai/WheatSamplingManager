@@ -22,6 +22,7 @@ class SheetProtocol {
     val CELL_COPYABLE = "cell_copyable"
 
     // SheetCell Type List
+    val TYPE_SERIAL_NUMBER = "type_serial_number"  //<抽样序列号单元格> 用户标识抽样单的唯一编号，同时用于将抽样单和样品关联。格式如“W170001”，是最为常用的类型，*是否可编辑为否，可否被加样为是，是否为必填为是*
     val TYPE_EDIT_TEXT = "type_edit_text"  // <填写单元格>用 于手机端填写信息。最为常用的类型，所有单元格属性对其生效。
     val TYPE_TEXT = "type_text"  // <显示单元格> 仅用于显示信息，单元格是否可编辑属性、单元格是否为必填属性对其无效
     val TYPE_RADIO = "type_radio"  // <单选单元格> 用于进行单项选择，如单元格名称为“自然灾害情况”，单元格值为“洪灾,涝灾”。单元格是否可编辑属性对其无效

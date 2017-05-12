@@ -26,6 +26,8 @@ import com.aj.collection.tools.Util
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.bignerdranch.expandablerecyclerview.ChildViewHolder
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import okhttp3.*
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.onClick
@@ -246,23 +248,52 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                 // 编辑
                 edit?.onClick {
                     val startForm = Intent(mContext, SheetActivity::class.java)
+                    startForm.putExtra("taskID", sheet.taskID)
                     startForm.putExtra("samplingID", sheet.id) //文件名不包含后缀
+                    startForm.putExtra("templetID", sheet.templetID ?: -1L)
                     startForm.putExtra("Mode", SheetActivity.MODE_EDIT) // 编辑模式，编辑模式下不可加样
                     mContext.startActivity(startForm)
                 }
 
                 // 删除
                 delete?.onClick {
-                    samplingtableDao?.delete(samplingTable)
-                    //also delete the media folder
-                    val mediaFolder = TaskInfo(mContext, 0).getMediaFolderBySampleTable(samplingTable)
-                    if (mediaFolder != null && mediaFolder.exists())
-                        FileUtil.delete(mediaFolder)
+                    val tasksSize = taskinfoDao?.queryBuilder()?.where(TASKINFODao.Properties.TaskID.eq(samplingTable?.taskID))?.list()?.size
+                    if (tasksSize!=1)
+                        return@onClick
+                    val task = taskinfoDao?.queryBuilder()?.where(TASKINFODao.Properties.TaskID.eq(samplingTable?.taskID))?.list()?.get(0)
+                    val taskLetter = task?.task_letter
+                    val uniqueNum = samplingTable?.sampling_unique_num?.toString()
+                    if (taskLetter==null || uniqueNum == null )
+                        return@onClick
+                    val listener = Response.Listener<String> { s ->
+                        try {
+                            val resultJson = JSONObject(s)
+                            val errorCode = resultJson.getString(URLs.KEY_ERROR)
+                            val message = resultJson.getString(URLs.KEY_MESSAGE)
+                            if (errorCode == ReturnCode.Code0){
+                                samplingtableDao?.delete(samplingTable)
+                                //also delete the media folder
+                                val mediaFolder = TaskInfo(mContext, 0).getMediaFolderBySampleTable(samplingTable)
+                                if (mediaFolder != null && mediaFolder.exists())
+                                    FileUtil.delete(mediaFolder)
 
-                    Toast.makeText(mContext, "已删除" + sheet.show_name, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(mContext, "已删除" + sheet.show_name, Toast.LENGTH_SHORT).show()
 
-                    //refresh data
-                    (mContext as WeixinActivityMain).refreshDoingTaskData(showProgDialog = true)
+                                //refresh data
+                                (mContext as WeixinActivityMain).refreshDoingTaskData(showProgDialog = true)
+                            }
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                    val errorListener = Response.ErrorListener { volleyError ->
+
+                    }
+                    val stringRequest = API.setSIdNotUsed(listener, errorListener,
+                            SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
+                            SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?,
+                            uniqueNum!!.split(taskLetter!!)[1].toInt().toString())
+                    queue?.add(stringRequest)
                 }
 
                 // 上传
@@ -283,6 +314,8 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                 makeUp?.onClick {
                     val startForm = Intent(mContext, SheetActivity::class.java)
                     startForm.putExtra("samplingID", sheet.id)//get the id of sampling
+                    startForm.putExtra("taskID", sheet.taskID)
+                    startForm.putExtra("templetID", sheet.templetID ?: -1L)
                     startForm.putExtra("Mode", SheetActivity.MODE_MAKE_UP)
                     startForm.putExtra("sid_of_server", sheet.sid_of_server)//补采的时候通过存在服务器上的id来判断这是对 哪个抽样单进行的补采
                     (mContext as Activity).startActivity(startForm)
@@ -292,7 +325,9 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                 upperView?.onClick {
                     val startForm = Intent(mContext, SheetActivity::class.java)
                     startForm.putExtra("res", sheet.sampling_content)    //字符串
+                    startForm.putExtra("templetID", sheet.templetID ?: -1L)
                     startForm.putExtra("samplingID", sheet.id) //文件名不包含后缀
+                    startForm.putExtra("taskID", sheet.taskID)
                     startForm.putExtra("Mode", SheetActivity.MODE_LOOK_THROUGH)//设置为查看模式
                     mContext.startActivity(startForm)
                 }

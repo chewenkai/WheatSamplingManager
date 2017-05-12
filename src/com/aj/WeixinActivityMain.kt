@@ -109,7 +109,7 @@ class WeixinActivityMain : AppCompatActivity() {
 
         val sheetStr = Constant.SHEETSTR
         for (i in 0..2) {
-            taskinfoDao?.insertOrReplace(TASKINFO((261 + i).toLong(), "品种${i + 1}", "XMXY", false, false, System.currentTimeMillis(), ""))
+            taskinfoDao?.insertOrReplace(TASKINFO((261 + i).toLong(), "品种${i + 1}", "W17", false, false, System.currentTimeMillis(), ""))
             templettableDao?.insertOrReplace(TEMPLETTABLE((i + 1).toLong(), (261 + i).toLong(), "品种${i + 1}", sheetStr, System.currentTimeMillis()))
         }
 //        for (i in 3..5){

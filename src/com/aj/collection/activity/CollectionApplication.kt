@@ -14,6 +14,7 @@ import android.os.Vibrator
 import android.support.multidex.MultiDex
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.util.ArraySet
 import android.util.Log
 import android.widget.TextView
 import com.aj.Constant
@@ -33,11 +34,15 @@ import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
 import com.baidu.mapapi.SDKInitializer
 import com.github.yuweiguocn.library.greendao.MigrationHelper
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jrs.utils.SprtPrinter
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 /**
  * Collection Application
@@ -79,6 +84,68 @@ class CollectionApplication : AppContext() {
         CollectionApplication.applicationContext = this
         instance = this
         queue = Volley.newRequestQueue(this) //init Volley
+        setCachedSIDFalse()
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        setCachedSIDFalse()
+    }
+
+    fun setCachedSIDFalse(){
+        val localSID = SPUtils.get(this, SPUtils.SAMPLING_CACHED_SID, "",
+                SPUtils.SAMPLING_CACHED_SID_NAME)
+
+        var cachedSID = ArrayList<String>()
+        if (localSID != null){
+            // 利用Gson将Json文本转为SheetCell列表
+            val turnsType = object : TypeToken<ArrayList<String>>() {}.type
+            cachedSID = Gson().fromJson(localSID as String, turnsType)
+        }
+        for (sid in cachedSID) {
+            setSNNotUsed(sid)
+        }
+    }
+
+    private fun setSNNotUsed(sampleSN:String) {
+        val listener = Response.Listener<String> { s ->
+            try {
+                val resultJson = JSONObject(s)
+                val errorCode = resultJson.getString(URLs.KEY_ERROR)
+                val message = resultJson.getString(URLs.KEY_MESSAGE)
+                if (errorCode == ReturnCode.Code0){
+                    val localSID = SPUtils.get(this, SPUtils.SAMPLING_CACHED_SID, "",
+                            SPUtils.SAMPLING_CACHED_SID_NAME)
+
+                    var cachedSID = ArrayList<String>()
+                    if (localSID != null){
+                        // 利用Gson将Json文本转为SheetCell列表
+                        val turnsType = object : TypeToken<ArrayList<String>>() {}.type
+                        cachedSID = Gson().fromJson(localSID as String, turnsType)
+                    }
+
+                    for (sid in cachedSID) {
+                        if (sid == sampleSN) { // 在本地中找到该抽样单id
+                            cachedSID.remove(sid)
+                            SPUtils.put(this, SPUtils.SAMPLING_CACHED_SID, Gson().toJson(cachedSID),
+                                    SPUtils.SAMPLING_CACHED_SID_NAME)
+                            break
+                        }
+                    }
+                }
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        }
+        val errorListener = Response.ErrorListener { volleyError ->
+            {}
+
+        }
+        val stringRequest = API.setSIdNotUsed(listener, errorListener,
+                SPUtils.get(this, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
+                SPUtils.get(this, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?,
+                sampleSN)
+        queue?.add(stringRequest)
     }
 
     fun initDaoSession(){

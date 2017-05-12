@@ -34,6 +34,9 @@ public class SPUtils {
     public static final String FARMER_BANK_NAME = "band_name";
     public static final String SAMPLING_COMPANY_ID="company_id";
 
+    public static final String SAMPLING_CACHED_SID_NAME="cached_sid";
+    public static final String SAMPLING_CACHED_SID="sampling_cached_sid";
+
     public static final String USER_DATA = "user_data";
     public static final String UNIT_NAME = "unit_name";
     public static final String UNIT_PHONE = "unit_phone";
