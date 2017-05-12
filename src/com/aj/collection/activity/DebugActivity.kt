@@ -111,9 +111,9 @@ class DebugActivity : Activity() {
                 output?.text = volleyError.toString()
             }
 
-            val stringRequest = API.registUser(listener, errorListener, param[0],param[1],
-                    param[2],param[3],param[4],param[5],param[6],param[7],param[8],param[9]
-                    ,param[10],param[11],param[12])
+            val stringRequest = API.registUser(listener, errorListener, param[0], param[1],
+                    param[2], param[3], param[4], param[5], param[6], param[7], param[8], param[9]
+                    , param[10], param[11], param[12])
             queue?.add(stringRequest)
         }
 
@@ -198,6 +198,12 @@ class DebugActivity : Activity() {
         getSampleTask?.setOnClickListener { testGetSamplingStatus() }
 
         getTaskStatus?.setOnClickListener { testGetTaskStatus() }
+
+        fetch_sid.onClick { testFetchId() }
+
+        setSIdUsed.onClick { testSetT() }
+
+        setSIdNotUsed.onClick { testSetF() }
     }
 
     private fun initUI() {
@@ -217,7 +223,7 @@ class DebugActivity : Activity() {
     /***************************************************************************
      * *****************************接口测试**************************************
      */
-    internal var queue: RequestQueue?=null
+    internal var queue: RequestQueue? = null
     internal var mContext: Context = this
 
     fun testReceived() {
@@ -319,7 +325,7 @@ class DebugActivity : Activity() {
                 val resultJson = JSONObject(s)
                 val errorCode = resultJson.getString(URLs.KEY_ERROR)
                 val message = resultJson.getString(URLs.KEY_MESSAGE)
-                output?.text = samplingtable.toString()+ "\n$s\n错误码：$errorCode\n消息：$message"
+                output?.text = samplingtable.toString() + "\n$s\n错误码：$errorCode\n消息：$message"
             } catch (e: JSONException) {
                 output?.text = s
                 e.printStackTrace()
@@ -441,6 +447,78 @@ class DebugActivity : Activity() {
                 SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String,
                 SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String, jsonArray.toString())
 
+        queue?.add(stringRequest)
+    }
+
+    var fetchedID = ""
+
+    fun testFetchId() {
+        progressDialog!!.setMessage("获取抽样单ID...")
+        progressDialog!!.show()
+        val listener = Response.Listener<String> { s ->
+            progressDialog!!.dismiss()
+            output?.text = s
+            try {
+                val resultJson = JSONObject(s)
+                val errorCode = resultJson.getString(URLs.KEY_ERROR)
+                val message = resultJson.getString(URLs.KEY_MESSAGE)
+                fetchedID = JSONObject(message).getString("id")
+                output?.text = "$s\n错误码：$errorCode\n消息：$message"
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        }
+        val errorListener = Response.ErrorListener { volleyError ->
+            progressDialog!!.dismiss()
+            output?.text = volleyError.toString()
+        }
+        val stringRequest = API.fetchSID(listener, errorListener, "kevin", "1")
+        queue?.add(stringRequest)
+    }
+
+    fun testSetT() {
+        progressDialog!!.setMessage("设置抽样单ID为已使用...")
+        progressDialog!!.show()
+        val listener = Response.Listener<String> { s ->
+            progressDialog!!.dismiss()
+            output?.text = s
+            try {
+                val resultJson = JSONObject(s)
+                val errorCode = resultJson.getString(URLs.KEY_ERROR)
+                val message = resultJson.getString(URLs.KEY_MESSAGE)
+                output?.text = "$s\n错误码：$errorCode\n消息：$message"
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        }
+        val errorListener = Response.ErrorListener { volleyError ->
+            progressDialog!!.dismiss()
+            output?.text = volleyError.toString()
+        }
+        val stringRequest = API.setSIdUsed(listener, errorListener, "kevin", "1", fetchedID)
+        queue?.add(stringRequest)
+    }
+
+    fun testSetF() {
+        progressDialog!!.setMessage("设置抽样单ID为未使用...")
+        progressDialog!!.show()
+        val listener = Response.Listener<String> { s ->
+            progressDialog!!.dismiss()
+            output?.text = s
+            try {
+                val resultJson = JSONObject(s)
+                val errorCode = resultJson.getString(URLs.KEY_ERROR)
+                val message = resultJson.getString(URLs.KEY_MESSAGE)
+                output?.text = "$s\n错误码：$errorCode\n消息：$message"
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        }
+        val errorListener = Response.ErrorListener { volleyError ->
+            progressDialog!!.dismiss()
+            output?.text = volleyError.toString()
+        }
+        val stringRequest = API.setSIdNotUsed(listener, errorListener, "kevin", "1", fetchedID)
         queue?.add(stringRequest)
     }
 }

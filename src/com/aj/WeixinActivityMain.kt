@@ -94,6 +94,7 @@ class WeixinActivityMain : AppCompatActivity() {
     private var getSamplingStatusRequest: StringRequest? = null
     private var getTaskStatusRequest: StringRequest? = null
     internal var mContext: Context = this
+    private var isActivityOnShowing = true  // 当前activity是否正在显示
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -234,13 +235,14 @@ class WeixinActivityMain : AppCompatActivity() {
     }
 
     override fun onStop() {
-
-        cancleRequestFromQueue()
+        // 设置标志位
+        isActivityOnShowing = false
         super.onStop()
     }
 
     public override fun onResume() {
-
+        // 设置标志位
+        isActivityOnShowing = true
         // refresh data
         refreshDoingTaskData(showProgDialog = false)
         refreshDoneTaskData(showProgDialog = false)
@@ -256,6 +258,7 @@ class WeixinActivityMain : AppCompatActivity() {
 
     override fun onDestroy() {
         mNM!!.cancel(R.string.app_name)
+        cancleRequestFromQueue()
         // Unregister our receiver.
         unbindMsgService()
         unregisterReceiver(timeTickReceiver)
@@ -462,7 +465,7 @@ class WeixinActivityMain : AppCompatActivity() {
     fun refreshDoingTaskData(showProgDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext)
         progressDialog.setMessage("数据加载中...")
-        if (showProgDialog)
+        if (showProgDialog&&isActivityOnShowing)
             progressDialog.show()
         doAsync {
             val taskData = queryDoingTaskData()
@@ -478,7 +481,7 @@ class WeixinActivityMain : AppCompatActivity() {
                 doingTaskAdapter?.taskList?.addAll(taskData)
                 doingTaskAdapter?.notifyParentDataSetChanged(true)
                 refreshBadgeView1()
-                if (showProgDialog)
+                if (showProgDialog&&isActivityOnShowing)
                     progressDialog.dismiss()
             }
         }
@@ -1254,7 +1257,7 @@ class WeixinActivityMain : AppCompatActivity() {
      */
     fun updateSamplingStatus(showDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        if (showDialog) {
+        if (showDialog&&isActivityOnShowing) {
             progressDialog.setMessage("正在刷新任务状态...")
             progressDialog.show()
         }
@@ -1273,7 +1276,7 @@ class WeixinActivityMain : AppCompatActivity() {
         }
 
         val listener = Response.Listener<String> { s ->
-            if (showDialog)
+            if (showDialog&&isActivityOnShowing)
                 progressDialog.dismiss()
             try {
                 val resultJson = JSONObject(s)
@@ -1336,7 +1339,7 @@ class WeixinActivityMain : AppCompatActivity() {
      */
     fun updateTaskStatus(showDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        if (showDialog) {
+        if (showDialog&&isActivityOnShowing) {
             progressDialog.setMessage("正在刷新任务状态...")
             progressDialog.show()
         }
@@ -1353,7 +1356,7 @@ class WeixinActivityMain : AppCompatActivity() {
         }
 
         val listener = Response.Listener<String> { s ->
-            if (showDialog)
+            if (showDialog&&isActivityOnShowing)
                 progressDialog.dismiss()
             try {
                 val resultJson = JSONObject(s)

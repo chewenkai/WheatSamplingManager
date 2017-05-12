@@ -282,6 +282,85 @@ public class API {
         return request;
     }
 
+    /**
+     * 从服务器获取一个新的SID
+     *
+     * @param listener
+     * @param errorListener
+     * @param user
+     * @param pwd
+     * @return
+     */
+    public static StringRequest fetchSID(Response.Listener<String> listener, Response.ErrorListener errorListener,
+                                                final String user, final String pwd) {
+        StringRequest request = new StringRequest(Request.Method.POST, URLs.RECEIVED, listener, errorListener) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("act", URLs.FETCHSIDACT);
+                map.put("username", user);
+                map.put("password", pwd);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+                return map;
+            }
+        };
+        return request;
+    }
+
+    /**
+     * 设置获取的SID为被使用
+     *
+     * @param listener
+     * @param errorListener
+     * @param user
+     * @param pwd
+     * @param sid
+     * @return
+     */
+    public static StringRequest setSIdUsed(Response.Listener<String> listener, Response.ErrorListener errorListener,
+                                                final String user, final String pwd, final String sid) {
+        StringRequest request = new StringRequest(Request.Method.POST, URLs.RECEIVED, listener, errorListener) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("act", URLs.SET_T);
+                map.put("username", user);
+                map.put("password", pwd);
+                map.put("id", sid);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+                return map;
+            }
+        };
+        return request;
+    }
+
+    /**
+     * 设置获取的SID为未使用
+     *
+     * @param listener
+     * @param errorListener
+     * @param user
+     * @param pwd
+     * @param sid
+     * @return
+     */
+    public static StringRequest setSIdNotUsed(Response.Listener<String> listener, Response.ErrorListener errorListener,
+                                                final String user, final String pwd, final String sid) {
+        StringRequest request = new StringRequest(Request.Method.POST, URLs.RECEIVED, listener, errorListener) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("act", URLs.SET_F);
+                map.put("username", user);
+                map.put("password", pwd);
+                map.put("id", sid);
+                map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+                return map;
+            }
+        };
+        return request;
+    }
+
     /***************************UPLOAD***********************/
 
 

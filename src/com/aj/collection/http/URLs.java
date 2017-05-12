@@ -118,6 +118,13 @@ public class URLs {
     public final static String RECEIVEDACT = "setReceived";
     public final static String RESULT_RECEIVEDOK = "ok";
 
+    /**
+     * 获取和设置SID
+     */
+    public final static String FETCHSIDACT = "searchId";
+    public final static String SET_T = "setT";
+    public final static String SET_F = "setF";
+
     /***************************UPLOAD***********************/
 
     /**

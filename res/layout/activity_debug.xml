@@ -142,6 +142,45 @@
             android:background="#c3c3c3"/>
 
         <TextView
+            android:id="@+id/fetch_sid"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:background="@drawable/selector_setting_button_style"
+            android:text="获取抽样单编号"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#c3c3c3"/>
+
+        <TextView
+            android:id="@+id/setSIdUsed"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:background="@drawable/selector_setting_button_style"
+            android:text="设置抽样单ID为被使用状态T"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#c3c3c3"/>
+
+        <TextView
+            android:id="@+id/setSIdNotUsed"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:background="@drawable/selector_setting_button_style"
+            android:text="设置抽样单ID为未使用状态F"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#c3c3c3"/>
+
+        <TextView
             android:id="@+id/debug_output_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
