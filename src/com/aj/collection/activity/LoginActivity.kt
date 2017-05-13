@@ -98,7 +98,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         }
 
         checkPermission()
-//        startActivity(Intent(this, DebugActivity::class.java))
     }
 
     override fun onClick(v: View) {

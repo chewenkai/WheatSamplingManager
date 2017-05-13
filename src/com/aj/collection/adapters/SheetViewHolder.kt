@@ -378,18 +378,6 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
      * 一键上传抽样单及其产生的文件
      */
     fun uploadSamplingAndMedia(samplingtables: List<SAMPLINGTABLE>?, taskName: String) {
-//        Toast.makeText(mContext, "上传抽样单成功，等待审核!", Toast.LENGTH_LONG).show()
-//
-//        for (sample in samplingtables!!){
-//            sample.sid_of_server = java.lang.Long.valueOf(0)
-//            sample.is_uploaded = true
-//            sample.check_status = Constant.S_STATUS_CHECKING
-//            samplingtableDao?.insertOrReplace(sample)
-//        }
-//        if (WeixinActivityMain::class.java.isInstance(mContext)){
-//            (mContext as WeixinActivityMain).refreshDoingTaskData(false)
-//        }
-//        return
 
         if (samplingtables?.size == 0) {
             Toast.makeText(mContext, "没有可以上传的抽样单!", Toast.LENGTH_LONG).show()
@@ -448,14 +436,15 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
 
                             samplingtableDao?.insertOrReplace(samplingtables[progressDialog.progress])
                         } catch (e: NumberFormatException) {
-                            progressDialog.dismiss()
+                            if (progressDialog.isShowing)
+                                progressDialog.dismiss()
                             Toast.makeText(mContext, "上传出错" + s, Toast.LENGTH_SHORT).show()
                             Toast.makeText(mContext, "返回错误的sid", Toast.LENGTH_LONG).show()
                             return
                         }
 
-                        //judge if upload the last one
-                        if (progressDialog.progress != progressDialog.max - 1) {// not the last sampling
+                        //judge if upload the last one 判断是否最后一个样品
+                        if (progressDialog.progress != progressDialog.max - 1) {// 不是最后一个样品，则继续上传
                             progressDialog.progress = progressDialog.progress + 1
                             progressDialog.setMessage(samplingtables[progressDialog.progress].show_name + "上传中...")
                             val errorListener = Response.ErrorListener { volleyError ->
@@ -475,14 +464,14 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                                     samplingtables[progressDialog.progress].is_make_up!!)
                             queue?.add(stringRequest)
 
-                        } else { //uploaded the last one
-                            progressDialog.dismiss()
+                        } else { // 是最后一个样品，提醒上传成功
+                            if (progressDialog.isShowing)
+                                progressDialog.dismiss()
                             //samplingtableDao.insertOrReplaceInTx(samplingtables);
                             //Toast
                             Toast.makeText(mContext, "抽样单上传成功", Toast.LENGTH_SHORT).show()
                             //update data set of adapter
-                            // TODO Update status have problem 更新抽样单状态还有问题
-                            (mContext as WeixinActivityMain).updateTaskStatus(false)
+                            (mContext as WeixinActivityMain).refreshDoingTaskData(false)
                         }
                     } else {
                         progressDialog.dismiss()

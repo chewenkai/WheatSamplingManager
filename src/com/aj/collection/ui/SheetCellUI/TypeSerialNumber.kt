@@ -17,6 +17,7 @@ import com.aj.collection.database.TASKINFO
 import com.aj.collection.http.API
 import com.aj.collection.http.ReturnCode
 import com.aj.collection.http.URLs
+import com.aj.collection.tools.KotlinUtil
 import com.aj.collection.tools.SPUtils
 import com.aj.collection.tools.SheetProtocol
 import com.android.volley.RequestQueue
@@ -218,15 +219,7 @@ class TypeSerialNumber(var mContext: Context, var sheetCell: SheetCell, var task
                     sampleSN = JSONObject(message).getString("id")
 
                     // 查询并添加本地缓存的sid
-                    val localSID = SPUtils.get(mContext, SPUtils.SAMPLING_CACHED_SID, "",
-                            SPUtils.SAMPLING_CACHED_SID_NAME)
-
-                    var cachedSID = ArrayList<String>()
-                    if (localSID != null){
-                        // 利用Gson将Json文本转为SheetCell列表
-                        val turnsType = object : TypeToken<ArrayList<String>>() {}.type
-                        cachedSID = Gson().fromJson(localSID as String, turnsType)
-                    }
+                    val cachedSID = KotlinUtil.getLocalSIds(mContext)
 
                     cachedSID.add(sampleSN)
                     SPUtils.put(mContext, SPUtils.SAMPLING_CACHED_SID, Gson().toJson(cachedSID),

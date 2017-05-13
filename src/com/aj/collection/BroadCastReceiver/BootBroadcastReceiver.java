@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.aj.collection.service.LongTermService;
 import com.aj.collection.service.MsgService;
 import com.aj.collection.tools.SPUtils;
 
@@ -12,21 +13,20 @@ import com.aj.collection.tools.SPUtils;
  * Created by kevin on 15-8-14.
  */
 public class BootBroadcastReceiver extends BroadcastReceiver {
-    static final String action_boot="android.intent.action.BOOT_COMPLETED";
-    String user,pwd;
+    static final String action_boot = "android.intent.action.BOOT_COMPLETED";
+    String user, pwd;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(action_boot)){
+        if (intent.getAction().equals(action_boot)) {
             user = (String) SPUtils.get(context, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE);
             pwd = (String) SPUtils.get(context, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE);
 
             if (!user.isEmpty() && !pwd.isEmpty()) {
                 Intent ootStartIntent = new Intent(context, MsgService.class);
-                if (((String)SPUtils.get(context, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) != null))
-                    context.startService(ootStartIntent);
-//
-//                Intent longtermService = new Intent(context, LongTermService.class);
-//                context.startService(longtermService);
+                context.startService(ootStartIntent);
+                Intent longtermService = new Intent(context, LongTermService.class);
+                context.startService(longtermService);
             }
         }
 

@@ -1,33 +1,14 @@
-/*
- *kevin
- */
-
 package com.aj.collection.service;
 
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Binder;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.os.Vibrator;
-import android.support.v7.app.NotificationCompat;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aj.Constant;
-import com.aj.WeixinActivityMain;
-import com.aj.collection.activity.CollectionApplication;
-import com.aj.collection.R;
-import com.aj.collection.database.DaoMaster;
-import com.aj.collection.database.DaoSession;
-import com.aj.collection.database.SAMPLINGTABLEDao;
-import com.aj.collection.database.TASKINFODao;
-import com.aj.collection.database.TEMPLETTABLEDao;
 import com.aj.collection.http.API;
 import com.aj.collection.http.ReturnCode;
 import com.aj.collection.http.URLs;
@@ -49,183 +30,34 @@ import org.json.JSONObject;
  * This service contain some function witch need in a long term running.
  */
 public class LongTermService extends Service {
-    private static final String TAG = "com.aj.collection.service.LongTermService:\n";
     private Context mContext = this;
-    private NotificationManager mNM;
-
-    boolean isServiceRunning = false;
-
     RequestQueue queue;
 
     private final int updatePeriod = 5;// update period time,the units is minute;
-    private int updateCounter = 0;// count the time
 
     private double latitude = 0, longitude = 0;
     private int locationMod = Constant.CAN_NOT_GET_LOCATION;
-    //database part
-    private SQLiteDatabase db;
-    private DaoMaster daoMaster;
-    private DaoSession daoSession;
-    private TASKINFODao taskinfoDao;
-    private TEMPLETTABLEDao templettableDao;
-    private SAMPLINGTABLEDao samplingtableDao;
 
-    public boolean isServiceRunning() {
-        isServiceRunning = false;
-        ActivityManager manager = (ActivityManager) getApplicationContext()
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        for (RunningServiceInfo service : manager
-                .getRunningServices(Integer.MAX_VALUE)) {
-            if ("com."
-                    .equals(service.service.getClassName())) {
-                isServiceRunning = true;
-                return isServiceRunning;
-            }
-        }
-        return isServiceRunning;
-    }
+
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        daoSession = ((CollectionApplication) (LongTermService.this.getApplication())).getDaoSession(mContext);
-        taskinfoDao = daoSession.getTASKINFODao();
-        templettableDao = daoSession.getTEMPLETTABLEDao();
-        samplingtableDao = daoSession.getSAMPLINGTABLEDao();
-
-
-        mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         queue = Volley.newRequestQueue(this); //init Volley
+        initLocation();
     }
 
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
-    }
 
     @Override
     public void onDestroy() {
-
-//        unregisterReceiver(mReceiver);
-        mNM.cancel(R.string.app_name);
-
+        mLocationClient.unRegisterLocationListener(myListener);//取消注册定位监听器
         super.onDestroy();
 
     }
 
-    private void returnToLoginActivity() {
-        if (mCallback != null)
-            mCallback.returnToLoginActivity();
-    }
-
-    /**
-     * Class for clients to access. Because we know this service always runs in
-     * the same process as its clients, we don't need to deal with IPC.
-     */
-    public class MsgBinder extends Binder {
-        public LongTermService getService() {
-            return LongTermService.this;
-        }
-    }
-
-    @Override
+    @Nullable
     public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    /**
-     * Receives messages from mContext.
-     */
-    private final IBinder mBinder = new MsgBinder();
-
-    public interface ICallback {
-        public void haveNewTask();
-
-        public Context getWeixinActitityContext();
-
-        public void returnToLoginActivity();
-
-        public void refreshBadgeView1_callback();
-
-        public void refreshDoingChildListView();
-    }
-
-    private ICallback mCallback;
-
-    public void registerCallback(ICallback cb) {
-        mCallback = cb;
-    }
-
-    /**
-     * Show a notification while this service is running.
-     */
-    private void showNotification() {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setSmallIcon(R.drawable.ic_launcher1);
-        mBuilder.setContentTitle(getResources().getString(R.string.app_name));
-        mBuilder.setContentText("您有一个新任务!");
-
-        Intent intent = new Intent(this, WeixinActivityMain.class);
-        mBuilder.setContentIntent(PendingIntent.getBroadcast(this, 0, intent, 0));
-        NotificationManager notificationManager = (NotificationManager)
-                getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, mBuilder.build());
-
-    }
-
-    // BroadcastReceiver for handling ACTION_SCREEN_OFF.
-    /**
-     * 广播接收器
-     *//*
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Check action just to be on the safe side.
-            if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {//每分钟的广播 1.if have new task
-                if (updatePeriod == updateCounter) {
-                    loginValidate();//check if the username and password which saved in storage is right
-                    updateCounter = 0;
-                } else
-                    updateCounter++;
-            }
-        }
-    };*/
-
-
-
-    /**
-     * 获取wakelock锁
-     *
-     * @param c Context
-     * @return
-     */
-
-    static PowerManager.WakeLock acquireWakeLock(Context c, int level) {
-        PowerManager.WakeLock mWakeLock;
-        PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-        int wakeFlags = PowerManager.SCREEN_DIM_WAKE_LOCK
-                | PowerManager.ACQUIRE_CAUSES_WAKEUP;
-        if (level == 3) {
-            wakeFlags = PowerManager.SCREEN_DIM_WAKE_LOCK
-                    | PowerManager.ACQUIRE_CAUSES_WAKEUP;
-        } else if (level == 2) {
-            wakeFlags = PowerManager.SCREEN_DIM_WAKE_LOCK;
-        } else if (level == 1) {
-            wakeFlags = PowerManager.PARTIAL_WAKE_LOCK;
-        }
-        mWakeLock = pm.newWakeLock(wakeFlags, TAG);
-        mWakeLock.acquire();
-        return mWakeLock;
-    }
-
-
-    private boolean isExitting = false;
-
-    public void setExitFlag() {
-        isExitting = true;
-
+        return null;
     }
 
     /**
@@ -335,12 +167,9 @@ public class LongTermService extends Service {
                     String content = resultJson.getString(URLs.KEY_MESSAGE);
 
                     if (errorCode.equals(ReturnCode.Code0)) {
-//                        Toast.makeText(mContext, "上传位置成功:" + longitude + "," + latitude + "," + locationMod, Toast.LENGTH_LONG).show();
-//                        testGetSamplingStatus();
+
                     } else{
-                        new ReturnCode(getApplicationContext(), errorCode, false);
-//                        if(errorCode.equals(ReturnCode.NO_SUCH_ACCOUNT)||errorCode.equals(ReturnCode.PASSWORD_INVALIDE))
-//                            returnToLoginActivity();
+
                     }
 
                 } catch (JSONException e) {
@@ -352,8 +181,6 @@ public class LongTermService extends Service {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-//				Toast.makeText(mContext, mContext.getString(R.string.badNetWork), Toast.LENGTH_LONG).show();
-                Log.e("uploadLocaFail", volleyError.toString());
             }
         };
         StringRequest stringRequest = API.uploadLocation(listener, errorListener,

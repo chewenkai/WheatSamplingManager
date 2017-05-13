@@ -639,7 +639,6 @@ public class MapActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        // TODO Auto-generated method stub
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == authBaseRequestCode) {
             for (int ret : grantResults) {
@@ -658,8 +657,6 @@ public class MapActivity extends Activity {
     private static final String[] authBaseArr = { Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION };
     private boolean hasBasePhoneAuth() {
-        // TODO Auto-generated method stub
-
         PackageManager pm = this.getPackageManager();
         for (String auth : authBaseArr) {
             if (pm.checkPermission(auth, this.getPackageName()) != PackageManager.PERMISSION_GRANTED) {

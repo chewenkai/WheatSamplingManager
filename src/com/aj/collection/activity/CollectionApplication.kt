@@ -4,17 +4,13 @@ package com.aj.collection.activity
  * Created by kevin on 15-9-26.
  */
 
-import android.Manifest
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
 import android.os.Vibrator
 import android.support.multidex.MultiDex
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.util.ArraySet
+import android.support.multidex.MultiDexApplication
 import android.util.Log
 import android.widget.TextView
 import com.aj.Constant
@@ -23,6 +19,7 @@ import com.aj.collection.database.*
 import com.aj.collection.http.API
 import com.aj.collection.http.ReturnCode
 import com.aj.collection.http.URLs
+import com.aj.collection.tools.KotlinUtil
 import com.aj.collection.tools.SPUtils
 import com.aj.collection.tools.Util
 import com.android.volley.RequestQueue
@@ -42,12 +39,11 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 /**
  * Collection Application
  */
-class CollectionApplication : AppContext() {
+class CollectionApplication : MultiDexApplication() {
 
     var cellIdentity = 0  //抽样单单元格的身份标示，在应用中自加,用于减少拍照单元格拍完照片后的数据处理量，去除后除了影响稍许性能没有其他影响
 
@@ -87,26 +83,22 @@ class CollectionApplication : AppContext() {
         setCachedSIDFalse()
     }
 
+
     override fun onTerminate() {
         super.onTerminate()
         setCachedSIDFalse()
     }
 
     fun setCachedSIDFalse(){
-        val localSID = SPUtils.get(this, SPUtils.SAMPLING_CACHED_SID, "",
-                SPUtils.SAMPLING_CACHED_SID_NAME)
-
-        var cachedSID = ArrayList<String>()
-        if (localSID != null){
-            // 利用Gson将Json文本转为SheetCell列表
-            val turnsType = object : TypeToken<ArrayList<String>>() {}.type
-            cachedSID = Gson().fromJson(localSID as String, turnsType)
-        }
+        val cachedSID = KotlinUtil.getLocalSIds(this)
         for (sid in cachedSID) {
             setSNNotUsed(sid)
         }
     }
 
+    /**
+     * 设置服务器端该sid未被使用
+     */
     private fun setSNNotUsed(sampleSN:String) {
         val listener = Response.Listener<String> { s ->
             try {
@@ -149,6 +141,8 @@ class CollectionApplication : AppContext() {
     }
 
     fun initDaoSession(){
+        if (daoSession!=null)
+            return
         val userName = SPUtils.get(this, SPUtils.LOGIN_NAME, Constant.DB_DEFAULT_NAME, SPUtils.LOGIN_VALIDATE) as String
         val helper = MySQLiteOpenHelper(this, userName, null)
         val db = helper.writableDb
@@ -181,11 +175,6 @@ class CollectionApplication : AppContext() {
      */
     fun getDaoSession(context: Context): DaoSession {
         return daoSession!!
-    }
-
-    override fun attachBaseContext(base: Context?) {
-        MultiDex.install(this)
-        super.attachBaseContext(base)
     }
 
     /**************************************

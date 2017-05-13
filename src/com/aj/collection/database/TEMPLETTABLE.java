@@ -4,6 +4,7 @@ package com.aj.collection.database;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Unique;
 
 /**
@@ -12,6 +13,7 @@ import org.greenrobot.greendao.annotation.Unique;
 @Entity
 public class TEMPLETTABLE {
     @Unique
+    @Id(autoincrement = true)
     private Long templetID;
     private Long taskID;
     private String templet_name;

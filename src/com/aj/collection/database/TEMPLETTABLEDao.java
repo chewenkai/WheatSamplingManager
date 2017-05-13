@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "TEMPLETTABLE".
 */
-public class TEMPLETTABLEDao extends AbstractDao<TEMPLETTABLE, Void> {
+public class TEMPLETTABLEDao extends AbstractDao<TEMPLETTABLE, Long> {
 
     public static final String TABLENAME = "TEMPLETTABLE";
 
@@ -22,7 +22,7 @@ public class TEMPLETTABLEDao extends AbstractDao<TEMPLETTABLE, Void> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property TempletID = new Property(0, Long.class, "templetID", false, "TEMPLET_ID");
+        public final static Property TempletID = new Property(0, Long.class, "templetID", true, "_id");
         public final static Property TaskID = new Property(1, Long.class, "taskID", false, "TASK_ID");
         public final static Property Templet_name = new Property(2, String.class, "templet_name", false, "TEMPLET_NAME");
         public final static Property Templet_content = new Property(3, String.class, "templet_content", false, "TEMPLET_CONTENT");
@@ -42,7 +42,7 @@ public class TEMPLETTABLEDao extends AbstractDao<TEMPLETTABLE, Void> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"TEMPLETTABLE\" (" + //
-                "\"TEMPLET_ID\" INTEGER UNIQUE ," + // 0: templetID
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE ," + // 0: templetID
                 "\"TASK_ID\" INTEGER," + // 1: taskID
                 "\"TEMPLET_NAME\" TEXT," + // 2: templet_name
                 "\"TEMPLET_CONTENT\" TEXT," + // 3: templet_content
@@ -116,8 +116,8 @@ public class TEMPLETTABLEDao extends AbstractDao<TEMPLETTABLE, Void> {
     }
 
     @Override
-    public Void readKey(Cursor cursor, int offset) {
-        return null;
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
@@ -142,20 +142,23 @@ public class TEMPLETTABLEDao extends AbstractDao<TEMPLETTABLE, Void> {
      }
     
     @Override
-    protected final Void updateKeyAfterInsert(TEMPLETTABLE entity, long rowId) {
-        // Unsupported or missing PK type
-        return null;
+    protected final Long updateKeyAfterInsert(TEMPLETTABLE entity, long rowId) {
+        entity.setTempletID(rowId);
+        return rowId;
     }
     
     @Override
-    public Void getKey(TEMPLETTABLE entity) {
-        return null;
+    public Long getKey(TEMPLETTABLE entity) {
+        if(entity != null) {
+            return entity.getTempletID();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean hasKey(TEMPLETTABLE entity) {
-        // TODO
-        return false;
+        return entity.getTempletID() != null;
     }
 
     @Override

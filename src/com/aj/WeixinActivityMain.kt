@@ -28,6 +28,7 @@ import com.aj.collection.R
 import com.aj.collection.ThirdModify_WeiXin.Exit
 import com.aj.collection.activity.*
 import com.aj.collection.adapters.TaskAdapter
+import com.aj.collection.bean.SheetCell
 import com.aj.collection.bean.TaskData
 import com.aj.collection.database.*
 import com.aj.collection.http.API
@@ -35,12 +36,17 @@ import com.aj.collection.http.ReturnCode
 import com.aj.collection.http.URLs
 import com.aj.collection.service.MsgService
 import com.aj.collection.tools.*
+import com.aj.collection.tools.Util.startLongTermService
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
+import com.baidu.autoupdatesdk.BDAutoUpdateSDK
+import com.baidu.autoupdatesdk.UICheckUpdateCallback
 import com.baidu.mobstat.SendStrategyEnum
 import com.baidu.mobstat.StatService
 import com.bignerdranch.expandablerecyclerview.ExpandableRecyclerAdapter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jrs.utils.FileUtils
 import net.micode.compass.CompassActivity
 import net.micode.notes.ui.NotesListActivity
@@ -95,6 +101,7 @@ class WeixinActivityMain : AppCompatActivity() {
     private var getTaskStatusRequest: StringRequest? = null
     internal var mContext: Context = this
     private var isActivityOnShowing = true  // 当前activity是否正在显示
+    private var autoUpdateDialog: ProgressDialog? = null  // 自动更新
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,11 +114,11 @@ class WeixinActivityMain : AppCompatActivity() {
         templettableDao = daoSession!!.templettableDao
         samplingtableDao = daoSession!!.samplingtableDao
 
-        val sheetStr = Constant.SHEETSTR
-        for (i in 0..2) {
-            taskinfoDao?.insertOrReplace(TASKINFO((261 + i).toLong(), "品种${i + 1}", "W17", false, false, System.currentTimeMillis(), ""))
-            templettableDao?.insertOrReplace(TEMPLETTABLE((i + 1).toLong(), (261 + i).toLong(), "品种${i + 1}", sheetStr, System.currentTimeMillis()))
-        }
+//        val sheetStr = Constant.SHEETSTR
+//        for (i in 0..2) {
+//            taskinfoDao?.insertOrReplace(TASKINFO((261 + i).toLong(), "品种${i + 1}", "W17", false, false, System.currentTimeMillis(), ""))
+//            templettableDao?.insertOrReplace(TEMPLETTABLE((i + 1).toLong(), (261 + i).toLong(), "品种${i + 1}", sheetStr, System.currentTimeMillis()))
+//        }
 //        for (i in 3..5){
 //            taskinfoDao?.insertOrReplace(TASKINFO((261+i).toLong(),"品种${i+1}","XMXY", true, false, System.currentTimeMillis(), ""))
 //            templettableDao?.insertOrReplace(TEMPLETTABLE((i+1).toLong(), (261+i).toLong(), "品种${i+1}", sheetStr, System.currentTimeMillis()))
@@ -203,6 +210,8 @@ class WeixinActivityMain : AppCompatActivity() {
         //start and bind the service
         startMsgService()
         bindMsgService()
+        // 开启后台上传位置服务
+        startLongTermService(this)
 
         queue = (application as CollectionApplication).requestQueue //init Volley
 
@@ -211,6 +220,24 @@ class WeixinActivityMain : AppCompatActivity() {
         val filter1 = IntentFilter(Intent.ACTION_TIME_TICK)
         registerReceiver(timeTickReceiver, filter1)// just remember unregister it
         bindMsgService()
+
+        // 检查并自动更新软件
+        autoUpdateDialog = ProgressDialog(this)
+        autoUpdateDialog?.setTitle("正在更新软件...")
+        autoUpdateDialog?.setIndeterminate(true)
+        BDAutoUpdateSDK.uiUpdateAction(this, MyUICheckUpdateCallback())
+    }
+
+    private inner class MyUICheckUpdateCallback : UICheckUpdateCallback {
+
+        override fun onNoUpdateFound() {
+
+        }
+
+        override fun onCheckComplete() {
+//            autoUpdateDialog?.dismiss()
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -357,7 +384,6 @@ class WeixinActivityMain : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_refresh_task -> {
-//                haveNewTask()
                 getNewTask()
                 updateTaskStatus(true)
                 updateSamplingStatus(true)
@@ -465,7 +491,7 @@ class WeixinActivityMain : AppCompatActivity() {
     fun refreshDoingTaskData(showProgDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext)
         progressDialog.setMessage("数据加载中...")
-        if (showProgDialog&&isActivityOnShowing)
+        if (showProgDialog && isActivityOnShowing)
             progressDialog.show()
         doAsync {
             val taskData = queryDoingTaskData()
@@ -481,7 +507,7 @@ class WeixinActivityMain : AppCompatActivity() {
                 doingTaskAdapter?.taskList?.addAll(taskData)
                 doingTaskAdapter?.notifyParentDataSetChanged(true)
                 refreshBadgeView1()
-                if (showProgDialog&&isActivityOnShowing)
+                if (showProgDialog && isActivityOnShowing && progressDialog.isShowing)
                     progressDialog.dismiss()
             }
         }
@@ -643,7 +669,7 @@ class WeixinActivityMain : AppCompatActivity() {
         // 手动检查新任务
         manualCheckTask = v.findViewById(R.id.check_new_task_btn) as LinearLayout
         manualCheckTask?.onClick {
-            haveNewTask()
+            getNewTask()
         }
         //清除缓存
         //显示缓存大小
@@ -970,7 +996,7 @@ class WeixinActivityMain : AppCompatActivity() {
         }
 
         override fun refreshDoingChildListView() {
-//            refreshDoingTaskData(showProgDialog = false)
+            refreshDoingTaskData(showProgDialog = false)
         }
     }
 
@@ -1039,55 +1065,6 @@ class WeixinActivityMain : AppCompatActivity() {
             getTaskStatusRequest!!.cancel()
     }
 
-    /**
-     * 检查是否有新任务
-     */
-    fun haveNewTask() {
-        stopMsgService()
-
-        val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        progressDialog.setMessage("检查新任务中...")
-        progressDialog.setCancelable(false)
-        progressDialog.show()
-        val listener = Response.Listener<String> { s ->
-            progressDialog.dismiss()
-            try {
-
-                val resultJson = JSONObject(s)
-                val errorCode = resultJson.getString(URLs.KEY_ERROR)
-                val result = resultJson.getString(URLs.KEY_MESSAGE)
-
-                if (errorCode == ReturnCode.Code0) {//connected
-                    if (result == URLs.RESULT_NEWTASK) {
-                        // 1.send msg to main mContext 2.save to sharedPreference 3.show a notification
-                        getNewTask()
-                    } else if (result == URLs.RESULT_NOTHING) {
-                        // don't have new task. just TOast
-//                            Toast.makeText(mContext, "没有新任务", Toast.LENGTH_LONG).show()
-                    } else
-                        Log.e("XXXXXXX", "接收到不该出现的结果")
-                } else {
-                    ReturnCode(applicationContext, errorCode, true)
-                    if (errorCode == ReturnCode.NO_SUCH_ACCOUNT || errorCode == ReturnCode.PASSWORD_INVALIDE) {
-                        returnToLoginActivity()
-                    }
-                }
-
-            } catch (e: JSONException) {
-                e.printStackTrace()
-                Log.e("XXXXXXXX", "havaNewTask 返回值出问题")
-                startMsgService()
-            }
-        }
-        val errorListener = Response.ErrorListener { volleyError ->
-            progressDialog.dismiss()
-            startMsgService()
-            Toast.makeText(mContext, mContext.getString(R.string.badNetWork), Toast.LENGTH_LONG).show()
-            Log.e("HaveNewTaskFail", volleyError.toString())
-        }
-        val stringRequest = API.haveNewTask(listener, errorListener, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?)
-        queue!!.add<String>(stringRequest)
-    }
 
     /**
      * get New Task
@@ -1098,7 +1075,6 @@ class WeixinActivityMain : AppCompatActivity() {
         progressDialog.setCancelable(false)
         progressDialog.show()
         val listener = Response.Listener<String> { s ->
-            //      Log.e("GetNewTaskSuc", s);
             try {
 
                 val resultJson = JSONObject(s)
@@ -1106,8 +1082,16 @@ class WeixinActivityMain : AppCompatActivity() {
                 val result = resultJson.getString(URLs.KEY_MESSAGE)
 
                 if (errorCode == ReturnCode.Code0) {//connected
-                    SPUtils.put(mContext, SPUtils.RECEIVED_TASK, result, SPUtils.TEMPORARY_SAVE)
-                    setReceived()
+                    val taskJsonArray = JSONArray(result)
+                    for (i in 0..taskJsonArray.length() - 1) {
+                        val taskJsonObject = taskJsonArray.getJSONObject(i)
+                        var hasNewTask = KotlinUtil.parseTaskDataIntoDatabase(mContext, taskJsonObject, taskinfoDao, templettableDao, samplingtableDao)
+                        if (i == taskJsonArray.length() - 1) { // 最后一个任务
+                            if (progressDialog.isShowing)
+                                progressDialog.dismiss()
+                        }
+                    }
+
                 } else {
                     ReturnCode(applicationContext, errorCode, true)
                     if (errorCode == ReturnCode.NO_SUCH_ACCOUNT || errorCode == ReturnCode.PASSWORD_INVALIDE) {
@@ -1117,11 +1101,9 @@ class WeixinActivityMain : AppCompatActivity() {
 
             } catch (e: JSONException) {
                 e.printStackTrace()
-                progressDialog.dismiss()
-                startMsgService()
+                if (progressDialog.isShowing)
+                    progressDialog.dismiss()
             }
-
-            progressDialog.dismiss()
         }
         val errorListener = Response.ErrorListener { volleyError ->
             progressDialog.dismiss()
@@ -1134,130 +1116,13 @@ class WeixinActivityMain : AppCompatActivity() {
     }
 
     /**
-     * tell server received the task
-     */
-    fun setReceived() {
-        val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        progressDialog.setMessage("存入数据库中...")
-        progressDialog.setCancelable(false)
-        progressDialog.show()
-
-        val listener = Response.Listener<String> { s ->
-            startMsgService()
-            try {
-                val resultJson = JSONObject(s)
-                val errorCode = resultJson.getString(URLs.KEY_ERROR)
-                val result = resultJson.getString(URLs.KEY_MESSAGE)
-
-                if (errorCode == ReturnCode.Code0) {//connected
-                    if (result == URLs.RESULT_RECEIVEDOK) {
-                        val tasks = SPUtils.get(mContext, SPUtils.RECEIVED_TASK, "", SPUtils.TEMPORARY_SAVE) as String?
-
-                        if (tasks!!.isEmpty()) {
-                            Log.e("XXXXXXXX", "没有获取到任何东西，不应该为空，检查程序")
-                            return@Listener
-                        }
-
-                        val taskJsonArray = JSONArray(tasks)
-                        for (i in 0..taskJsonArray.length() - 1) {
-                            val taskJsonObject = taskJsonArray.getJSONObject(i)
-                            val taskID = taskJsonObject.getString(URLs.KEY_TASKID)
-                            val taskName = taskJsonObject.getString(URLs.KEY_TASKNAME)
-                            val taskLetter = taskJsonObject.getString(URLs.KEY_TASK_INI_LETTER)
-                            val taskDes = taskJsonObject.getString(URLs.KEY_TASKDISCRIPTION)
-                            val taskCont = taskJsonObject.getString(URLs.KEY_TASKCONT)
-                            val sampling = taskJsonObject.getString(URLs.KEY_SAMPLING)//定点采样的抽样单
-
-                            //任务id已存在，则不存入数据
-                            if (taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.TaskID.eq(taskID)).list().size != 0) {
-                                T.showShort(applicationContext, "任务已存在！")
-                                if (progressDialog.isShowing)
-                                    progressDialog.dismiss()
-                                return@Listener
-                            }
-
-                            //insert task
-                            val taskinfo = TASKINFO(java.lang.Long.valueOf(taskID), taskName, taskLetter, false, true, System.currentTimeMillis(), taskDes)
-                            taskinfoDao!!.insertOrReplace(taskinfo)
-
-                            //insert Templet
-                            val templettable = TEMPLETTABLE(null, taskinfo.taskID, taskinfo.task_name, taskCont, System.currentTimeMillis())
-                            templettableDao!!.insertOrReplace(templettable)
-
-                            //定点采样 insert sampling
-                            val samplingsArray = JSONArray(sampling)
-
-
-                            //                                progressDialog.setMax(samplingsArray.length());
-                            //                                progressDialog.setProgress(0);
-                            //                                progressDialog.show();
-
-
-                            for (j in 0..samplingsArray.length() - 1) {
-                                //                                    progressDialog.setProgress(j + 1);
-                                //                                    if (j + 1 == samplingsArray.length())
-                                //                                        progressDialog.dismiss();
-
-                                val samplingID = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLINGID)
-                                val samplingCont = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLINGCONT)
-                                val samplingName = samplingsArray.getJSONObject(j).getString(URLs.KEY_ITEMS)
-                                val samplingNum = samplingsArray.getJSONObject(j).getString(URLs.KEY_ITEMSID)
-                                val companyAddress = samplingsArray.getJSONObject(j).getString(URLs.KEY_SAMPLING_COMPANY_NAME) // 去掉romove
-                                val mediaFolderChild = Util.getSamplingNum(mContext, taskinfo)
-
-                                val samplingtable = SAMPLINGTABLE(null, java.lang.Long.valueOf(taskID), templettable.templetID, samplingName + "-" + samplingNum, companyAddress,
-                                        samplingCont, mediaFolderChild, false, false, true, false, Constant.S_STATUS_HAVE_NOT_UPLOAD, System.currentTimeMillis(), null, java.lang.Long.valueOf(samplingID), null, null, null, mediaFolderChild, false)
-
-
-                                samplingtableDao!!.insertOrReplace(samplingtable)
-                            }
-
-
-                        }
-
-                        SPUtils.put(mContext, SPUtils.RECEIVED_TASK, "", SPUtils.TEMPORARY_SAVE)
-
-                        if (progressDialog.isShowing)
-                            progressDialog.dismiss()
-
-                        //show a notification
-                        showNotification()
-                        refreshDoingTaskData(showProgDialog = false)
-                    } else {
-                        if (progressDialog.isShowing)
-                            progressDialog.dismiss()
-
-                        ReturnCode(applicationContext, errorCode, true)
-                        if (errorCode == ReturnCode.NO_SUCH_ACCOUNT || errorCode == ReturnCode.PASSWORD_INVALIDE) {
-                            returnToLoginActivity()
-                        }
-                    }
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
-                if (progressDialog.isShowing)
-                    progressDialog.dismiss()
-            }
-        }
-        val errorListener = Response.ErrorListener { volleyError ->
-            if (progressDialog.isShowing)
-                progressDialog.dismiss()
-            startMsgService()
-            Toast.makeText(mContext, mContext.getString(R.string.badNetWork), Toast.LENGTH_LONG).show()
-            Log.e("Received", volleyError.toString())
-        }
-        setTaskReceivedRequest = API.setTaskReceived(listener, errorListener, SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?)
-        queue!!.add<String>(setTaskReceivedRequest!!)
-    }
-
-    /**
      * 更新抽样单审核Status
      * server return like this:
      * {error:0,msg:[{sid:01,type:'0'},{sid:02,type:'1'}]}
      */
     fun updateSamplingStatus(showDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        if (showDialog&&isActivityOnShowing) {
+        if (showDialog && isActivityOnShowing) {
             progressDialog.setMessage("正在刷新任务状态...")
             progressDialog.show()
         }
@@ -1276,7 +1141,7 @@ class WeixinActivityMain : AppCompatActivity() {
         }
 
         val listener = Response.Listener<String> { s ->
-            if (showDialog&&isActivityOnShowing)
+            if (showDialog && isActivityOnShowing)
                 progressDialog.dismiss()
             try {
                 val resultJson = JSONObject(s)
@@ -1339,7 +1204,7 @@ class WeixinActivityMain : AppCompatActivity() {
      */
     fun updateTaskStatus(showDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        if (showDialog&&isActivityOnShowing) {
+        if (showDialog && isActivityOnShowing) {
             progressDialog.setMessage("正在刷新任务状态...")
             progressDialog.show()
         }
@@ -1356,7 +1221,7 @@ class WeixinActivityMain : AppCompatActivity() {
         }
 
         val listener = Response.Listener<String> { s ->
-            if (showDialog&&isActivityOnShowing)
+            if (showDialog && isActivityOnShowing)
                 progressDialog.dismiss()
             try {
                 val resultJson = JSONObject(s)
@@ -1398,6 +1263,8 @@ class WeixinActivityMain : AppCompatActivity() {
 
             } catch (e: JSONException) {
                 e.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
         val errorListener = Response.ErrorListener { volleyError ->
@@ -1412,7 +1279,7 @@ class WeixinActivityMain : AppCompatActivity() {
                 SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
                 SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?, jsonArray.toString())
 
-        queue!!.add<String>(getTaskStatusRequest!!)
+        queue?.add(getTaskStatusRequest)
     }
 
     companion object {

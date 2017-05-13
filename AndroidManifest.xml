@@ -81,6 +81,10 @@
             <!--android:name="com.baidu.lbsapi.API_KEY"-->
             <!--android:value="qDfS7OHKph9pywKrx9GykfnK" />-->
 
+        <!--自动更新-->
+        <meta-data android:name="BDAPPID" android:value="7291456"/>
+        <meta-data android:name="BDAPPKEY" android:value="6w0mp45cbE1e99zHfnEuIyCG5wp26L5G"/>
+
         <!-- 百度移动统计APP KEY -->
         <meta-data
             android:name="BaiduMobAd_STAT_ID"
@@ -227,10 +231,21 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
+
         <provider
             android:name="net.micode.notes.data.NotesProvider"
             android:authorities="micode_notes"
             android:multiprocess="true" />
+
+        <!--<provider-->
+            <!--android:authorities="${applicationId}.fileprovider"-->
+            <!--android:name="android.support.v4.content.FileProvider"-->
+            <!--android:exported="false"-->
+            <!--android:grantUriPermissions="true">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+                <!--android:resource="@xml/bdp_update_filepaths"/>-->
+        <!--</provider>-->
 
         <receiver
             android:name="net.micode.notes.widget.NoteWidgetProvider_2x"
