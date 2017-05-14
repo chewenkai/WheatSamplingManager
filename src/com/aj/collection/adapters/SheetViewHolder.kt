@@ -286,13 +286,13 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                             e.printStackTrace()
                         }
                     }
-                    val errorListener = Response.ErrorListener { volleyError ->
-
+                    val errorListener = Response.ErrorListener {
+                        Toast.makeText(mContext, "请连接网络后再删除", Toast.LENGTH_SHORT).show()
                     }
                     val stringRequest = API.setSIdNotUsed(listener, errorListener,
                             SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
                             SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?,
-                            uniqueNum!!.split(taskLetter!!)[1].toInt().toString())
+                            uniqueNum!!.split(taskLetter!!)[1].toInt().toString(), task.taskID.toString())
                     queue?.add(stringRequest)
                 }
 

@@ -1,7 +1,6 @@
 package com.aj.collection
 
 import android.Manifest
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,14 +10,12 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.media.ThumbnailUtils.createVideoThumbnail
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
-import android.support.design.widget.TextInputEditText
-import android.support.design.widget.TextInputLayout
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
-import android.support.v7.widget.AppCompatRadioButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
@@ -31,23 +28,28 @@ import android.widget.*
 import at.markushi.ui.CircleButton
 import com.aj.Constant
 import com.aj.Constant.DEFAULT_IMAGE_HEIGHT_DP
-import com.aj.collection.activity.CameraView
 import com.aj.collection.activity.CollectionApplication
 import com.aj.collection.activity.SheetActivity
 import com.aj.collection.bean.SheetCell
+import com.aj.collection.http.URLs
 import com.aj.collection.tools.MediaManager
 import com.aj.collection.tools.ScreenUtil
 import com.aj.collection.tools.SheetProtocol
 import com.aj.collection.tools.Util
-import com.aj.collection.activity.GalleryActivity
 import com.aj.collection.tools.Util.getBitmapUri
 import com.baidu.location.BDLocation
 import com.squareup.picasso.Picasso
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.onClick
 import org.jetbrains.anko.toast
-import org.json.JSONArray
+import org.jetbrains.anko.uiThread
 import org.json.JSONObject
+import vi.com.gdi.bgl.android.java.EnvDrawText.buffer
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 
 /**
  * 录像单元格(type_vedios): 用于拍摄视频。单元格值、单元格是否可打印、单元格是否默认勾选打印属性对其无效
@@ -229,8 +231,8 @@ class TypeVedios(var mContext: Context, var sheetCell: SheetCell, val autoGenera
     /**
      * 删除新产生的视频文件
      */
-    fun deleteNewMediaFiles(){
-        for (file in newMediaFiles){
+    fun deleteNewMediaFiles() {
+        for (file in newMediaFiles) {
             file.delete()
         }
     }
@@ -424,27 +426,40 @@ class TypeVedios(var mContext: Context, var sheetCell: SheetCell, val autoGenera
             if (photoFile.exists()) {
                 if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     val thumb = createVideoThumbnail(photoFile.path, 0)
-                    if (thumb==null)
-                        Picasso.with(mContext).load(R.drawable.image_read_fail).resizeDimen(0,
-                                ScreenUtil.dpToPx(mContext, DEFAULT_IMAGE_HEIGHT_DP)).into(image)
+                    if (thumb == null)
+                        image.setImageResource(R.drawable.image_read_fail)
                     else
                         Picasso.with(mContext).load(getBitmapUri(mContext, thumb)).resize(0,
                                 ScreenUtil.dpToPx(mContext, DEFAULT_IMAGE_HEIGHT_DP)).into(image)
                 } else {
-                    Picasso.with(mContext).load(R.drawable.image_read_fail).resizeDimen(0,
-                            ScreenUtil.dpToPx(mContext, DEFAULT_IMAGE_HEIGHT_DP)).into(image)
+                    image.setImageResource(R.drawable.image_read_fail)
                 }
-            }else{
-                Picasso.with(mContext).load(R.drawable.image_read_fail).resizeDimen(0,
-                        ScreenUtil.dpToPx(mContext, DEFAULT_IMAGE_HEIGHT_DP)).into(image)
+            } else {
+                image.setImageResource(R.drawable.image_read_fail)
+                doAsync {
+                    downloadFile(URLs.DOWNLOAD_IMG_PATH + photoFile.name, photoFile)
+                    uiThread {
+                        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                            val thumb = createVideoThumbnail(photoFile.path, 0)
+                            if (thumb == null)
+                                image.setImageResource(R.drawable.image_read_fail)
+                            else
+                                Picasso.with(mContext).load(getBitmapUri(mContext, thumb)).resize(0,
+                                        ScreenUtil.dpToPx(mContext, DEFAULT_IMAGE_HEIGHT_DP)).into(image)
+                        } else {
+                            image.setImageResource(R.drawable.image_read_fail)
+                        }
+                    }
+                }
             }
 
             image.setOnClickListener {
                 //其他的是查看录像
-                val url = Uri.parse("file://" + photoFile.path)
+                val vedioURI = FileProvider.getUriForFile(mContext, "com.aj.collection.fileprovider", photoFile)
                 val type = "video/mp4"
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(url, type)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                intent.setDataAndType(vedioURI, type)
                 mContext.startActivity(intent)
             }
             val button = holder.removeButton
@@ -505,6 +520,34 @@ class TypeVedios(var mContext: Context, var sheetCell: SheetCell, val autoGenera
                 removeButton = itemView.findViewById(R.id.remove_gallary_button) as CircleButton
             }// Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
+        }
+
+
+
+        fun downloadFile(fileURL: String, file: File) {
+            try {
+                file.parentFile.mkdir()
+                var url = URL(fileURL)
+                var c = url.openConnection() as HttpURLConnection
+                c.requestMethod = "GET"
+                c.doOutput = true
+                c.connect()
+                var f = FileOutputStream(file);
+                var inputStream = c.inputStream
+                var buffer = ByteArray(1024)
+                var len1 = 0
+                while (true) {
+                    len1 = inputStream.read(buffer)
+                    if (len1 > 0)
+                        f.write(buffer, 0, len1)
+                    else
+                        break
+                }
+                f.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
         }
     }
 }

@@ -4,6 +4,7 @@ package com.aj.collection.database;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Unique;
 
 /**
@@ -12,6 +13,7 @@ import org.greenrobot.greendao.annotation.Unique;
 @Entity
 public class TASKINFO {
     @Unique
+    @Id
     private Long taskID;
     private String task_name;
     private String task_letter;

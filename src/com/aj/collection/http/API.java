@@ -292,7 +292,7 @@ public class API {
      * @return
      */
     public static StringRequest fetchSID(Response.Listener<String> listener, Response.ErrorListener errorListener,
-                                                final String user, final String pwd) {
+                                                final String user, final String pwd, final String taskID) {
         StringRequest request = new StringRequest(Request.Method.POST, URLs.RECEIVED, listener, errorListener) {
             @Override
             public Map<String, String> getParams() throws AuthFailureError {
@@ -300,6 +300,7 @@ public class API {
                 map.put("act", URLs.FETCHSIDACT);
                 map.put("username", user);
                 map.put("password", pwd);
+                map.put("task_id", taskID);
                 map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
@@ -318,7 +319,7 @@ public class API {
      * @return
      */
     public static StringRequest setSIdUsed(Response.Listener<String> listener, Response.ErrorListener errorListener,
-                                                final String user, final String pwd, final String sid) {
+                                                final String user, final String pwd, final String sid, final String taskID) {
         StringRequest request = new StringRequest(Request.Method.POST, URLs.RECEIVED, listener, errorListener) {
             @Override
             public Map<String, String> getParams() throws AuthFailureError {
@@ -327,6 +328,7 @@ public class API {
                 map.put("username", user);
                 map.put("password", pwd);
                 map.put("id", sid);
+                map.put("task_id",taskID);
                 map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }
@@ -345,7 +347,7 @@ public class API {
      * @return
      */
     public static StringRequest setSIdNotUsed(Response.Listener<String> listener, Response.ErrorListener errorListener,
-                                                final String user, final String pwd, final String sid) {
+                                                final String user, final String pwd, final String sid, final String taskID) {
         StringRequest request = new StringRequest(Request.Method.POST, URLs.RECEIVED, listener, errorListener) {
             @Override
             public Map<String, String> getParams() throws AuthFailureError {
@@ -354,6 +356,7 @@ public class API {
                 map.put("username", user);
                 map.put("password", pwd);
                 map.put("id", sid);
+                map.put("task_id",taskID);
                 map.put("UDID", ((TelephonyManager) CollectionApplication.Companion.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
                 return map;
             }

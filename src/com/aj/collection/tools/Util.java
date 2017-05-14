@@ -405,4 +405,11 @@ public class Util {
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
         return Uri.parse(path);
     }
+
+    public static final String ANDROID_RESOURCE = "android.resource://";
+    public static final String FORWARD_SLASH = "/";
+
+    public static Uri resourceIdToUri(Context context, int resourceId) {
+        return Uri.parse(ANDROID_RESOURCE + context.getPackageName() + FORWARD_SLASH + resourceId);
+    }
 }

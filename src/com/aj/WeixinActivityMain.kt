@@ -48,6 +48,7 @@ import com.bignerdranch.expandablerecyclerview.ExpandableRecyclerAdapter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jrs.utils.FileUtils
+import kotlinx.android.synthetic.main.weixin_setting_content.*
 import net.micode.compass.CompassActivity
 import net.micode.notes.ui.NotesListActivity
 import org.jetbrains.anko.doAsync
@@ -575,7 +576,7 @@ class WeixinActivityMain : AppCompatActivity() {
     fun queryDoingTaskData(): ArrayList<TaskData> {
         //queryTaskName
         val taskinfos = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.Is_finished.eq(false)).orderAsc(TASKINFODao.Properties.TaskID).list()
-        return taskInfo2TaskData(taskinfos)
+        return taskInfo2TaskData(taskinfos,isInTaskFragment = true)
     }
 
     /**
@@ -584,27 +585,32 @@ class WeixinActivityMain : AppCompatActivity() {
     fun queryDoneTaskData(): ArrayList<TaskData> {
         //queryTaskName
         val taskinfos = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.Is_finished.eq(true)).orderAsc(TASKINFODao.Properties.TaskID).list()
-        return taskInfo2TaskData(taskinfos)
+        return taskInfo2TaskData(taskinfos, isInTaskFragment = false)
     }
 
     /**
      * taskInfo类转TaskData
      */
-    fun taskInfo2TaskData(taskInfos: List<TASKINFO>): ArrayList<TaskData> {
+    fun taskInfo2TaskData(taskInfos: List<TASKINFO>, isInTaskFragment:Boolean): ArrayList<TaskData> {
         val taskSet = ArrayList<TaskData>()  // 任务列表
         for (taskInfo in taskInfos) {
             // 当前任务下查找抽样单
             val sheetSet = ArrayList<SAMPLINGTABLE>()  // 盛放抽样单的列表
             val sheets = samplingtableDao!!.queryBuilder().where(SAMPLINGTABLEDao.Properties.TaskID.eq(taskInfo.taskID)).
                     orderAsc(SAMPLINGTABLEDao.Properties.Id).list()  // 查找任务下的抽样单
-            // 先添加一个模板
-            val templets = templettableDao?.queryBuilder()?.where(TEMPLETTABLEDao.Properties.TaskID.eq(taskInfo.taskID))?.
-                    orderAsc(TEMPLETTABLEDao.Properties.TempletID)?.list()
-            // 当前定义的一个任务就一个模板
-            val templet = templets?.get(0)
-            sheetSet.add(SAMPLINGTABLE(-1L, templet?.taskID, templet?.templetID, templet?.templet_name, null,
-                    templet?.templet_content, null, null, null, null, null,
-                    null, null, null, null, null, null, null, null, false))
+            if (isInTaskFragment){
+                // 先添加一个模板
+                val templets = templettableDao?.queryBuilder()?.where(TEMPLETTABLEDao.Properties.TaskID.eq(taskInfo.taskID))?.
+                        orderAsc(TEMPLETTABLEDao.Properties.TempletID)?.list()
+                if (templets?.size != 1)
+                    continue
+                // 当前定义的一个任务就一个模板
+                val templet = templets?.get(0)
+                sheetSet.add(SAMPLINGTABLE(-1L, templet?.taskID, templet?.templetID, templet?.templet_name, null,
+                        templet?.templet_content, null, null, null, null, null,
+                        null, null, null, null, null, null, null, null, false))
+            }
+            // 添加后续的抽样单
             sheetSet.addAll(sheets)
 
             var taskData = TaskData(sheetSet, taskInfo.taskID, taskInfo.task_name, taskInfo.task_letter,
@@ -978,9 +984,12 @@ class WeixinActivityMain : AppCompatActivity() {
      */
 
     private val mCallback = object : MsgService.ICallback {
+        override fun refreshDoneChildListView() {
+            refreshDoneChildListView()
+        }
 
         override fun haveNewTask() {
-//           refreshDoingTaskData(showProgDialog = false)
+
         }
 
         override fun getWeixinActitityContext(): Context {
@@ -991,7 +1000,7 @@ class WeixinActivityMain : AppCompatActivity() {
             (mContext as WeixinActivityMain).returnToLoginActivity()
         }
 
-        override fun refreshBadgeView1_callback() {
+        override fun refreshBadgeView_callback() {
             refreshBadgeView1()
         }
 
@@ -1073,7 +1082,8 @@ class WeixinActivityMain : AppCompatActivity() {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
         progressDialog.setMessage("接受新任务中...")
         progressDialog.setCancelable(false)
-        progressDialog.show()
+        if (!progressDialog.isShowing)
+            progressDialog.show()
         val listener = Response.Listener<String> { s ->
             try {
 
@@ -1086,17 +1096,23 @@ class WeixinActivityMain : AppCompatActivity() {
                     for (i in 0..taskJsonArray.length() - 1) {
                         val taskJsonObject = taskJsonArray.getJSONObject(i)
                         var hasNewTask = KotlinUtil.parseTaskDataIntoDatabase(mContext, taskJsonObject, taskinfoDao, templettableDao, samplingtableDao)
-                        if (i == taskJsonArray.length() - 1) { // 最后一个任务
-                            if (progressDialog.isShowing)
-                                progressDialog.dismiss()
-                        }
                     }
+                    KotlinUtil.deleteTaskDosentExsistInList(taskJsonArray, taskinfoDao, templettableDao, samplingtableDao)
+
+                    if (progressDialog.isShowing)
+                        progressDialog.dismiss()
+                    refreshDoingTaskData(false)
+                    refreshDoneTaskData(false)
 
                 } else {
                     ReturnCode(applicationContext, errorCode, true)
                     if (errorCode == ReturnCode.NO_SUCH_ACCOUNT || errorCode == ReturnCode.PASSWORD_INVALIDE) {
                         returnToLoginActivity()
                     }
+                    if (progressDialog.isShowing)
+                        progressDialog.dismiss()
+                    refreshDoingTaskData(false)
+                    refreshDoneTaskData(false)
                 }
 
             } catch (e: JSONException) {
@@ -1124,7 +1140,8 @@ class WeixinActivityMain : AppCompatActivity() {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
         if (showDialog && isActivityOnShowing) {
             progressDialog.setMessage("正在刷新任务状态...")
-            progressDialog.show()
+            if (!progressDialog.isShowing)
+                progressDialog.show()
         }
         val jsonArray = JSONArray()
         // TODO 在sheetViewHolder中添加null sid 为非上传状态
@@ -1178,10 +1195,12 @@ class WeixinActivityMain : AppCompatActivity() {
                 e.printStackTrace()
             } catch (e: Exception) {
                 e.printStackTrace()
+                if (progressDialog.isShowing)
+                    progressDialog.dismiss()
             }
         }
         val errorListener = Response.ErrorListener { volleyError ->
-            if (showDialog)
+            if (progressDialog.isShowing)
                 progressDialog.dismiss()
             Log.e("getSamStatusFail", volleyError.toString())
             if (showDialog) {
@@ -1206,7 +1225,8 @@ class WeixinActivityMain : AppCompatActivity() {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
         if (showDialog && isActivityOnShowing) {
             progressDialog.setMessage("正在刷新任务状态...")
-            progressDialog.show()
+            if (!progressDialog.isShowing)
+                progressDialog.show()
         }
         val jsonArray = JSONArray()
         val alltaskinfos = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.TaskID.isNotNull).orderAsc().list()
@@ -1218,6 +1238,8 @@ class WeixinActivityMain : AppCompatActivity() {
             }
         } catch (e: JSONException) {
             e.printStackTrace()
+            if (progressDialog.isShowing)
+                progressDialog.dismiss()
         }
 
         val listener = Response.Listener<String> { s ->
@@ -1265,10 +1287,12 @@ class WeixinActivityMain : AppCompatActivity() {
                 e.printStackTrace()
             } catch (e: Exception) {
                 e.printStackTrace()
+                if (progressDialog.isShowing)
+                    progressDialog.dismiss()
             }
         }
         val errorListener = Response.ErrorListener { volleyError ->
-            if (showDialog)
+            if (progressDialog.isShowing)
                 progressDialog.dismiss()
             Log.e("getTaskStatusFail", volleyError.toString())
             if (showDialog) {

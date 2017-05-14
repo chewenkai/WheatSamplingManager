@@ -18,30 +18,30 @@ import java.lang.Long
  */
 class KotlinUtil {
     companion object {
-        fun getLocalSIds(mContext: Context): ArrayList<String> {
+        fun getLocalSIds(mContext: Context): JSONArray {
             val localSID = SPUtils.get(mContext, SPUtils.SAMPLING_CACHED_SID, "",
                     SPUtils.SAMPLING_CACHED_SID_NAME) as String
+            val jsonArray = JSONArray(localSID)
+//            var cachedSID = ArrayList<String>()
+//            if (localSID != null && localSID.isNotEmpty() && localSID.isNotBlank()) {
+//                // 利用Gson将Json文本转为SheetCell列表
+//                try {
+//                    val turnsType = object : TypeToken<ArrayList<String>>() {}.type
+//                    cachedSID = Gson().fromJson(localSID, turnsType)
+//                } catch (e: IllegalStateException) {
+//                    e.printStackTrace()
+//                }
 
-            var cachedSID = ArrayList<String>()
-            if (localSID != null && localSID.isNotEmpty() && localSID.isNotBlank()) {
-                // 利用Gson将Json文本转为SheetCell列表
-                try {
-                    val turnsType = object : TypeToken<ArrayList<String>>() {}.type
-                    cachedSID = Gson().fromJson(localSID, turnsType)
-                } catch (e: IllegalStateException) {
-                    e.printStackTrace()
-                }
-
-            }
-            return cachedSID
+//            }
+            return jsonArray
         }
 
         /**
          * 返回结果为是否有新任务
          */
         fun parseTaskDataIntoDatabase(mContext: Context, taskJsonObject: JSONObject, taskinfoDao: TASKINFODao?,
-                                      templettableDao: TEMPLETTABLEDao?, samplingtableDao: SAMPLINGTABLEDao?):Boolean {
-            var hasNewTask=false
+                                      templettableDao: TEMPLETTABLEDao?, samplingtableDao: SAMPLINGTABLEDao?): Boolean {
+            var hasNewTask = false
             try {
                 val taskID = taskJsonObject.getString(URLs.KEY_TASKID)
                 val taskName = taskJsonObject.getString(URLs.KEY_TASKNAME)
@@ -63,7 +63,7 @@ class KotlinUtil {
                     templettableDao?.insertOrReplace(templettable)
                     templettable = templettableDao?.queryBuilder()?.where(TEMPLETTABLEDao.Properties.TaskID.eq(theTask.taskID))?.list()?.get(0)
                     hasNewTask = true
-                } else {
+                } else {  // 更新任务
                     theTask = searchTasks[0]
                     templettable = templettableDao?.queryBuilder()?.where(TEMPLETTABLEDao.Properties.TaskID.eq(theTask.taskID))?.list()?.get(0)
                 }
@@ -86,17 +86,66 @@ class KotlinUtil {
                         val turnsType = object : TypeToken<List<SheetCell>>() {}.type
                         val sheetCellList: ArrayList<SheetCell> = Gson().fromJson(sheetCells, turnsType)
 
+                        var sampleStatus = Constant.S_STATUS_CHECKING
+                        var isServerSampling = false
+                        var isSaved = true
+                        var isUploaded = true
+                        // 判断单元格中是不是全部都有值，如果都有值，说明抽样单是之前上传的，存为“已保存”和“已上传”
+                        // 如果有空值，说明是定点抽样单，应存为“未保存”和“未上传”
+                        for (sheetCell in sheetCellList) {
+                            if (sheetCell.cell_fill_required == SheetProtocol().True &&
+                                    (sheetCell.cell_value.isBlank() || sheetCell.cell_value.isEmpty())) {
+                                isServerSampling = true
+                                isSaved = false
+                                isUploaded = false
+                                sampleStatus = Constant.S_STATUS_HAVE_NOT_UPLOAD
+                                break
+                            }
+
+                        }
+                        // 判断是否是补采的抽样单
+                        var isMakeUp = false
+                        if (sheetCellList[0].cell_value?.contains(Constant.MAKE_UP_MARK))
+                            isMakeUp = true
+
                         val samplingtable = SAMPLINGTABLE(null, Long.valueOf(taskID), templettable?.templetID, samplingName, sheetCellList[1].cell_value,
-                                samplingCont, mediaFolderChild, false, false, true, false, Constant.S_STATUS_HAVE_NOT_UPLOAD, System.currentTimeMillis(), null, Long.valueOf(samplingID), null, null, null, samplingNum, false)
+                                samplingCont, mediaFolderChild, isSaved, isUploaded, isServerSampling, isMakeUp, sampleStatus, System.currentTimeMillis(), null, Long.valueOf(samplingID), null, null, null, samplingNum, false)
 
                         samplingtableDao!!.insertOrReplace(samplingtable)
                     }
                     // 抽样单存在，不做任何操作
                 }
                 return hasNewTask
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
                 return false
+            }
+        }
+
+        fun deleteTaskDosentExsistInList(taskJsonArray: JSONArray, taskinfoDao:TASKINFODao?,
+                                         templettableDao: TEMPLETTABLEDao?,samplingtableDao: SAMPLINGTABLEDao?) {
+
+            try {
+                val searchTasks = taskinfoDao?.queryBuilder()?.list()?:ArrayList<TASKINFO>()
+                loop@for (task in searchTasks){
+                    for (i in 0..taskJsonArray.length() - 1) {
+                        if (task.taskID.toString() == taskJsonArray.getJSONObject(i).getString(URLs.KEY_TASKID))
+                            continue@loop
+                    }
+                    // 删除该任务下的抽样单
+                    samplingtableDao?.deleteInTx(samplingtableDao.queryBuilder().
+                            where(SAMPLINGTABLEDao.Properties.TaskID.eq(task.taskID)).list())
+                    // 删除对应的任务模板
+                    templettableDao?.deleteInTx(templettableDao.queryBuilder().
+                            where(TEMPLETTABLEDao.Properties.TaskID.eq(task.taskID)).list())
+                    // 删除任务
+                    taskinfoDao?.deleteInTx(taskinfoDao.queryBuilder().
+                            where(TASKINFODao.Properties.TaskID.eq(task.taskID)).list())
+                }
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

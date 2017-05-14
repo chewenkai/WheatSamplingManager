@@ -171,54 +171,6 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
         queue!!.add(stringRequest)
     }
 
-    private fun getSuperiorInfo(ll_superiors: LinearLayout) {
-        val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
-        progressDialog.setMessage("查询上级单位...")
-        progressDialog.show()
-
-        val listener = Response.Listener<String> { s ->
-            progressDialog.dismiss()
-            try {
-                val resultJson = JSONObject(s)
-                val errorCode = resultJson.getString(URLs.KEY_ERROR)
-                val content = resultJson.getString(URLs.KEY_MESSAGE)
-
-                if (errorCode == ReturnCode.Code0) {
-                    val gson = Gson()
-                    gson.fromJson(s, Superior::class.java)
-                    val turnsType = object : TypeToken<List<Superior>>() {}.type
-                    var superiorList: List<Superior> = gson.fromJson(content, turnsType)
-                    for (superior in superiorList) {
-                        val rb = AppCompatRadioButton(this@LoginActivity)
-                        rb.setText(superior.company)
-                        rb.setOnClickListener {
-                            clearAllRadioButtons()
-                            rb.isChecked = true
-                            selectedSuperior = superior
-                        }
-                        ll_superiors.addView(rb)
-                        allSuperiorRadioButtons.add(rb)
-                    }
-
-                } else {
-                    ReturnCode(applicationContext, errorCode, true)
-                }
-
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-        }
-        val errorListener = Response.ErrorListener { volleyError ->
-            progressDialog.dismiss()
-            Toast.makeText(mContext, mContext.getString(R.string.badNetWork), Toast.LENGTH_LONG).show()
-            Log.e("LoginTestFail", volleyError.toString())
-        }
-
-        val stringRequest = API.getSuperiorInfo(listener, errorListener)
-
-        queue!!.add(stringRequest)
-    }
-
     private fun clearAllRadioButtons() {
         for (rb: AppCompatRadioButton in allSuperiorRadioButtons) {
             rb.isChecked = false
@@ -381,12 +333,14 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                         && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
                     val intent = Intent(mContext, WeixinActivityMain::class.java)
                     startActivity(intent)
+                    finish()
                 }
             } else {
                 val intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS)
                 intent.data = Uri.parse("package:" + this@LoginActivity.packageName)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
+                finish()
             }
         } else {
             // permission was granted, yay! Do the
@@ -397,6 +351,7 @@ class LoginActivity : AppCompatActivity(), OnClickListener {
                     && !user!!.isEmpty() && !pwd!!.isEmpty() && !intent.getBooleanExtra(ReturnCode.ACCOUNT_LOGIN_OTHER_DEVICE, false)) {
                 val intent = Intent(mContext, WeixinActivityMain::class.java)
                 startActivity(intent)
+                finish()
             }
         }
     }

@@ -462,7 +462,7 @@ class DebugActivity : Activity() {
                 val resultJson = JSONObject(s)
                 val errorCode = resultJson.getString(URLs.KEY_ERROR)
                 val message = resultJson.getString(URLs.KEY_MESSAGE)
-                fetchedID = JSONObject(message).getString("id")
+                fetchedID = message
                 output?.text = "$s\n错误码：$errorCode\n消息：$message"
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -472,7 +472,7 @@ class DebugActivity : Activity() {
             progressDialog!!.dismiss()
             output?.text = volleyError.toString()
         }
-        val stringRequest = API.fetchSID(listener, errorListener, "kevin", "1")
+        val stringRequest = API.fetchSID(listener, errorListener, "kevin", "1", "261")
         queue?.add(stringRequest)
     }
 
@@ -495,7 +495,7 @@ class DebugActivity : Activity() {
             progressDialog!!.dismiss()
             output?.text = volleyError.toString()
         }
-        val stringRequest = API.setSIdUsed(listener, errorListener, "kevin", "1", fetchedID)
+        val stringRequest = API.setSIdUsed(listener, errorListener, "kevin", "1", fetchedID, "261")
         queue?.add(stringRequest)
     }
 
@@ -518,7 +518,7 @@ class DebugActivity : Activity() {
             progressDialog!!.dismiss()
             output?.text = volleyError.toString()
         }
-        val stringRequest = API.setSIdNotUsed(listener, errorListener, "kevin", "1", fetchedID)
+        val stringRequest = API.setSIdNotUsed(listener, errorListener, "kevin", "1", fetchedID, "261")
         queue?.add(stringRequest)
     }
 }

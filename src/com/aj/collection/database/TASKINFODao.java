@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "TASKINFO".
 */
-public class TASKINFODao extends AbstractDao<TASKINFO, Void> {
+public class TASKINFODao extends AbstractDao<TASKINFO, Long> {
 
     public static final String TABLENAME = "TASKINFO";
 
@@ -22,7 +22,7 @@ public class TASKINFODao extends AbstractDao<TASKINFO, Void> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property TaskID = new Property(0, Long.class, "taskID", false, "TASK_ID");
+        public final static Property TaskID = new Property(0, Long.class, "taskID", true, "_id");
         public final static Property Task_name = new Property(1, String.class, "task_name", false, "TASK_NAME");
         public final static Property Task_letter = new Property(2, String.class, "task_letter", false, "TASK_LETTER");
         public final static Property Is_finished = new Property(3, Boolean.class, "is_finished", false, "IS_FINISHED");
@@ -44,7 +44,7 @@ public class TASKINFODao extends AbstractDao<TASKINFO, Void> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"TASKINFO\" (" + //
-                "\"TASK_ID\" INTEGER UNIQUE ," + // 0: taskID
+                "\"_id\" INTEGER PRIMARY KEY UNIQUE ," + // 0: taskID
                 "\"TASK_NAME\" TEXT," + // 1: task_name
                 "\"TASK_LETTER\" TEXT," + // 2: task_letter
                 "\"IS_FINISHED\" INTEGER," + // 3: is_finished
@@ -140,8 +140,8 @@ public class TASKINFODao extends AbstractDao<TASKINFO, Void> {
     }
 
     @Override
-    public Void readKey(Cursor cursor, int offset) {
-        return null;
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
@@ -170,20 +170,23 @@ public class TASKINFODao extends AbstractDao<TASKINFO, Void> {
      }
     
     @Override
-    protected final Void updateKeyAfterInsert(TASKINFO entity, long rowId) {
-        // Unsupported or missing PK type
-        return null;
+    protected final Long updateKeyAfterInsert(TASKINFO entity, long rowId) {
+        entity.setTaskID(rowId);
+        return rowId;
     }
     
     @Override
-    public Void getKey(TASKINFO entity) {
-        return null;
+    public Long getKey(TASKINFO entity) {
+        if(entity != null) {
+            return entity.getTaskID();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean hasKey(TASKINFO entity) {
-        // TODO
-        return false;
+        return entity.getTaskID() != null;
     }
 
     @Override

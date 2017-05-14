@@ -133,6 +133,11 @@ public class URLs {
     public final static String UPLAODIMG = URL_API_HOST + "uploadfile.php";
 
     /**
+     * 下载图片位置
+     */
+    public final static String DOWNLOAD_IMG_PATH = URL_API_HOST + "admin"+ URL_SPLITTER +
+            "uploadimages" + URL_SPLITTER;
+    /**
      * 上传抽样单 post $act username password tid tname scon sname sid
      */
     public final static String UPLOADSAMPLING = URL_API_HOST + "jiekou.php";

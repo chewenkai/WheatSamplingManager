@@ -216,13 +216,12 @@ class TypeSerialNumber(var mContext: Context, var sheetCell: SheetCell, var task
                 val errorCode = resultJson.getString(URLs.KEY_ERROR)
                 val message = resultJson.getString(URLs.KEY_MESSAGE)
                 if (errorCode == ReturnCode.Code0) {
-                    sampleSN = JSONObject(message).getString("id")
-
+                    sampleSN = message
+                    val jsonObject = JSONObject("{\"id\":$sampleSN,\"task_id\":${taskinfo?.taskID}}")
                     // 查询并添加本地缓存的sid
                     val cachedSID = KotlinUtil.getLocalSIds(mContext)
-
-                    cachedSID.add(sampleSN)
-                    SPUtils.put(mContext, SPUtils.SAMPLING_CACHED_SID, Gson().toJson(cachedSID),
+                    cachedSID.put(jsonObject)
+                    SPUtils.put(mContext, SPUtils.SAMPLING_CACHED_SID, cachedSID.toString(),
                             SPUtils.SAMPLING_CACHED_SID_NAME)
 
                     while (sampleSN.length != 4) {
@@ -242,55 +241,8 @@ class TypeSerialNumber(var mContext: Context, var sheetCell: SheetCell, var task
         }
         val stringRequest = API.fetchSID(listener, errorListener,
                 SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
-                SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?)
-        queue?.add(stringRequest)
-    }
-
-    private fun setSNUsed() {
-        if (sampleSN == defaultSampleSN)
-            return
-        val listener = Response.Listener<String> { s ->
-            try {
-                val resultJson = JSONObject(s)
-                val errorCode = resultJson.getString(URLs.KEY_ERROR)
-                val message = resultJson.getString(URLs.KEY_MESSAGE)
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-        }
-        val errorListener = Response.ErrorListener { volleyError ->
-
-        }
-        val stringRequest = API.setSIdUsed(listener, errorListener,
-                SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
                 SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?,
-                sampleSN)
-        queue?.add(stringRequest)
-    }
-
-    private fun setSNNotUsed() {
-        if (sampleSN == defaultSampleSN)
-            return
-        val listener = Response.Listener<String> { s ->
-            try {
-                val resultJson = JSONObject(s)
-                val errorCode = resultJson.getString(URLs.KEY_ERROR)
-                val message = resultJson.getString(URLs.KEY_MESSAGE)
-                if (errorCode == ReturnCode.Code0){
-
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-        }
-        val errorListener = Response.ErrorListener { volleyError ->
-            {}
-
-        }
-        val stringRequest = API.setSIdNotUsed(listener, errorListener,
-                SPUtils.get(mContext, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
-                SPUtils.get(mContext, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?,
-                sampleSN)
+                taskinfo?.taskID?.toString())
         queue?.add(stringRequest)
     }
 }

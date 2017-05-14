@@ -34,6 +34,7 @@ import com.github.yuweiguocn.library.greendao.MigrationHelper
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jrs.utils.SprtPrinter
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -90,40 +91,32 @@ class CollectionApplication : MultiDexApplication() {
     }
 
     fun setCachedSIDFalse(){
-        val cachedSID = KotlinUtil.getLocalSIds(this)
-        for (sid in cachedSID) {
-            setSNNotUsed(sid)
+        val cachedSID:JSONArray = KotlinUtil.getLocalSIds(this)
+        for (i in 0..cachedSID.length()-1) {
+            setSNNotUsed((cachedSID.get(i) as JSONObject).getString("id"),
+                    (cachedSID.get(i) as JSONObject).getString("task_id"))
         }
     }
 
     /**
      * 设置服务器端该sid未被使用
      */
-    private fun setSNNotUsed(sampleSN:String) {
+    private fun setSNNotUsed(sampleSN:String, taskID:String) {
         val listener = Response.Listener<String> { s ->
             try {
                 val resultJson = JSONObject(s)
                 val errorCode = resultJson.getString(URLs.KEY_ERROR)
                 val message = resultJson.getString(URLs.KEY_MESSAGE)
                 if (errorCode == ReturnCode.Code0){
-                    val localSID = SPUtils.get(this, SPUtils.SAMPLING_CACHED_SID, "",
-                            SPUtils.SAMPLING_CACHED_SID_NAME)
-
-                    var cachedSID = ArrayList<String>()
-                    if (localSID != null){
-                        // 利用Gson将Json文本转为SheetCell列表
-                        val turnsType = object : TypeToken<ArrayList<String>>() {}.type
-                        cachedSID = Gson().fromJson(localSID as String, turnsType)
-                    }
-
-                    for (sid in cachedSID) {
-                        if (sid == sampleSN) { // 在本地中找到该抽样单id
-                            cachedSID.remove(sid)
-                            SPUtils.put(this, SPUtils.SAMPLING_CACHED_SID, Gson().toJson(cachedSID),
-                                    SPUtils.SAMPLING_CACHED_SID_NAME)
-                            break
+                    val cachedSID: JSONArray = KotlinUtil.getLocalSIds(this)
+                    var newJsonArray = JSONArray()
+                    for (i in 0..cachedSID.length() - 1) {
+                        if (sampleSN != (cachedSID.get(i) as JSONObject).getString("id")) {
+                            newJsonArray.put(cachedSID.get(i) as JSONObject)
                         }
                     }
+                    SPUtils.put(this, SPUtils.SAMPLING_CACHED_SID, newJsonArray.toString(),
+                            SPUtils.SAMPLING_CACHED_SID_NAME)
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -136,7 +129,7 @@ class CollectionApplication : MultiDexApplication() {
         val stringRequest = API.setSIdNotUsed(listener, errorListener,
                 SPUtils.get(this, SPUtils.LOGIN_NAME, "", SPUtils.LOGIN_VALIDATE) as String?,
                 SPUtils.get(this, SPUtils.LOGIN_PASSWORD, "", SPUtils.LOGIN_VALIDATE) as String?,
-                sampleSN)
+                sampleSN, taskID)
         queue?.add(stringRequest)
     }
 

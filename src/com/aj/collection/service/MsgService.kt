@@ -104,10 +104,6 @@ class MsgService : Service() {
         getNewTask()
     }
 
-    override fun onStart(intent: Intent, startId: Int) {
-        super.onStart(intent, startId)
-    }
-
     override fun onDestroy() {
 
         unregisterTimeTickReceiver()
@@ -157,9 +153,11 @@ class MsgService : Service() {
 
         fun returnToLoginActivity()
 
-        fun refreshBadgeView1_callback()
+        fun refreshBadgeView_callback()
 
         fun refreshDoingChildListView()
+
+        fun refreshDoneChildListView()
     }
 
     private var mCallback: ICallback? = null
@@ -213,10 +211,12 @@ class MsgService : Service() {
                         var hasNewTask = KotlinUtil.parseTaskDataIntoDatabase(mContext, taskJsonObject, taskinfoDao, templettableDao, samplingtableDao)
                         if (hasNewTask)
                             showNotification()
-                        if (i == taskJsonArray.length() - 1) { // 最后一个任务
-                            mCallback?.refreshDoingChildListView()
-                        }
                     }
+                    KotlinUtil.deleteTaskDosentExsistInList(taskJsonArray, taskinfoDao,
+                            templettableDao, samplingtableDao)
+
+                    mCallback?.refreshDoingChildListView()
+//                    mCallback?.refreshDoneChildListView()
 
                 } else {
                     ReturnCode(applicationContext, errorCode, true)
