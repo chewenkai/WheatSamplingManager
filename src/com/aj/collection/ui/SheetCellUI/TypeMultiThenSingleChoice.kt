@@ -77,6 +77,7 @@ class TypeMultiThenSingleChoice(var mContext: Context, var sheetCell: SheetCell)
     }
 
     /**
+     * TODO 分号分割
      * 获取单元格值(cell_value)
      */
     override fun get_cell_value(): String {

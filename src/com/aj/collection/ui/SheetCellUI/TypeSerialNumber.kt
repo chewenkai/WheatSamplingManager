@@ -176,6 +176,7 @@ class TypeSerialNumber(var mContext: Context, var sheetCell: SheetCell, var task
     var cell_printable: CheckBox? = null
     var defaultSampleSN = Constant.DEFAULT_SAMPLE_SN
     var sampleSN: String = defaultSampleSN  // 抽样单序列号
+    var sid: String = Constant.DO_NOT_HAVE_SID  // 抽样单的服务器ID
     // 网络部分
     internal var queue: RequestQueue? = null
 
@@ -216,10 +217,13 @@ class TypeSerialNumber(var mContext: Context, var sheetCell: SheetCell, var task
                 val errorCode = resultJson.getString(URLs.KEY_ERROR)
                 val message = resultJson.getString(URLs.KEY_MESSAGE)
                 if (errorCode == ReturnCode.Code0) {
-                    sampleSN = message
+                    val json = JSONObject(message)
+                    //解析sid和任务sid
+                    sampleSN = json.getString("sid_of_task")
+                    sid = json.getString("sid")
                     val jsonObject = JSONObject("{\"id\":$sampleSN,\"task_id\":${taskinfo?.taskID}}")
                     // 查询并添加本地缓存的sid
-                    val cachedSID = KotlinUtil.getLocalSIds(mContext)
+                    val cachedSID = KotlinUtil.getLocalSIds(mContext)?:return@Listener
                     cachedSID.put(jsonObject)
                     SPUtils.put(mContext, SPUtils.SAMPLING_CACHED_SID, cachedSID.toString(),
                             SPUtils.SAMPLING_CACHED_SID_NAME)

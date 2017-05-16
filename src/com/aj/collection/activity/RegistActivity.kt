@@ -36,7 +36,9 @@ import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -80,14 +82,27 @@ class RegistActivity : AppCompatActivity() {
         val saveButton = findViewById(R.id.dialog_ok) as Button
 
         val superiorListLL = findViewById(R.id.superior_list) as LinearLayout
-        var data: ArrayList<Province> = ArrayList<Province>()
-        val json: String = ConvertUtils.toString(getAssets().open("city2.json"))
-        data.addAll(JSON.parseArray(json, Province::class.java))
-        addressPicker = AddressPicker(this@RegistActivity, data)
-        addressPicker?.setShadowVisible(false)
-        addressPicker?.setHideProvince(false)
-        addressPicker?.setHideCounty(false)
-        superiorListLL.addView(addressPicker?.contentView)
+        var data = ArrayList<Province>()
+        // TODO 放到后台线程执行，添加ProgressDialog
+        val progress = ProgressDialog(this)
+        progress.setMessage("加载城市数据")
+        progress.setCancelable(false)
+        if(!progress.isShowing)
+            progress.show()
+        doAsync {
+            val json: String = ConvertUtils.toString(getAssets().open("city2.json"))
+            data.addAll(JSON.parseArray(json, Province::class.java))
+            uiThread {
+                addressPicker = AddressPicker(this@RegistActivity, data)
+                addressPicker?.setShadowVisible(false)
+                addressPicker?.setHideProvince(false)
+                addressPicker?.setHideCounty(false)
+                superiorListLL.addView(addressPicker?.contentView)
+                if(progress.isShowing)
+                    progress.dismiss()
+            }
+        }
+
         saveButton.setOnClickListener {
             for (et: EditText in allSignUpEditText) {
                 if (et.text.isEmpty()) {

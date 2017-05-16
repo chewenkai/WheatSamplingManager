@@ -18,9 +18,11 @@ import java.lang.Long
  */
 class KotlinUtil {
     companion object {
-        fun getLocalSIds(mContext: Context): JSONArray {
+        fun getLocalSIds(mContext: Context): JSONArray? {
             val localSID = SPUtils.get(mContext, SPUtils.SAMPLING_CACHED_SID, "",
                     SPUtils.SAMPLING_CACHED_SID_NAME) as String
+            if (localSID == null || localSID.isEmpty() || localSID.isBlank())
+                return JSONArray("[]")
             val jsonArray = JSONArray(localSID)
 //            var cachedSID = ArrayList<String>()
 //            if (localSID != null && localSID.isNotEmpty() && localSID.isNotBlank()) {
@@ -54,7 +56,7 @@ class KotlinUtil {
                 val searchTasks = taskinfoDao!!.queryBuilder().where(TASKINFODao.Properties.TaskID.eq(taskID)).list()
                 var theTask: TASKINFO? = null
                 var templettable: TEMPLETTABLE? = null
-                if (searchTasks.size != 1) {  // 数据库中没有该任务，插入
+                if (searchTasks.size == 0) {  // 数据库中没有该任务，插入
                     theTask = TASKINFO(taskID.toLong(), taskName, taskLetter,
                             false, true, System.currentTimeMillis(), taskDes)
                     taskinfoDao?.insertOrReplace(theTask)
@@ -79,7 +81,7 @@ class KotlinUtil {
                     val mediaFolderChild = Util.getSamplingNum(mContext, theTask)
                     val searchSamples = samplingtableDao?.queryBuilder()?.where(SAMPLINGTABLEDao.Properties.Sid_of_server.eq(samplingID))?.list()
                     // 判断本地是否存在该抽样单
-                    if (searchSamples?.size != 1) {  // 抽样单不存在,插入抽样单
+                    if (searchSamples?.size == 0) {  // 抽样单不存在,插入抽样单
                         // 提取抽样单Json文本
                         var sheetCells = JSONObject(samplingCont).getString(SheetProtocol().SHEET_JSON_KEY)
                         // 利用Gson将Json文本转为SheetCell列表

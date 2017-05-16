@@ -134,6 +134,15 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/task_description"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="任务详情"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:gravity="center"/>
+
+        <TextView
             android:id="@+id/newFlag"
             android:layout_width="wrap_content"
             android:minWidth="20dp"

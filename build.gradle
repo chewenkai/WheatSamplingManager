@@ -3,13 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.greenrobot.greendao'
 dependencies {
-    compile 'com.android.support:multidex:1.0.1'
     compile(name: 'autoupdatesdk-release', ext: 'aar')
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
     // Android Support Library
     compile "com.android.support:appcompat-v7:$build_version"
     compile "com.android.support:design:$build_version"
@@ -18,29 +16,13 @@ dependencies {
     compile "com.android.support:support-v4:$build_version"
 
     // UI
-    compile 'com.bignerdranch.android:expandablerecyclerview:3.0.0-RC1'
-    compile 'com.pkmmte.view:circularimageview:1.1'
-    compile 'com.android.volley:volley:1.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.4.2'
 
     // wheel picker
-    compile 'cn.qqtheme.framework:WheelPicker:1.4.5'  // use a deffirent build version, be careful, it may cause manifest merge error.
+    // use a deffirent build version, be careful, it may cause manifest merge error.
     // image picker
-    compile 'com.squareup.picasso:picasso:2.5.2'
     // image loader
-    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
-    compile 'com.github.markushi:circlebutton:1.1'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.daimajia.slider:library:1.1.5@aar'
-//    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    //    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
-    compile 'com.alibaba:fastjson:1.1.57.android'
-    compile 'org.apache.commons.io:commonsIO:2.5.0'
-
-    compile 'org.greenrobot:greendao:3.2.0'
-    compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.3.0'
-
-//    compile project(':utillib')
     // Kotlin and Anko
     compile "org.jetbrains.anko:anko-sdk15:$anko_version"
     // sdk19, sdk21, sdk23 are also available
@@ -50,6 +32,25 @@ dependencies {
     // For appcompat-v7 bindings
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.bignerdranch.android:expandablerecyclerview:3.0.0-RC1'
+    compile 'com.pkmmte.view:circularimageview:1.1'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+//    compile 'com.android.volley:volley:1.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.2'
+    compile 'cn.qqtheme.framework:WheelPicker:1.4.5'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
+    compile 'com.github.markushi:circlebutton:1.1'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.daimajia.slider:library:1.1.5@aar'
+    compile 'com.alibaba:fastjson:1.1.57.android'
+    compile 'org.apache.commons.io:commonsIO:2.5.0'
+    compile 'org.greenrobot:greendao:3.2.0'
+    compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.3.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    testCompile 'junit:junit:4.12'
 }
 
 android {

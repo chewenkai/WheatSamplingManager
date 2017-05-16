@@ -558,14 +558,16 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
 
                     if (progressDialog.progress == files.size - 1) {  // The final file
                         WeixinActivityMain.instance!!.runOnUiThread {
-                            progressDialog.dismiss()
+                            if (progressDialog.isShowing)
+                                progressDialog.dismiss()
                             uploadSamplings(samplingtables, taskName)
                         }
 
                     } else {
                         if (errorCode != ReturnCode.Code0) {
                             WeixinActivityMain.instance!!.runOnUiThread {
-                                progressDialog.dismiss()
+                                if (progressDialog.isShowing)
+                                    progressDialog.dismiss()
                                 Toast.makeText(mContext, mContext.getString(R.string.serverError), Toast.LENGTH_SHORT).show()
                             }
                         } else {
@@ -608,7 +610,8 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
                 } catch (e: JSONException) {
                     e.printStackTrace()
                     WeixinActivityMain.instance!!.runOnUiThread {
-                        progressDialog.dismiss()
+                        if (progressDialog.isShowing)
+                            progressDialog.dismiss()
                         Toast.makeText(mContext, mContext.getString(R.string.serverError), Toast.LENGTH_SHORT).show()
                     }
                 }

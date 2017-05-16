@@ -128,8 +128,6 @@ public class API {
      * @param errorListener
      * @param user
      * @param pwd
-     * @param company
-     * @param company_id
      * @param farmer_name
      * @param farmer_phone
      * @param farmer_identity

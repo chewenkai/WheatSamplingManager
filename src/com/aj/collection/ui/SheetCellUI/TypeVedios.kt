@@ -349,7 +349,7 @@ class TypeVedios(var mContext: Context, var sheetCell: SheetCell, val autoGenera
                         cell_name!!.text.toString() + File.separator + "VIDEO_" + (mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).deviceId + Util.getCurrentTime("yyMMddHHmmss") + ".mp4")
                 var uriVideo: Uri? = null
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
-                    uriVideo = FileProvider.getUriForFile(mContext, mContext.applicationContext.packageName + ".provider", video_name)
+                    uriVideo = FileProvider.getUriForFile(mContext, mContext.applicationContext.packageName + ".fileprovider", video_name)
                 else
                     uriVideo = Uri.fromFile(video_name)
                 val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
@@ -455,7 +455,12 @@ class TypeVedios(var mContext: Context, var sheetCell: SheetCell, val autoGenera
 
             image.setOnClickListener {
                 //其他的是查看录像
-                val vedioURI = FileProvider.getUriForFile(mContext, "com.aj.collection.fileprovider", photoFile)
+                var vedioURI:Uri? = null
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+                    vedioURI = FileProvider.getUriForFile(mContext, "com.aj.collection.fileprovider", photoFile)
+                else
+                    vedioURI = Uri.fromFile(photoFile)
+
                 val type = "video/mp4"
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

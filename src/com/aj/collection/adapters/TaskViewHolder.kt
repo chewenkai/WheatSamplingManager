@@ -2,6 +2,7 @@ package com.aj.collection.adapters
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
@@ -11,10 +12,13 @@ import android.widget.TextView
 import com.aj.Constant
 import com.aj.collection.R
 import com.aj.collection.activity.CollectionApplication
+import com.aj.collection.activity.TaskDescriptionActivity
 import com.aj.collection.bean.TaskData
 import com.aj.collection.database.*
 import com.android.volley.RequestQueue
 import com.bignerdranch.expandablerecyclerview.ParentViewHolder
+import org.jetbrains.anko.onClick
+import org.jetbrains.anko.toast
 
 /**
  * Created by kevin on 17-4-22.
@@ -30,6 +34,7 @@ class TaskViewHolder(val mContext:Context, itemView: View): ParentViewHolder<Tas
     var counterPassed:TextView? = null
     var counterNotPassed:TextView? = null
     var counterNotUsed:TextView? = null
+    var taskDescription:TextView? =null
     var newFlag:TextView? = null
 
     private var daoSession: DaoSession? = null
@@ -47,6 +52,7 @@ class TaskViewHolder(val mContext:Context, itemView: View): ParentViewHolder<Tas
         counterPassed = itemView.findViewById(R.id.counter_passed) as TextView
         counterNotPassed = itemView.findViewById(R.id.counter_not_passed) as TextView
         counterNotUsed = itemView.findViewById(R.id.counter_not_used) as TextView
+        taskDescription = itemView.findViewById(R.id.task_description) as TextView
         newFlag = itemView.findViewById(R.id.newFlag) as TextView
         //database init
         daoSession = ((mContext as Activity).application as CollectionApplication).getDaoSession(mContext)
@@ -58,7 +64,13 @@ class TaskViewHolder(val mContext:Context, itemView: View): ParentViewHolder<Tas
 
     fun onBind(parent: TaskData){
         val taskID = parent.taskID
-
+        // 查询任务
+        val tasks = taskinfoDao?.queryBuilder()?.where(TASKINFODao.Properties.TaskID.eq(taskID))?.list()
+        if (tasks?.size !=1){
+            mContext.toast("找不到任务")
+            return
+        }
+        val task = tasks[0]
         //New字符相关
         if (parent.is_new_task)
             newFlag?.visibility = (View.VISIBLE)
@@ -83,6 +95,13 @@ class TaskViewHolder(val mContext:Context, itemView: View): ParentViewHolder<Tas
         counterPassed?.text = passedSampling?.size.toString() + "个"
         counterNotPassed?.text = notPassedSampling?.size.toString() + "个"
         counterNotUsed?.text = notUsedSampling?.size.toString() + "个"
+
+        // 任务详情
+        taskDescription?.onClick {
+            val intent = Intent(mContext, TaskDescriptionActivity::class.java)
+            intent.putExtra(Constant.TASK_DES_EXTRA, task.description)
+            mContext.startActivity(intent)
+        }
     }
 
     override fun onExpansionToggled(expanded: Boolean) {

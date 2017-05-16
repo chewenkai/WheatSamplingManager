@@ -331,6 +331,9 @@ class WeixinActivityMain : AppCompatActivity() {
                     mTabText3!!.setTextColor(Color.parseColor("#585858"))
 
                     //refresh doing page
+                    getNewTask(false)
+                    updateSamplingStatus(false)
+                    updateTaskStatus(false)
                     refreshDoingTaskData(showProgDialog = false)
                 }
                 1 -> {
@@ -347,6 +350,9 @@ class WeixinActivityMain : AppCompatActivity() {
                     mTabText3!!.setTextColor(Color.parseColor("#585858"))
 
                     //refresh history page
+                    getNewTask(false)
+                    updateSamplingStatus(false)
+                    updateTaskStatus(false)
                     refreshDoneTaskData(showProgDialog = false)
                 }
                 2 -> {
@@ -385,7 +391,7 @@ class WeixinActivityMain : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_refresh_task -> {
-                getNewTask()
+                getNewTask(true)
                 updateTaskStatus(true)
                 updateSamplingStatus(true)
             }
@@ -606,7 +612,7 @@ class WeixinActivityMain : AppCompatActivity() {
                     continue
                 // 当前定义的一个任务就一个模板
                 val templet = templets?.get(0)
-                sheetSet.add(SAMPLINGTABLE(-1L, templet?.taskID, templet?.templetID, templet?.templet_name, null,
+                sheetSet.add(SAMPLINGTABLE(-1L, templet?.taskID, templet?.templetID, templet?.templet_name + getString(R.string.template_suffix), null,
                         templet?.templet_content, null, null, null, null, null,
                         null, null, null, null, null, null, null, null, false))
             }
@@ -675,7 +681,7 @@ class WeixinActivityMain : AppCompatActivity() {
         // 手动检查新任务
         manualCheckTask = v.findViewById(R.id.check_new_task_btn) as LinearLayout
         manualCheckTask?.onClick {
-            getNewTask()
+            getNewTask(true)
         }
         //清除缓存
         //显示缓存大小
@@ -1078,11 +1084,11 @@ class WeixinActivityMain : AppCompatActivity() {
     /**
      * get New Task
      */
-    fun getNewTask() {
+    fun getNewTask(showDialog: Boolean) {
         val progressDialog = ProgressDialog(mContext, ProgressDialog.THEME_HOLO_LIGHT)
         progressDialog.setMessage("接受新任务中...")
         progressDialog.setCancelable(false)
-        if (!progressDialog.isShowing)
+        if (showDialog&&!progressDialog.isShowing)
             progressDialog.show()
         val listener = Response.Listener<String> { s ->
             try {
@@ -1109,7 +1115,7 @@ class WeixinActivityMain : AppCompatActivity() {
                     if (errorCode == ReturnCode.NO_SUCH_ACCOUNT || errorCode == ReturnCode.PASSWORD_INVALIDE) {
                         returnToLoginActivity()
                     }
-                    if (progressDialog.isShowing)
+                    if (showDialog&&progressDialog.isShowing)
                         progressDialog.dismiss()
                     refreshDoingTaskData(false)
                     refreshDoneTaskData(false)
@@ -1117,12 +1123,13 @@ class WeixinActivityMain : AppCompatActivity() {
 
             } catch (e: JSONException) {
                 e.printStackTrace()
-                if (progressDialog.isShowing)
+                if (showDialog&&progressDialog.isShowing)
                     progressDialog.dismiss()
             }
         }
         val errorListener = Response.ErrorListener { volleyError ->
-            progressDialog.dismiss()
+            if (showDialog&&progressDialog.isShowing)
+                progressDialog.dismiss()
             startMsgService()
             Toast.makeText(mContext, mContext.getString(R.string.badNetWork), Toast.LENGTH_LONG).show()
             Log.e("GetNewTaskFail", volleyError.toString())
@@ -1150,7 +1157,7 @@ class WeixinActivityMain : AppCompatActivity() {
             for (i in allSamplingtables.indices) {
                 val jsonObject = JSONObject()
                 // 如果没有SID说明上传的时候出现问题，应该重新上传，获取服务器的ID
-                jsonObject.put("sid", allSamplingtables[i].sid_of_server ?: Constant.DO_NOT_HAVE_SID)
+                jsonObject.put("sid", allSamplingtables[i].sid_of_server?:Constant.DO_NOT_HAVE_SID)
                 jsonArray.put(jsonObject)
             }
         } catch (e: JSONException) {
@@ -1170,13 +1177,19 @@ class WeixinActivityMain : AppCompatActivity() {
                     for (index in 0..result.length() - 1) {
                         val theResult = (result.get(index) as JSONObject)
                         val searchSample = samplingtableDao?.queryBuilder()?.where(SAMPLINGTABLEDao.Properties.
-                                Sid_of_server.eq(theResult.get("sid").toString().toLong()))?.list()
-                        if (searchSample?.size != 1) {
+                                Sid_of_server.eq(theResult.get("sid").toString().toLong()))?.list()?:return@Listener
+                        if (searchSample?.size ==0) {
                             Log.e("XXXXXXX", "WeixinActivity.java 返回任务sid找不到")
                             return@Listener
                         } else {
-                            searchSample[0].check_status = theResult.get("type").toString().toInt()
-                            samplingtableDao?.insertOrReplace(searchSample[0])
+                            for (sample in searchSample){
+                                if (theResult.get("type").toString().isEmpty() ||
+                                        theResult.get("type").toString().isBlank())
+                                    continue
+                                sample.check_status = theResult.get("type").toString().toInt()
+                                samplingtableDao?.insertOrReplace(sample)
+                            }
+
                         }
                     }
                     refreshDoingTaskData(showProgDialog = false)

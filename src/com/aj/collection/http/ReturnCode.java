@@ -139,6 +139,12 @@ public class ReturnCode {
     public final static String EMPTY_UDID_STRING = "无法获取本机的唯一ID";
 
     /**
+     * 找不到省市县的ID
+     */
+    public final static String EMPTY_ID_OF_REGION = "12345";
+    public final static String EMPTY_ID_OF_REGION_STRING = "获取不到该区域的ID，请重试";
+
+    /**
      * 账号在别处登陆
      */
     public final static String ACCOUNT_LOGIN_OTHER_DEVICE = "10099";
@@ -225,6 +231,10 @@ public class ReturnCode {
             case EMPTY_UDID:
                 if (showToast)
                     Toast.makeText(context,EMPTY_UDID_STRING,Toast.LENGTH_LONG).show();
+                break;
+            case EMPTY_ID_OF_REGION:
+                if (showToast)
+                    Toast.makeText(context,EMPTY_ID_OF_REGION_STRING,Toast.LENGTH_LONG).show();
                 break;
             case ACCOUNT_LOGIN_OTHER_DEVICE:
 //                if (showToast)

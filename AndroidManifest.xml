@@ -4,25 +4,24 @@
     android:versionCode="1"
     android:versionName="1.0">
 
-    <!-- 这个权限用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <!-- 这个权限用于访问GPS定位-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!-- 用于读取手机当前的状态-->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <!-- 访问网络，网络定位需要上网-->
+    <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 访问网络，网络定位需要上网 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- SD卡读取权限，用户写入离线定位数据-->
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-
+    <!-- SD卡读取权限，用户写入离线定位数据 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <!-- 允许应用读取低级别的系统日志文件 -->
     <uses-permission android:name="android.permission.READ_LOGS" />
@@ -71,19 +70,24 @@
         android:largeHeap="true"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
-        <!--调试key-->
-         <meta-data
-         android:name="com.baidu.lbsapi.API_KEY"
-         android:value="pOQBFO2A9iRLZyd4bjYYWxS9KppEGKyg" />
+        <!-- 调试key -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="pOQBFO2A9iRLZyd4bjYYWxS9KppEGKyg" />
 
-        <!--正式key-->
-        <!--<meta-data-->
-            <!--android:name="com.baidu.lbsapi.API_KEY"-->
-            <!--android:value="qDfS7OHKph9pywKrx9GykfnK" />-->
+        <!-- 正式key -->
+        <!-- <meta-data -->
+        <!-- android:name="com.baidu.lbsapi.API_KEY" -->
+        <!-- android:value="qDfS7OHKph9pywKrx9GykfnK" /> -->
 
-        <!--自动更新-->
-        <meta-data android:name="BDAPPID" android:value="7291456"/>
-        <meta-data android:name="BDAPPKEY" android:value="6w0mp45cbE1e99zHfnEuIyCG5wp26L5G"/>
+
+        <!-- 自动更新 -->
+        <meta-data
+            android:name="BDAPPID"
+            android:value="7291456" />
+        <meta-data
+            android:name="BDAPPKEY"
+            android:value="6w0mp45cbE1e99zHfnEuIyCG5wp26L5G" />
 
         <!-- 百度移动统计APP KEY -->
         <meta-data
@@ -132,10 +136,11 @@
         </activity>
         <activity
             android:name=".activity.SheetActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
             android:parentActivityName="com.aj.WeixinActivityMain"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
+
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -143,9 +148,10 @@
         </activity>
         <activity
             android:name=".activity.RegistActivity"
+            android:parentActivityName=".activity.LoginActivity"
             android:screenOrientation="portrait"
-            android:parentActivityName="com.aj.collection.activity.LoginActivity"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustResize">
+
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -155,29 +161,35 @@
         <activity
             android:name=".activity.PrintActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".activity.DetecedUnit"
+            android:parentActivityName="com.aj.WeixinActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:parentActivityName="com.aj.WeixinActivityMain">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.aj.WeixinActivityMain" />
         </activity>
-        <activity android:name=".Navigation.MapActivity" />
-        <activity android:name=".Navigation.BNGuideActivity" />
-
-        <activity android:name=".Navigation.MapOffline" />
-        <activity android:name=".activity.AboutActivity" />
-        <activity android:name=".activity.Agreement" />
+        <activity android:name=".Navigation.MapActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Navigation.BNGuideActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Navigation.MapOffline"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.AboutActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.Agreement"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.DebugActivity"
             android:label="@string/title_activity_debug"
-            android:theme="@style/Theme.AppCompat.Light"/>
-        <activity android:name=".activity.GalleryActivity"/>
-
+            android:theme="@style/Theme.AppCompat.Light"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.GalleryActivity"
+            android:screenOrientation="portrait" />
 
         <!-- 开机自启动的广播 -->
         <receiver android:name=".BroadCastReceiver.BootBroadcastReceiver">
@@ -223,29 +235,28 @@
         </activity>
 
         <provider
-            android:authorities="${applicationId}.fileprovider"
             android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/bdp_update_filepaths"/>
+                android:resource="@xml/bdp_update_filepaths" />
         </provider>
-
         <provider
             android:name="net.micode.notes.data.NotesProvider"
             android:authorities="micode_notes"
             android:multiprocess="true" />
 
-        <!--<provider-->
-            <!--android:authorities="${applicationId}.fileprovider"-->
-            <!--android:name="android.support.v4.content.FileProvider"-->
-            <!--android:exported="false"-->
-            <!--android:grantUriPermissions="true">-->
-            <!--<meta-data-->
-                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
-                <!--android:resource="@xml/bdp_update_filepaths"/>-->
-        <!--</provider>-->
+        <!-- <provider -->
+        <!-- android:authorities="${applicationId}.fileprovider" -->
+        <!-- android:name="android.support.v4.content.FileProvider" -->
+        <!-- android:exported="false" -->
+        <!-- android:grantUriPermissions="true"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+        <!-- android:resource="@xml/bdp_update_filepaths"/> -->
+        <!-- </provider> -->
 
         <receiver
             android:name="net.micode.notes.widget.NoteWidgetProvider_2x"
@@ -280,30 +291,33 @@
         </receiver>
         <receiver
             android:name="net.micode.notes.ui.AlarmReceiver"
-            android:process=":remote"/>
+            android:process=":remote" />
 
         <activity
             android:name="net.micode.notes.ui.AlarmAlertActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Holo.Wallpaper.NoTitleBar"/>.
+            android:theme="@android:style/Theme.Holo.Wallpaper.NoTitleBar" />
+        .
         <activity
             android:name="net.micode.notes.ui.NotesPreferenceActivity"
             android:label="@string/preferences_title"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Holo.Light"/>
+            android:theme="@android:style/Theme.Holo.Light" />
 
         <!-- 仿微信的主界面 -->
         <activity
             android:name="com.aj.WeixinActivityMain"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".ThirdModify_WeiXin.Exit"
+            android:screenOrientation="portrait"
             android:theme="@style/MyDialogStyle" />
 
         <service
             android:name="net.micode.notes.gtask.remote.GTaskSyncService"
-            android:exported="false"/>
+            android:exported="false" />
 
         <meta-data
             android:name="android.app.default_searchable"
@@ -316,11 +330,11 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-
-        <service android:name=".service.MsgService"/>
-
+        <service android:name=".service.MsgService" />
         <service android:name=".service.LongTermService" />
 
+        <activity android:name=".activity.TaskDescriptionActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

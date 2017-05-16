@@ -472,7 +472,7 @@ class DebugActivity : Activity() {
             progressDialog!!.dismiss()
             output?.text = volleyError.toString()
         }
-        val stringRequest = API.fetchSID(listener, errorListener, "kevin", "1", "261")
+        val stringRequest = API.fetchSID(listener, errorListener, "kevin", "1", "1")
         queue?.add(stringRequest)
     }
 
@@ -495,7 +495,7 @@ class DebugActivity : Activity() {
             progressDialog!!.dismiss()
             output?.text = volleyError.toString()
         }
-        val stringRequest = API.setSIdUsed(listener, errorListener, "kevin", "1", fetchedID, "261")
+        val stringRequest = API.setSIdUsed(listener, errorListener, "kevin", "1", fetchedID, "1")
         queue?.add(stringRequest)
     }
 
@@ -518,7 +518,7 @@ class DebugActivity : Activity() {
             progressDialog!!.dismiss()
             output?.text = volleyError.toString()
         }
-        val stringRequest = API.setSIdNotUsed(listener, errorListener, "kevin", "1", fetchedID, "261")
+        val stringRequest = API.setSIdNotUsed(listener, errorListener, "kevin", "1", fetchedID, "1")
         queue?.add(stringRequest)
     }
 }

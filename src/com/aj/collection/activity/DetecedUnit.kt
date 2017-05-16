@@ -24,8 +24,10 @@ import com.alibaba.fastjson.JSON
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import kotlinx.android.synthetic.main.set_base_info.*
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.onClick
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -71,25 +73,37 @@ class DetecedUnit : AppCompatActivity()  {
         kaiguan = findViewById(R.id.switch_phone) as Switch
 
         var data = ArrayList<Province>()
-        val json: String = ConvertUtils.toString(assets.open("city2.json"))
-        data.addAll(JSON.parseArray(json, Province::class.java))
-        addressPicker = AddressPicker(this@DetecedUnit, data)
-        addressPicker?.setShadowVisible(false)
-        addressPicker?.setHideProvince(false)
-        addressPicker?.setHideCounty(false)
-        change_region.onClick {
-            if (addressPicker?.isShowing?:true) {
-                addressPicker?.dismiss()
-            }
-            else {
-                addressPicker?.show()
-                addressPicker?.submitButton?.onClick {
-                    province = addressPicker?.selectedProvince?.areaName?:""
-                    city = addressPicker?.selectedCity?.areaName?:""
-                    country = addressPicker?.selectedCounty?.areaName?:""
-                    region_text.text = province + "-" +  city + "-" + country
-                    addressPicker?.dismiss()
+        // TODO 放到后台线程执行，添加ProgressDialog
+        val progress = ProgressDialog(this)
+        progress.setMessage("加载城市数据")
+        progress.setCancelable(false)
+        if(!progress.isShowing)
+            progress.show()
+        doAsync {
+            val json: String = ConvertUtils.toString(getAssets().open("city2.json"))
+            data.addAll(JSON.parseArray(json, Province::class.java))
+            uiThread {
+                addressPicker = AddressPicker(this@DetecedUnit, data)
+                addressPicker?.setShadowVisible(false)
+                addressPicker?.setHideProvince(false)
+                addressPicker?.setHideCounty(false)
+                change_region.onClick {
+                    if (addressPicker?.isShowing?:true) {
+                        addressPicker?.dismiss()
+                    }
+                    else {
+                        addressPicker?.show()
+                        addressPicker?.submitButton?.onClick {
+                            province = addressPicker?.selectedProvince?.areaName?:""
+                            city = addressPicker?.selectedCity?.areaName?:""
+                            country = addressPicker?.selectedCounty?.areaName?:""
+                            region_text.text = province + "-" +  city + "-" + country
+                            addressPicker?.dismiss()
+                        }
+                    }
                 }
+                if(progress.isShowing)
+                    progress.dismiss()
             }
         }
 

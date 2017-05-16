@@ -25,7 +25,7 @@ class TypeAutoRecordDate(var mContext: Context, var sheetCell: SheetCell) : Cell
      * 获取打印的内容
      */
     override fun getPrintContent(): String {
-        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked?:false)
+        if (sheetCell.cell_printable == SheetProtocol().True && cell_printable?.isChecked ?: false)
             return cell_name?.hint.toString() + ":" + get_cell_value()
         else
             return ""
@@ -43,6 +43,9 @@ class TypeAutoRecordDate(var mContext: Context, var sheetCell: SheetCell) : Cell
      * 将内容填到单元格
      */
     override fun setFilledContent(content: String) {
+        // 查看和编辑抽样单的时候内容不可能为空，如果直接设置为空是错误的
+        if (content == null || content.isBlank() || content.isEmpty())
+            return
         cell_value?.setText(content)
     }
 

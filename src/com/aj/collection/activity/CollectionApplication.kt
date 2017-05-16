@@ -91,7 +91,7 @@ class CollectionApplication : MultiDexApplication() {
     }
 
     fun setCachedSIDFalse(){
-        val cachedSID:JSONArray = KotlinUtil.getLocalSIds(this)
+        val cachedSID: JSONArray = KotlinUtil.getLocalSIds(this) ?: return
         for (i in 0..cachedSID.length()-1) {
             setSNNotUsed((cachedSID.get(i) as JSONObject).getString("id"),
                     (cachedSID.get(i) as JSONObject).getString("task_id"))
@@ -108,7 +108,7 @@ class CollectionApplication : MultiDexApplication() {
                 val errorCode = resultJson.getString(URLs.KEY_ERROR)
                 val message = resultJson.getString(URLs.KEY_MESSAGE)
                 if (errorCode == ReturnCode.Code0){
-                    val cachedSID: JSONArray = KotlinUtil.getLocalSIds(this)
+                    val cachedSID: JSONArray = KotlinUtil.getLocalSIds(this)?:return@Listener
                     var newJsonArray = JSONArray()
                     for (i in 0..cachedSID.length() - 1) {
                         if (sampleSN != (cachedSID.get(i) as JSONObject).getString("id")) {
@@ -167,6 +167,8 @@ class CollectionApplication : MultiDexApplication() {
      * @return
      */
     fun getDaoSession(context: Context): DaoSession {
+        if (daoSession == null)
+            initDaoSession()
         return daoSession!!
     }
 
