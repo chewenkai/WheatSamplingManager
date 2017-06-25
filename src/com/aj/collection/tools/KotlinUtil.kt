@@ -67,7 +67,14 @@ class KotlinUtil {
                     hasNewTask = true
                 } else {  // 更新任务
                     theTask = searchTasks[0]
+                    theTask?.task_name = taskName
+                    theTask?.task_letter=taskLetter
+                    theTask?.description=taskDes
+                    taskinfoDao?.update(theTask)
+                    // 更新模板
                     templettable = templettableDao?.queryBuilder()?.where(TEMPLETTABLEDao.Properties.TaskID.eq(theTask.taskID))?.list()?.get(0)
+                    templettable?.templet_content=taskCont
+                    templettableDao?.update(templettable)
                 }
 
                 //获取该用户在该任务下的抽样单

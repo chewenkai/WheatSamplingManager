@@ -269,6 +269,7 @@ class WeixinActivityMain : AppCompatActivity() {
     }
 
     public override fun onResume() {
+
         // 设置标志位
         isActivityOnShowing = true
         // refresh data
@@ -838,7 +839,7 @@ class WeixinActivityMain : AppCompatActivity() {
             }
         })
 
-        //unregist
+        //logout
         exitBtn = v.findViewById(R.id.exitapp) as LinearLayout
         exitBtn!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {

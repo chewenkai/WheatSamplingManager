@@ -345,7 +345,7 @@
                 android:paddingLeft="30dp"
                 android:paddingRight="20dp"
                 android:paddingTop="15dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:layout_width="match_parent"

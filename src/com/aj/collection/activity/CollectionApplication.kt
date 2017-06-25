@@ -134,8 +134,7 @@ class CollectionApplication : MultiDexApplication() {
     }
 
     fun initDaoSession(){
-        if (daoSession!=null)
-            return
+
         val userName = SPUtils.get(this, SPUtils.LOGIN_NAME, Constant.DB_DEFAULT_NAME, SPUtils.LOGIN_VALIDATE) as String
         val helper = MySQLiteOpenHelper(this, userName, null)
         val db = helper.writableDb

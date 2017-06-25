@@ -389,8 +389,11 @@ class SheetViewHolder(val mContext: Context, itemView: View, viewType: Int) : Ch
             //search media files under this sampling,add them to files list
             val mediaFileName = samplingtables[i].media_folder
             val mediaFilePaths = File(Util.getMediaFolder(mContext) + File.separator + mediaFileName).listFiles()
-            for (filePath in mediaFilePaths) {
-                files += filePath.listFiles()
+
+            if (mediaFilePaths.isNotEmpty()){
+                for (filePath in mediaFilePaths) {
+                    files += filePath.listFiles()
+                }
             }
 
         }

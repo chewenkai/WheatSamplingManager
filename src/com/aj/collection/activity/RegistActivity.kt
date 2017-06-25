@@ -68,17 +68,17 @@ class RegistActivity : AppCompatActivity() {
         val phone = findViewById(R.id.farmer_phone) as EditText
         allSignUpEditText.add(phone)
         val identity = findViewById(R.id.farmer_identity_number) as EditText
-        allSignUpEditText.add(identity)
+//        allSignUpEditText.add(identity)
         val address = findViewById(R.id.farmer_address) as EditText
-        allSignUpEditText.add(address)
+//        allSignUpEditText.add(address)
         val post = findViewById(R.id.farmer_post_number) as EditText
-        allSignUpEditText.add(post)
+//        allSignUpEditText.add(post)
         val possessor = findViewById(R.id.farmer_bank_card_possessor) as EditText
-        allSignUpEditText.add(possessor)
+//        allSignUpEditText.add(possessor)
         val band_card_number = findViewById(R.id.farmer_band_card_number) as EditText
-        allSignUpEditText.add(band_card_number)
+//        allSignUpEditText.add(band_card_number)
         val band_name = findViewById(R.id.farmer_bank_name) as EditText
-        allSignUpEditText.add(band_name)
+//        allSignUpEditText.add(band_name)
         val saveButton = findViewById(R.id.dialog_ok) as Button
 
         val superiorListLL = findViewById(R.id.superior_list) as LinearLayout
@@ -106,7 +106,7 @@ class RegistActivity : AppCompatActivity() {
         saveButton.setOnClickListener {
             for (et: EditText in allSignUpEditText) {
                 if (et.text.isEmpty()) {
-                    toast("请将信息填写完整")
+                    toast("请将必填信息填写完整")
                     return@setOnClickListener
                 }
             }

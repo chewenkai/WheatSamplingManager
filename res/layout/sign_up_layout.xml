@@ -26,11 +26,22 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="用户名"
-                android:textColor="@color/black"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" * "
+                    android:textSize="18sp"
+                    android:textColor="@color/red"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="用户名"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/farmer_user_name"
@@ -46,11 +57,22 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="密码"
-                android:textColor="@color/black" />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" * "
+                    android:textSize="18sp"
+                    android:textColor="@color/red"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="密码"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/farmer_password"
@@ -76,11 +98,22 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="大户姓名"
-                android:textColor="@color/black"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" * "
+                    android:textSize="18sp"
+                    android:textColor="@color/red"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="大户姓名"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/farmer_name"
@@ -96,11 +129,22 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="电话"
-                android:textColor="@color/black" />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" * "
+                    android:textSize="18sp"
+                    android:textColor="@color/red"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="电话"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/farmer_phone"

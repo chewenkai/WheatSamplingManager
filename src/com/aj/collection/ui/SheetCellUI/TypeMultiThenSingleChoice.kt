@@ -45,8 +45,11 @@ class TypeMultiThenSingleChoice(var mContext: Context, var sheetCell: SheetCell)
 
     /**
      * 将内容填到单元格
+     * content 格式如 “干旱,一般;高温,一般;”
      */
     override fun setFilledContent(content: String) {
+        if (!content.endsWith(";"))  // 校验格式
+            return
         val nCheckBoxesStr = content.splitKeeping(";")
         if (nCheckBoxesStr.isEmpty())
             return
@@ -243,14 +246,17 @@ class TypeMultiThenSingleChoice(var mContext: Context, var sheetCell: SheetCell)
 
     /**
      * 设置一级选项已选中的选项
-     * 洪涝,轻微
+     * radioValue格式为 “洪涝,轻微”
      */
     fun setSelectedCheckBox(radioValue: String) {
         var content = radioValue.splitKeeping(",")
+        // 由于定点采样抽样单中多选+单选的数据是全部数据，这里为了防止第一个被选中，需要进行判断
+        if (content.size != 2)
+            return
         for (radio in checkBoxes) {
-            if (radio.text.toString().equals(content[0])) {
+            if (radio.text.toString().equals(content[0])) {  // content[0]指“洪涝”
                 radio.isChecked = true
-                (radio.tag as RadiosView).setSelectedRadio(content[1])
+                (radio.tag as RadiosView).setSelectedRadio(content[1])  // content[1]指“轻微”
                 (radio.tag as RadiosView).showRadios()
             }
         }
